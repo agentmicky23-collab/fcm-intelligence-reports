@@ -1,0 +1,127 @@
+{
+  "reports": [
+    {
+      "id": "RPT-LOCATION-INTEL",
+      "title": "Location Intelligence",
+      "price": 99,
+      "currency": "GBP",
+      "type": "one-time",
+      "description": "Standalone location analysis for property and area assessment",
+      "features": [
+        "Location Score (A-F grade)",
+        "Street View imagery",
+        "Area mapping",
+        "Demographics breakdown",
+        "House prices & affluence",
+        "Consumer profile",
+        "Crime & safety analysis",
+        "Competition mapping",
+        "Footfall analysis"
+      ],
+      "pageCount": "15-20",
+      "deliveryFormat": "PDF",
+      "consultationIncluded": false,
+      "stripeProductId": null,
+      "stripePriceId": null
+    },
+    {
+      "id": "RPT-BASIC",
+      "title": "Basic Report - Quick Due Diligence",
+      "price": 149,
+      "currency": "GBP",
+      "type": "one-time",
+      "description": "Initial sanity check before investing more time",
+      "features": [
+        "Business overview & summary",
+        "Key metrics at a glance",
+        "Red flags identification",
+        "Basic viability assessment",
+        "Go/No-Go recommendation"
+      ],
+      "pageCount": "6-10",
+      "deliveryFormat": "PDF",
+      "consultationIncluded": false,
+      "consultationMinutes": 0,
+      "stripeProductId": null,
+      "stripePriceId": null,
+      "bestFor": "Quick checks, early-stage interest, budget-conscious buyers"
+    },
+    {
+      "id": "RPT-PROFESSIONAL",
+      "title": "Professional Report - Full Business Analysis",
+      "price": 249,
+      "currency": "GBP",
+      "type": "one-time",
+      "description": "Comprehensive financial analysis for serious buyers",
+      "features": [
+        "Everything in Basic Report",
+        "Full financial deep dive",
+        "P&L analysis & breakdown",
+        "Post Office remuneration analysis",
+        "Revenue stream breakdown",
+        "Competition overview",
+        "30-minute consultation call",
+        "Negotiation guidance"
+      ],
+      "pageCount": "20-25",
+      "deliveryFormat": "PDF",
+      "consultationIncluded": true,
+      "consultationMinutes": 30,
+      "stripeProductId": null,
+      "stripePriceId": null,
+      "bestFor": "Buyers who have the location sorted but need to verify the financials",
+      "bundleDiscount": "10% off all services"
+    },
+    {
+      "id": "RPT-PREMIUM",
+      "title": "Premium Report - Complete Intelligence Package",
+      "price": 449,
+      "currency": "GBP",
+      "type": "one-time",
+      "description": "Everything you need in one comprehensive report. Business financials + full location intelligence.",
+      "features": [
+        "Everything in Professional Report",
+        "Full Location Intelligence",
+        "Property & Affluence Analysis",
+        "Demographics & Consumer Profile",
+        "Crime & Safety Analysis",
+        "Competition Mapping",
+        "Footfall Analysis",
+        "Street View & Maps",
+        "60-minute consultation call",
+        "Detailed action roadmap"
+      ],
+      "pageCount": "30-40",
+      "deliveryFormat": "PDF",
+      "consultationIncluded": true,
+      "consultationMinutes": 60,
+      "stripeProductId": null,
+      "stripePriceId": null,
+      "bestFor": "Serious buyers who want the complete picture before committing",
+      "mostPopular": true,
+      "bundleDiscount": "20% off all services"
+    }
+  ],
+  "membership": [
+    {
+      "id": "MEM-INSIDER",
+      "title": "FCM Insider Membership",
+      "price": 15,
+      "currency": "GBP",
+      "billingPeriod": "month",
+      "type": "recurring",
+      "description": "Get the edge over other buyers with exclusive access to our hand-picked recommendations",
+      "features": [
+        "Access to hand-selected recommended listings",
+        "5% off all reports",
+        "Weekly alerts for new listings matching your criteria",
+        "Priority support (24-hour response)"
+      ],
+      "cancellable": true,
+      "noLongTermCommitment": true,
+      "stripeProductId": null,
+      "stripePriceId": null,
+      "currentMembers": 50
+    }
+  ]
+}

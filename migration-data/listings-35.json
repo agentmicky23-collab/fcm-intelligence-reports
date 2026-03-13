@@ -1,0 +1,1556 @@
+[
+  {
+    "id": "OPP-2026-0306-001",
+    "businessName": "Keith Convenience + PO + Freehold",
+    "businessType": "post_office",
+    "location": "Keith, Moray, Scotland",
+    "region": "Scotland",
+    "askingPrice": "195000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "90000",
+    "sessionsPerMonth": 0,
+    "score": 92,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "Christie & Co / RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Freehold mains Post Office + convenience + 4-bed manager accommodation. Town centre unopposed position. Rates exempt. Elite asset security.",
+    "insiderVisible": true,
+    "badge": "⭐ FCM Pick",
+    "priceLabel": "Freehold Asset",
+    "priceDisplay": "£195,000",
+    "headerGradient": "linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%)",
+    "headerEmoji": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+    "headerTag": "SCOTLAND",
+    "headerTagBg": "#a855f7",
+    "details": [
+      {
+        "label": "PO Revenue",
+        "value": "£90k/yr"
+      },
+      {
+        "label": "Accommodation",
+        "value": "4-bed residential"
+      }
+    ],
+    "summary": "SCOTLAND EXPANSION: Freehold mains Post Office + convenience + 4-bed manager accommodation. Town centre unopposed position. Rates exempt. Elite asset security.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/644237_moray.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "Christie & Co / RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-002",
+    "businessName": "Barnsley Mains Post Office + Retail",
+    "businessType": "post_office",
+    "location": "Barnsley, South Yorkshire",
+    "region": "Yorkshire",
+    "askingPrice": "99900",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "61000",
+    "sessionsPerMonth": 1200,
+    "score": 88,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "Daltons Business",
+    "sourceUrl": "https://daltons.co.uk",
+    "notes": "Exceptional valuation: motivated retirement seller at bargain price. 1,200+ daily sessions. Mains Post Office with retail expansion potential. Strong fundamentals.",
+    "insiderVisible": true,
+    "badge": "⭐ FCM Pick",
+    "priceLabel": "Retirement Sale",
+    "priceDisplay": "£99,900",
+    "headerGradient": "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
+    "headerEmoji": "💷",
+    "headerTag": "VALUE ENTRY",
+    "headerTagBg": "#fb7185",
+    "details": [
+      {
+        "label": "PO Revenue",
+        "value": "£61k/yr"
+      },
+      {
+        "label": "Daily Sessions",
+        "value": "1,200+"
+      }
+    ],
+    "summary": "EXCEPTIONAL VALUATION: Motivated retirement seller at bargain price. 1,200+ daily sessions. Mains Post Office with retail expansion potential. Strong fundamentals.",
+    "originalUrl": "",
+    "originalUrlLabel": "Daltons Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "Daltons Business • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-003",
+    "businessName": "Fleetwood Main PO + Retail + Accommodation",
+    "businessType": "post_office",
+    "location": "Fleetwood, Lancashire (NW England)",
+    "region": "North West",
+    "askingPrice": "75000",
+    "weeklyTurnover": "1400",
+    "yearlyTurnover": "70000",
+    "annualFees": "70000",
+    "sessionsPerMonth": 1100,
+    "score": 85,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "Daltons Business",
+    "sourceUrl": "https://daltons.co.uk",
+    "notes": "NW cluster gem: Main Post Office status + licensed retail + staff accommodation. Dual revenue streams. 1,100+ daily sessions. Coastal promenade location with exceptional ROI.",
+    "insiderVisible": true,
+    "badge": "⭐ FCM Pick",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£75,000",
+    "headerGradient": "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    "headerEmoji": "🌊",
+    "headerTag": "NW COASTAL",
+    "headerTagBg": "#34d399",
+    "details": [
+      {
+        "label": "PO Revenue",
+        "value": "£70k/yr"
+      },
+      {
+        "label": "Retail Weekly",
+        "value": "£600-700"
+      },
+      {
+        "label": "Accommodation",
+        "value": "Staff housing included"
+      }
+    ],
+    "summary": "NW CLUSTER GEM: Main Post Office status + licensed retail + staff accommodation. Dual revenue streams. 1,100+ daily sessions. Coastal promenade location with exceptional ROI.",
+    "originalUrl": "",
+    "originalUrlLabel": "Daltons Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "Daltons Business • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-004",
+    "businessName": "Mains Post Office Wells-next-the-Sea",
+    "businessType": "post_office",
+    "location": "Wells-next-the-Sea NR2, Norfolk",
+    "region": "East Anglia",
+    "askingPrice": "95000",
+    "weeklyTurnover": "2435",
+    "yearlyTurnover": "93600",
+    "annualFees": "93600",
+    "sessionsPerMonth": 0,
+    "score": 86,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Exceptional valuation: sub-1x annual PO income asking price (rare signal). Coastal resort town with high seasonal footfall. 2 open counters + fortress counter. Retail expansion potential.",
+    "insiderVisible": true,
+    "badge": "⭐ FCM Pick",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£95,000",
+    "headerGradient": "linear-gradient(135deg, #f97316 0%, #b45309 100%)",
+    "headerEmoji": "⛵",
+    "headerTag": "COASTAL RESORT",
+    "headerTagBg": "#fb923c",
+    "details": [
+      {
+        "label": "PO Revenue",
+        "value": "£93.6k/yr"
+      },
+      {
+        "label": "Weekly Turnover",
+        "value": "£2,435"
+      }
+    ],
+    "summary": "EXCEPTIONAL VALUATION: Sub-1x annual PO income asking price (rare signal). Coastal resort town with high seasonal footfall. 2 open counters + fortress counter. Retail expansion potential.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/645602_norfolk.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-005",
+    "businessName": "Bilsborrow Village Store & PO",
+    "businessType": "convenience_store",
+    "location": "Bilsborrow, Preston PR3, Lancashire",
+    "region": "North West",
+    "askingPrice": "240000",
+    "weeklyTurnover": "13500",
+    "yearlyTurnover": "702000",
+    "annualFees": "80000",
+    "sessionsPerMonth": 0,
+    "score": 94,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Phenomenal opportunity: A6 roadside position. Zero PO competition (nearest 4 miles). £702k turnover with £13.5k weekly. 3-bed flat above. Premier Inn + caravan park + canal footfall. Rare lifestyle + business hybrid.",
+    "insiderVisible": true,
+    "badge": "⭐ FCM Pick",
+    "priceLabel": "Leasehold (£880k Freehold)",
+    "priceDisplay": "£240,000",
+    "headerGradient": "linear-gradient(135deg, #ec4899 0%, #be185d 100%)",
+    "headerEmoji": "💎",
+    "headerTag": "PREMIUM",
+    "headerTagBg": "#f472b6",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£702k/yr"
+      },
+      {
+        "label": "Weekly Turnover",
+        "value": "£13,500"
+      },
+      {
+        "label": "PO Income",
+        "value": "£80k/yr"
+      },
+      {
+        "label": "Accommodation",
+        "value": "3-bed above"
+      }
+    ],
+    "summary": "PHENOMENAL OPPORTUNITY: A6 roadside position. Zero PO competition (nearest 4 miles). £702k turnover with £13.5k weekly. 3-bed flat above. Premier Inn + caravan park + canal footfall. Rare lifestyle + business hybrid.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/641541_lancashire.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-006",
+    "businessName": "Lanark Mains PO + Development Site",
+    "businessType": "post_office",
+    "location": "Lanark ML1, South Lanarkshire, Scotland",
+    "region": "Scotland",
+    "askingPrice": "175000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "64300",
+    "sessionsPerMonth": 0,
+    "score": 87,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Scotland development play: Sole mains Post Office in town. Freehold with planning permission for convenience store + 2x 2-bed residential flats. Rates exempt. Town centre prominence. Significant upside potential.",
+    "insiderVisible": true,
+    "badge": "⭐ FCM Pick",
+    "priceLabel": "Freehold",
+    "priceDisplay": "£175,000",
+    "headerGradient": "linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%)",
+    "headerEmoji": "🏗️",
+    "headerTag": "DEVELOPMENT",
+    "headerTagBg": "#a855f7",
+    "details": [
+      {
+        "label": "PO Revenue",
+        "value": "£64.3k/yr"
+      },
+      {
+        "label": "Development",
+        "value": "Planning permission granted"
+      }
+    ],
+    "summary": "SCOTLAND DEVELOPMENT PLAY: Sole mains Post Office in town. Freehold with planning permission for convenience store + 2x 2-bed residential flats. Rates exempt. Town centre prominence. Significant upside potential.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/644738_south_lanarkshire.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-007",
+    "businessName": "Sale General Store & Post Office",
+    "businessType": "post_office",
+    "location": "Sale M33, Greater Manchester (NW)",
+    "region": "North West",
+    "askingPrice": "164950",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "563000",
+    "annualFees": "44000",
+    "sessionsPerMonth": 0,
+    "score": 83,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Manchester cluster: Corner site with 7-day trading (8am-8pm, licensed to 11pm). Off-licence attached. £563k turnover. Large residential catchment. 10-year lease from 2023. Pair with Salford asset.",
+    "insiderVisible": true,
+    "badge": "⭐ FCM Pick",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£164,950",
+    "headerGradient": "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+    "headerEmoji": "🏪",
+    "headerTag": "MANCHESTER",
+    "headerTagBg": "#22d3ee",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£563k/yr"
+      },
+      {
+        "label": "PO Income",
+        "value": "£43k + £1k InPost"
+      },
+      {
+        "label": "Trading Hours",
+        "value": "8am-8pm daily (11pm off-licence)"
+      }
+    ],
+    "summary": "MANCHESTER CLUSTER: Corner site with 7-day trading (8am-8pm, licensed to 11pm). Off-licence attached. £563k turnover. Large residential catchment. 10-year lease from 2023. Pair with Salford asset.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/643912_manchester.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-008",
+    "businessName": "North Warwickshire PO + Convenience + Off-Licence",
+    "businessType": "post_office",
+    "location": "North Warwickshire, Midlands",
+    "region": "Midlands",
+    "askingPrice": "400000",
+    "weeklyTurnover": "3600",
+    "yearlyTurnover": "187200",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 85,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz / Daltons",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Midlands expansion: Freehold corner property. Triple revenue streams (Post Office + convenience + off-licence). Modern fixtures. Residential area anchor. £3.6k weekly baseline with growth levers.",
+    "insiderVisible": true,
+    "badge": "⭐ FCM Pick",
+    "priceLabel": "Freehold",
+    "priceDisplay": "£400,000",
+    "headerGradient": "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+    "headerEmoji": "🏠",
+    "headerTag": "FREEHOLD",
+    "headerTagBg": "#fbbf24",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£187.2k/yr"
+      },
+      {
+        "label": "Weekly Turnover",
+        "value": "£3,600"
+      },
+      {
+        "label": "Property Type",
+        "value": "Corner freehold, semi-detached"
+      }
+    ],
+    "summary": "MIDLANDS EXPANSION: Freehold corner property. Triple revenue streams (Post Office + convenience + off-licence). Modern fixtures. Residential area anchor. £3.6k weekly baseline with growth levers.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/644832_warwickshire.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz / Daltons • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-009",
+    "businessName": "Leicester Convenience + PO + Freehold",
+    "businessType": "convenience_store",
+    "location": "Leicester, East Midlands",
+    "region": "East Midlands",
+    "askingPrice": "399500",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "702000",
+    "annualFees": "0",
+    "sessionsPerMonth": 1400,
+    "score": 87,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Midlands platform: Freehold convenience with integrated Post Office services. £702k annual turnover with 1,400+ daily sessions. Multi-revenue diversification opportunity.",
+    "insiderVisible": true,
+    "badge": "✨ Tier 2",
+    "priceLabel": "Freehold",
+    "priceDisplay": "£399,500",
+    "headerGradient": "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+    "headerEmoji": "🏪",
+    "headerTag": "MIDLANDS",
+    "headerTagBg": "#22d3ee",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£702k/yr"
+      },
+      {
+        "label": "Daily Sessions",
+        "value": "1,400+"
+      }
+    ],
+    "summary": "MIDLANDS PLATFORM: Freehold convenience with integrated Post Office services. £702k annual turnover with 1,400+ daily sessions. Multi-revenue diversification opportunity.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-010",
+    "businessName": "Barnsley Licensed Convenience + PO",
+    "businessType": "convenience_store",
+    "location": "Barnsley, South Yorkshire",
+    "region": "Yorkshire",
+    "askingPrice": "370000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "156000",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 79,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "Daltons Business",
+    "sourceUrl": "https://daltons.co.uk",
+    "notes": "Barnsley secondary: Licensed convenience with integrated Post Office. £156k retail revenue. Established trade. Pair with primary Barnsley Post Office for complete South Yorkshire portfolio.",
+    "insiderVisible": true,
+    "badge": "✨ South Yorkshire",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£370,000",
+    "headerGradient": "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
+    "headerEmoji": "🏪",
+    "headerTag": "YORKSHIRE",
+    "headerTagBg": "#fb7185",
+    "details": [
+      {
+        "label": "Retail Revenue",
+        "value": "£156k/yr"
+      },
+      {
+        "label": "Trading Status",
+        "value": "Licensed operation"
+      }
+    ],
+    "summary": "BARNSLEY SECONDARY: Licensed convenience with integrated Post Office. £156k retail revenue. Established trade. Pair with primary Barnsley Post Office for complete South Yorkshire portfolio.",
+    "originalUrl": "",
+    "originalUrlLabel": "Daltons Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "Daltons Business • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-011",
+    "businessName": "Plymouth Post Office + Convenience",
+    "businessType": "post_office",
+    "location": "Plymouth, Devon",
+    "region": "South West",
+    "askingPrice": "290000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "850000",
+    "annualFees": "0",
+    "sessionsPerMonth": 750,
+    "score": 84,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Devon gateway: High turnover £850k at premium coastal location. Monitor session growth trajectory. Diversified revenue opportunity. South West expansion anchor.",
+    "insiderVisible": true,
+    "badge": "✨ Coastal",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£290,000",
+    "headerGradient": "linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)",
+    "headerEmoji": "🌊",
+    "headerTag": "DEVON",
+    "headerTagBg": "#60a5fa",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£850k/yr"
+      },
+      {
+        "label": "Daily Sessions",
+        "value": "700-800"
+      }
+    ],
+    "summary": "DEVON GATEWAY: High turnover £850k at premium coastal location. Monitor session growth trajectory. Diversified revenue opportunity. South West expansion anchor.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-012",
+    "businessName": "Prees Mains Post Office + Retail",
+    "businessType": "post_office",
+    "location": "Prees, Shropshire",
+    "region": "Shropshire",
+    "askingPrice": "150000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "55000",
+    "sessionsPerMonth": 0,
+    "score": 72,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Shropshire entry: Mains Post Office with retail component. Reasonable entry point. ⚠️ Recommend broker session verification before proceeding.",
+    "insiderVisible": true,
+    "badge": "✨ Entry Point",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£150,000",
+    "headerGradient": "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+    "headerEmoji": "📍",
+    "headerTag": "SHROPSHIRE",
+    "headerTagBg": "#fbbf24",
+    "details": [
+      {
+        "label": "Est. PO Income",
+        "value": "£55k+/yr"
+      },
+      {
+        "label": "Location Type",
+        "value": "Mains Post Office"
+      }
+    ],
+    "summary": "SHROPSHIRE ENTRY: Mains Post Office with retail component. Reasonable entry point. ⚠️ Recommend broker session verification before proceeding.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-013",
+    "businessName": "Shiregreen Subway + Convenience + PO",
+    "businessType": "convenience_store",
+    "location": "Shiregreen, Sheffield",
+    "region": "Yorkshire",
+    "askingPrice": "140000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 65,
+    "confidence": "LOW",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "⚠️ Multi-operation hybrid: Subway franchise + convenience + Post Office. ⚠️ IMPORTANT: Verify Subway transfer feasibility and franchise terms before proceeding. Multi-brand complexity requires careful due diligence.",
+    "insiderVisible": true,
+    "badge": "⚠️ Franchise",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£140,000",
+    "headerGradient": "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
+    "headerEmoji": "🍖",
+    "headerTag": "FRANCHISE",
+    "headerTagBg": "#fb7185",
+    "details": [
+      {
+        "label": "Operation Type",
+        "value": "Subway franchise + convenience"
+      },
+      {
+        "label": "Integrated Services",
+        "value": "Post Office included"
+      }
+    ],
+    "summary": "⚠️ MULTI-OPERATION HYBRID: Subway franchise + convenience + Post Office. ⚠️ IMPORTANT: Verify Subway transfer feasibility and franchise terms before proceeding. Multi-brand complexity requires careful due diligence.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-014",
+    "businessName": "Kendal Mains Post Office + Licensed Store",
+    "businessType": "post_office",
+    "location": "Kendal, Lake District, Cumbria",
+    "region": "North West",
+    "askingPrice": "180000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "120000",
+    "sessionsPerMonth": 0,
+    "score": 81,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Lake District asset: Mains Post Office + licensed store in tourist destination. Seasonal variation creates opportunity. Premium location anchor for outdoor enthusiast market.",
+    "insiderVisible": true,
+    "badge": "⭐ Premium",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£180,000",
+    "headerGradient": "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    "headerEmoji": "🏔️",
+    "headerTag": "LAKE DISTRICT",
+    "headerTagBg": "#34d399",
+    "details": [
+      {
+        "label": "PO Revenue",
+        "value": "£120k/yr"
+      },
+      {
+        "label": "Location Profile",
+        "value": "Tourist destination, seasonal opportunity"
+      }
+    ],
+    "summary": "LAKE DISTRICT ASSET: Mains Post Office + licensed store in tourist destination. Seasonal variation creates opportunity. Premium location anchor for outdoor enthusiast market.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-015",
+    "businessName": "Felling Local Plus + Convenience + 4-bed",
+    "businessType": "post_office",
+    "location": "Felling, Tyne & Wear (North East)",
+    "region": "North East",
+    "askingPrice": "165000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "500000",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 78,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "North East gateway: Local Plus Post Office + convenience + 4-bed accommodation. £500k turnover. NE expansion platform. Accommodation flexibility for live-in management or rental income.",
+    "insiderVisible": true,
+    "badge": "✨ NE Expansion",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£165,000",
+    "headerGradient": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+    "headerEmoji": "🏠",
+    "headerTag": "NE ENGLAND",
+    "headerTagBg": "#a78bfa",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£500k/yr"
+      },
+      {
+        "label": "Accommodation",
+        "value": "4-bed above premises"
+      },
+      {
+        "label": "Post Office Type",
+        "value": "Local Plus"
+      }
+    ],
+    "summary": "NORTH EAST GATEWAY: Local Plus Post Office + convenience + 4-bed accommodation. £500k turnover. NE expansion platform. Accommodation flexibility for live-in management or rental income.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-016",
+    "businessName": "Wolverhampton Convenience + Post Office",
+    "businessType": "convenience_store",
+    "location": "Wolverhampton, West Midlands",
+    "region": "West Midlands",
+    "askingPrice": "85000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "400000",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 82,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Midlands value play: Ultra-low entry at just £85k for £400k turnover business. Strong leverage on capital investment. Good profit margin opportunity.",
+    "insiderVisible": true,
+    "badge": "💰 Budget Entry",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£85,000",
+    "headerGradient": "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+    "headerEmoji": "💰",
+    "headerTag": "VALUE",
+    "headerTagBg": "#22d3ee",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£400k/yr"
+      },
+      {
+        "label": "Entry Price",
+        "value": "Ultra-low at £85k"
+      }
+    ],
+    "summary": "MIDLANDS VALUE PLAY: Ultra-low entry at just £85k for £400k turnover business. Strong leverage on capital investment. Good profit margin opportunity.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-017",
+    "businessName": "Devon High-Turnover Asset",
+    "businessType": "convenience_store",
+    "location": "Devon, South West",
+    "region": "South West",
+    "askingPrice": "365000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "650000",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 84,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Devon platform: High turnover £650k at established location. Multi-revenue diversification anchor. South West expansion cornerstone asset.",
+    "insiderVisible": true,
+    "badge": "⭐ Platform",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£365,000",
+    "headerGradient": "linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)",
+    "headerEmoji": "🌊",
+    "headerTag": "DEVON",
+    "headerTagBg": "#60a5fa",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£650k/yr"
+      },
+      {
+        "label": "Business Profile",
+        "value": "Established revenue streams"
+      }
+    ],
+    "summary": "DEVON PLATFORM: High turnover £650k at established location. Multi-revenue diversification anchor. South West expansion cornerstone asset.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-018",
+    "businessName": "Devon Mid-Range Asset",
+    "businessType": "convenience_store",
+    "location": "Devon, South West",
+    "region": "South West",
+    "askingPrice": "130000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "169000",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 72,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Devon secondary: Lower turnover but solid margin opportunity. Growth lever potential. Consider as secondary clustering asset alongside Devon platform properties.",
+    "insiderVisible": true,
+    "badge": "✨ Opportunity",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£130,000",
+    "headerGradient": "linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)",
+    "headerEmoji": "🌊",
+    "headerTag": "DEVON",
+    "headerTagBg": "#60a5fa",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£169k/yr"
+      },
+      {
+        "label": "Opportunity Profile",
+        "value": "Margin + growth lever"
+      }
+    ],
+    "summary": "DEVON SECONDARY: Lower turnover but solid margin opportunity. Growth lever potential. Consider as secondary clustering asset alongside Devon platform properties.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-019",
+    "businessName": "Devon Entry-Level Asset",
+    "businessType": "convenience_store",
+    "location": "Devon, South West",
+    "region": "South West",
+    "askingPrice": "64900",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "83800",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 55,
+    "confidence": "LOW",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "⚠️ Below standard threshold: Entry-level asset at £64.9k. Below standard FCM acquisition criteria. ⚠️ Include ONLY as cluster play with Devon high-turnover platform assets. Not standalone recommendation.",
+    "insiderVisible": true,
+    "badge": "⚠️ Cluster Only",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£64,900",
+    "headerGradient": "linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)",
+    "headerEmoji": "🌊",
+    "headerTag": "DEVON",
+    "headerTagBg": "#60a5fa",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£83.8k/yr"
+      },
+      {
+        "label": "Eligibility",
+        "value": "⚠️ Below FCM standard"
+      }
+    ],
+    "summary": "⚠️ BELOW STANDARD THRESHOLD: Entry-level asset at £64.9k. Below standard FCM acquisition criteria. ⚠️ Include ONLY as cluster play with Devon high-turnover platform assets. Not standalone recommendation.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-020",
+    "businessName": "Sale Sub Post Office + Retail",
+    "businessType": "post_office",
+    "location": "Sale, Manchester",
+    "region": "North West",
+    "askingPrice": "563000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "400000",
+    "annualFees": "0",
+    "sessionsPerMonth": 1300,
+    "score": 81,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Manchester secondary: Sub Post Office + retail. 1,300+ sessions estimated. Complete Greater Manchester cluster acquisition strategy. Pair with Salford asset.",
+    "insiderVisible": true,
+    "badge": "⭐ Cluster",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£563,000",
+    "headerGradient": "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+    "headerEmoji": "🏪",
+    "headerTag": "MANCHESTER",
+    "headerTagBg": "#22d3ee",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£400k+/yr (est.)"
+      },
+      {
+        "label": "Daily Sessions",
+        "value": "1,300+"
+      }
+    ],
+    "summary": "MANCHESTER SECONDARY: Sub Post Office + retail. 1,300+ sessions estimated. Complete Greater Manchester cluster acquisition strategy. Pair with Salford asset.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-021",
+    "businessName": "Salford Sub Post Office + Retail",
+    "businessType": "post_office",
+    "location": "Salford, Greater Manchester",
+    "region": "North West",
+    "askingPrice": "382000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "350000",
+    "annualFees": "0",
+    "sessionsPerMonth": 1200,
+    "score": 80,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Salford opportunity: Sub Post Office + retail. 1,200+ sessions estimated. NW portfolio diversification. Pair with Sale asset to create Greater Manchester cluster.",
+    "insiderVisible": true,
+    "badge": "⭐ Cluster",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£382,000",
+    "headerGradient": "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+    "headerEmoji": "🏪",
+    "headerTag": "MANCHESTER",
+    "headerTagBg": "#22d3ee",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£350k+/yr (est.)"
+      },
+      {
+        "label": "Daily Sessions",
+        "value": "1,200+"
+      }
+    ],
+    "summary": "SALFORD OPPORTUNITY: Sub Post Office + retail. 1,200+ sessions estimated. NW portfolio diversification. Pair with Sale asset to create Greater Manchester cluster.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-022",
+    "businessName": "Blackburn Post Office & Deli",
+    "businessType": "post_office",
+    "location": "Blackburn BB1, Lancashire (NW)",
+    "region": "North West",
+    "askingPrice": "50000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "30000",
+    "sessionsPerMonth": 0,
+    "score": 68,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "NW entry point: Post Office + established deli (external serving hatch) at £50k. Near Blackburn Hospital + Shadsworth Industrial Estate. 5 days/week. Low capital for expansion opportunity into newspapers.",
+    "insiderVisible": true,
+    "badge": "💰 Ultra-Budget",
+    "priceLabel": "Ultra-Low Entry",
+    "priceDisplay": "£50,000",
+    "headerGradient": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+    "headerEmoji": "🍴",
+    "headerTag": "DELI HYBRID",
+    "headerTagBg": "#a78bfa",
+    "details": [
+      {
+        "label": "PO Annual Salary",
+        "value": "£30k/yr"
+      },
+      {
+        "label": "Monthly Rent",
+        "value": "£650"
+      },
+      {
+        "label": "Expansion Potential",
+        "value": "Newspapers distribution"
+      }
+    ],
+    "summary": "NW ENTRY POINT: Post Office + established deli (external serving hatch) at £50k. Near Blackburn Hospital + Shadsworth Industrial Estate. 5 days/week. Low capital for expansion opportunity into newspapers.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/633001_lancashire.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-023",
+    "businessName": "Barnoldswick Post Office & Store",
+    "businessType": "post_office",
+    "location": "Barnoldswick, Lancashire",
+    "region": "North West",
+    "askingPrice": "230000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "106000",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 76,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "NW freehold anchor: Long-established general store + Post Office. Unopposed position in Barnoldswick community. Freehold provides asset security advantage. Steady year-round trade.",
+    "insiderVisible": true,
+    "badge": "⭐ Freehold",
+    "priceLabel": "Freehold",
+    "priceDisplay": "£230,000",
+    "headerGradient": "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+    "headerEmoji": "🏠",
+    "headerTag": "FREEHOLD",
+    "headerTagBg": "#fbbf24",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£106k/yr"
+      },
+      {
+        "label": "Property Status",
+        "value": "Long-established freehold"
+      },
+      {
+        "label": "Market Position",
+        "value": "Unopposed in community"
+      }
+    ],
+    "summary": "NW FREEHOLD ANCHOR: Long-established general store + Post Office. Unopposed position in Barnoldswick community. Freehold provides asset security advantage. Steady year-round trade.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/278036_lancashire.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-024",
+    "businessName": "Peterborough Mains Post Office",
+    "businessType": "post_office",
+    "location": "Central Avenue, Peterborough PE1, Cambridgeshire",
+    "region": "East Anglia",
+    "askingPrice": "175000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "157500",
+    "annualFees": "53500",
+    "sessionsPerMonth": 0,
+    "score": 88,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "Daltons / RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "East Anglia platform: Mains Post Office in densely populated residential area. Banking/government services hub. Exceptional 34% profit margin. Multiple revenue streams. Accounts available on NDA.",
+    "insiderVisible": true,
+    "badge": "⭐ Strong Margins",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£175,000",
+    "headerGradient": "linear-gradient(135deg, #f97316 0%, #b45309 100%)",
+    "headerEmoji": "📍",
+    "headerTag": "EAST ANGLIA",
+    "headerTagBg": "#fb923c",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£157.5k/yr"
+      },
+      {
+        "label": "Net Profit",
+        "value": "£52.1k/yr (34% margin)"
+      },
+      {
+        "label": "PO Revenue",
+        "value": "£53.5k/yr"
+      }
+    ],
+    "summary": "EAST ANGLIA PLATFORM: Mains Post Office in densely populated residential area. Banking/government services hub. Exceptional 34% profit margin. Multiple revenue streams. Accounts available on NDA.",
+    "originalUrl": "",
+    "originalUrlLabel": "Daltons / RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "Daltons / RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-025",
+    "businessName": "Wivenhoe Town Store & Post Office",
+    "businessType": "post_office",
+    "location": "Wivenhoe, Colchester CO7, Essex",
+    "region": "East Anglia",
+    "askingPrice": "120000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "175000",
+    "annualFees": "45000",
+    "sessionsPerMonth": 0,
+    "score": 80,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Essex fresh listing: Established community town store + Post Office. New to market offering. Strong £45k net profit. Community anchor with solid margins.",
+    "insiderVisible": true,
+    "badge": "✨ New Listing",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£120,000",
+    "headerGradient": "linear-gradient(135deg, #f97316 0%, #b45309 100%)",
+    "headerEmoji": "🏪",
+    "headerTag": "ESSEX",
+    "headerTagBg": "#fb923c",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£175k/yr"
+      },
+      {
+        "label": "Net Profit",
+        "value": "£45k/yr"
+      },
+      {
+        "label": "Status",
+        "value": "Fresh to market"
+      }
+    ],
+    "summary": "ESSEX FRESH LISTING: Established community town store + Post Office. New to market offering. Strong £45k net profit. Community anchor with solid margins.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-026",
+    "businessName": "East Sussex Post Office + Convenience + Off-Licence",
+    "businessType": "post_office",
+    "location": "East Sussex, South East",
+    "region": "South East",
+    "askingPrice": "130000",
+    "weeklyTurnover": "2750",
+    "yearlyTurnover": "143000",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 75,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "South East quality asset: Recently refitted (2024) newsagents + Post Office + convenience + off-licence. Modern fixtures. Prime location. Profitable operation with growth levers.",
+    "insiderVisible": true,
+    "badge": "✨ Modern Fitout",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£130,000",
+    "headerGradient": "linear-gradient(135deg, #ec4899 0%, #be185d 100%)",
+    "headerEmoji": "📰",
+    "headerTag": "SOUTH EAST",
+    "headerTagBg": "#f472b6",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£143k/yr"
+      },
+      {
+        "label": "Weekly Turnover",
+        "value": "£2,750"
+      },
+      {
+        "label": "Refurbishment",
+        "value": "Modern fitout (2024)"
+      }
+    ],
+    "summary": "SOUTH EAST QUALITY ASSET: Recently refitted (2024) newsagents + Post Office + convenience + off-licence. Modern fixtures. Prime location. Profitable operation with growth levers.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/645989_east_sussex.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-027",
+    "businessName": "Doncaster Post Office & Village Store",
+    "businessType": "post_office",
+    "location": "Doncaster DN1, South Yorkshire",
+    "region": "Yorkshire",
+    "askingPrice": "70000",
+    "weeklyTurnover": "4000",
+    "yearlyTurnover": "208000",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 79,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Doncaster leverage: Rare village Post Office with 4-bed accommodation. £4k weekly baseline. Underutilized kitchen = significant expansion potential. Low entry price with major upside opportunity.",
+    "insiderVisible": true,
+    "badge": "⭐ Growth Play",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£70,000",
+    "headerGradient": "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
+    "headerEmoji": "🏡",
+    "headerTag": "VILLAGE",
+    "headerTagBg": "#fb7185",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£208k/yr"
+      },
+      {
+        "label": "Weekly Turnover",
+        "value": "£4,000"
+      },
+      {
+        "label": "Accommodation",
+        "value": "4-bed + underutilized kitchen"
+      }
+    ],
+    "summary": "DONCASTER LEVERAGE: Rare village Post Office with 4-bed accommodation. £4k weekly baseline. Underutilized kitchen = significant expansion potential. Low entry price with major upside opportunity.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/636241_south_yorkshire.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-028",
+    "businessName": "Greenford Post Office + Off-Licence",
+    "businessType": "post_office",
+    "location": "Greenford UB6, London",
+    "region": "London",
+    "askingPrice": "180000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "336000",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 82,
+    "confidence": "HIGH",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "London gateway: Prime Greenford location with high foot traffic. Post Office + off-licence combination. New lease opportunity. London market entry point.",
+    "insiderVisible": true,
+    "badge": "📍 London",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£180,000",
+    "headerGradient": "linear-gradient(135deg, #fbbf24 0%, #d97706 100%)",
+    "headerEmoji": "🏪",
+    "headerTag": "LONDON",
+    "headerTagBg": "#fcd34d",
+    "details": [
+      {
+        "label": "Annual Turnover",
+        "value": "£336k/yr"
+      },
+      {
+        "label": "Location",
+        "value": "Prime high foot traffic area"
+      },
+      {
+        "label": "Lease Status",
+        "value": "New lease available"
+      }
+    ],
+    "summary": "LONDON GATEWAY: Prime Greenford location with high foot traffic. Post Office + off-licence combination. New lease opportunity. London market entry point.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/645522_london.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-029",
+    "businessName": "Chelmsford Post Office & Store + 3-bed",
+    "businessType": "post_office",
+    "location": "Chelmsford CM1, Essex",
+    "region": "East Anglia",
+    "askingPrice": "719999",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 71,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Historic freehold asset: Grade II Listed building established 100+ years. Retirement sale window. Semi-detached + 3-bed residential. Property value focus. Heritage restoration/renovation constraints to assess.",
+    "insiderVisible": true,
+    "badge": "🏛️ Heritage",
+    "priceLabel": "Freehold",
+    "priceDisplay": "£719,999",
+    "headerGradient": "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+    "headerEmoji": "🏛️",
+    "headerTag": "LISTED",
+    "headerTagBg": "#fbbf24",
+    "details": [
+      {
+        "label": "Property Status",
+        "value": "Grade II Listed (100+ years)"
+      },
+      {
+        "label": "Accommodation",
+        "value": "3-bed semi-detached"
+      },
+      {
+        "label": "Sale Type",
+        "value": "Retirement sale"
+      }
+    ],
+    "summary": "HISTORIC FREEHOLD ASSET: Grade II Listed building established 100+ years. Retirement sale window. Semi-detached + 3-bed residential. Property value focus. Heritage restoration/renovation constraints to assess.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/645249_essex.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-030",
+    "businessName": "Coventry Busy Mains Post Office",
+    "businessType": "post_office",
+    "location": "Main road, Coventry outskirts (Solihull area), Midlands",
+    "region": "Midlands",
+    "askingPrice": null,
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "72000",
+    "sessionsPerMonth": 0,
+    "score": 80,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz / Daltons",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Midlands opportunity: Very busy Mains Post Office (£72k annual income). External ATM, photo booth for diversified revenue. Low-key retail component. ⚠️ Requires direct broker contact for pricing negotiation.",
+    "insiderVisible": true,
+    "badge": "⭐ Strong PO",
+    "priceLabel": "Contact Broker",
+    "priceDisplay": "Price On Application",
+    "headerGradient": "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+    "headerEmoji": "💷",
+    "headerTag": "POA",
+    "headerTagBg": "#22d3ee",
+    "details": [
+      {
+        "label": "PO Income",
+        "value": "£72k/yr"
+      },
+      {
+        "label": "Unique Features",
+        "value": "External ATM, photo booth"
+      },
+      {
+        "label": "Engagement",
+        "value": "⚠️ Broker contact required"
+      }
+    ],
+    "summary": "MIDLANDS OPPORTUNITY: Very busy Mains Post Office (£72k annual income). External ATM, photo booth for diversified revenue. Low-key retail component. ⚠️ Requires direct broker contact for pricing negotiation.",
+    "originalUrl": "",
+    "originalUrlLabel": "Broker Negotiation Required",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz / Daltons • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-031",
+    "businessName": "Mains PO + 120-Seater Café/Bistro",
+    "businessType": "post_office",
+    "location": "Undisclosed Location (West Yorkshire)",
+    "region": "Yorkshire",
+    "askingPrice": "350000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 76,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "Daltons",
+    "sourceUrl": "https://daltons.co.uk",
+    "notes": "Unique multi-operation model: 6-position Mains Post Office + 120-seat café/bistro + forecourt seating. 4-star hygiene rating. Double-fronted premises. ⚠️ Requires café/bistro management expertise. Rare diversified revenue model.",
+    "insiderVisible": true,
+    "badge": "🍰 Unique Model",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£350,000",
+    "headerGradient": "linear-gradient(135deg, #db2777 0%, #9f1239 100%)",
+    "headerEmoji": "☕",
+    "headerTag": "CAFÉ HYBRID",
+    "headerTagBg": "#f472b6",
+    "details": [
+      {
+        "label": "Premises Size",
+        "value": "8,500 sq ft"
+      },
+      {
+        "label": "Seating Capacity",
+        "value": "120 seats"
+      },
+      {
+        "label": "PO Configuration",
+        "value": "6-position counter"
+      },
+      {
+        "label": "Hygiene Rating",
+        "value": "4-star"
+      }
+    ],
+    "summary": "UNIQUE MULTI-OPERATION MODEL: 6-position Mains Post Office + 120-seat café/bistro + forecourt seating. 4-star hygiene rating. Double-fronted premises. ⚠️ Requires café/bistro management expertise. Rare diversified revenue model.",
+    "originalUrl": "",
+    "originalUrlLabel": "Daltons Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "Daltons • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-032",
+    "businessName": "London Freehold Post Office + Off-Licence",
+    "businessType": "post_office",
+    "location": "London area",
+    "region": "London",
+    "askingPrice": "350000",
+    "weeklyTurnover": "650",
+    "yearlyTurnover": "33800",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 68,
+    "confidence": "LOW",
+    "status": "new",
+    "source": "Daltons",
+    "sourceUrl": "https://daltons.co.uk",
+    "notes": "London freehold asset: Off-licence + newspapers + Post Office. Asset value primarily in London property itself rather than operational revenue. 6-day opening. Lifestyle + property appreciation opportunity.",
+    "insiderVisible": true,
+    "badge": "🏠 Asset Play",
+    "priceLabel": "Freehold",
+    "priceDisplay": "£350,000",
+    "headerGradient": "linear-gradient(135deg, #fbbf24 0%, #d97706 100%)",
+    "headerEmoji": "🏠",
+    "headerTag": "FREEHOLD",
+    "headerTagBg": "#fcd34d",
+    "details": [
+      {
+        "label": "Weekly Turnover",
+        "value": "£650/week"
+      },
+      {
+        "label": "Annual Turnover",
+        "value": "£33.8k/yr"
+      },
+      {
+        "label": "Components",
+        "value": "Off-licence + newspapers + PO"
+      }
+    ],
+    "summary": "LONDON FREEHOLD ASSET: Off-licence + newspapers + Post Office. Asset value primarily in London property itself rather than operational revenue. 6-day opening. Lifestyle + property appreciation opportunity.",
+    "originalUrl": "",
+    "originalUrlLabel": "Daltons Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "Daltons • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-033",
+    "businessName": "Lower Shiplake Post Office & Village Store",
+    "businessType": "post_office",
+    "location": "Lower Shiplake, Oxfordshire",
+    "region": "South East",
+    "askingPrice": "149950",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 74,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "South East village gem: Post Office + village store + 3-bed accommodation. Community-supported operation. Village location anchor. Growth potential in expanding residential market.",
+    "insiderVisible": true,
+    "badge": "✨ Village Gem",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£149,950",
+    "headerGradient": "linear-gradient(135deg, #ec4899 0%, #be185d 100%)",
+    "headerEmoji": "🏡",
+    "headerTag": "VILLAGE",
+    "headerTagBg": "#f472b6",
+    "details": [
+      {
+        "label": "Components",
+        "value": "PO + store + 3-bed accommodation"
+      },
+      {
+        "label": "Community Status",
+        "value": "Village anchor, local support"
+      },
+      {
+        "label": "Growth Potential",
+        "value": "Residential area expansion"
+      }
+    ],
+    "summary": "SOUTH EAST VILLAGE GEM: Post Office + village store + 3-bed accommodation. Community-supported operation. Village location anchor. Growth potential in expanding residential market.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/641036_oxfordshire.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-034",
+    "businessName": "Morecambe Post Office + Stationers + 5-bed",
+    "businessType": "post_office",
+    "location": "Morecambe LA3, Lancashire",
+    "region": "North West",
+    "askingPrice": "499950",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "35700",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 72,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "NW freehold bundle: Post Office + stationers + 5-bed family home + 2-bed annexe. Freehold property advantage (NW territory). Asset value focused acquisition. Business/property hybrid opportunity.",
+    "insiderVisible": true,
+    "badge": "🏠 Property-Heavy",
+    "priceLabel": "Freehold",
+    "priceDisplay": "£499,950",
+    "headerGradient": "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+    "headerEmoji": "🏠",
+    "headerTag": "FREEHOLD",
+    "headerTagBg": "#fbbf24",
+    "details": [
+      {
+        "label": "Business Revenue",
+        "value": "£35.7k/yr"
+      },
+      {
+        "label": "Residential Component",
+        "value": "5-bed home + 2-bed annexe"
+      },
+      {
+        "label": "Property Advantage",
+        "value": "Freehold security"
+      }
+    ],
+    "summary": "NW FREEHOLD BUNDLE: Post Office + stationers + 5-bed family home + 2-bed annexe. Freehold property advantage (NW territory). Asset value focused acquisition. Business/property hybrid opportunity.",
+    "originalUrl": "https://www.rightbiz.co.uk/buy_business/for_sale/627623_lancashire.html",
+    "originalUrlLabel": "View Listing →",
+    "originalUrlDisabled": false,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  },
+  {
+    "id": "OPP-2026-0306-035",
+    "businessName": "Mains Post Office (Former Crown)",
+    "businessType": "post_office",
+    "location": "Surrey, South East",
+    "region": "South East",
+    "askingPrice": "160000",
+    "weeklyTurnover": "0",
+    "yearlyTurnover": "0",
+    "annualFees": "0",
+    "sessionsPerMonth": 0,
+    "score": 77,
+    "confidence": "MODERATE",
+    "status": "new",
+    "source": "RightBiz",
+    "sourceUrl": "https://rightbiz.com",
+    "notes": "Surrey high street anchor: Former Crown Post Office (shared premises with Royal Mail). Double-fronted High Street position. Excellent footfall infrastructure. Commercial/office area integration.",
+    "insiderVisible": true,
+    "badge": "⭐ High Street",
+    "priceLabel": "Leasehold",
+    "priceDisplay": "£160,000",
+    "headerGradient": "linear-gradient(135deg, #ec4899 0%, #be185d 100%)",
+    "headerEmoji": "🏪",
+    "headerTag": "FORMER CROWN",
+    "headerTagBg": "#f472b6",
+    "details": [
+      {
+        "label": "PO Type",
+        "value": "Mains (former Crown)"
+      },
+      {
+        "label": "Location",
+        "value": "Double-fronted High Street"
+      },
+      {
+        "label": "Footfall Infrastructure",
+        "value": "Excellent (shared Royal Mail)"
+      }
+    ],
+    "summary": "SURREY HIGH STREET ANCHOR: Former Crown Post Office (shared premises with Royal Mail). Double-fronted High Street position. Excellent footfall infrastructure. Commercial/office area integration.",
+    "originalUrl": "",
+    "originalUrlLabel": "RightBiz Listing",
+    "originalUrlDisabled": true,
+    "sourceAttribution": "RightBiz • Verified 6 Mar 2026",
+    "verifiedDate": "6 Mar 2026"
+  }
+]
