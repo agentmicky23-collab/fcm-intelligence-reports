@@ -6,8 +6,10 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { href: "/", label: "Listings" },
+  { href: "/", label: "Home" },
   { href: "/reports", label: "Reports" },
+  { href: "/opportunities", label: "Opportunities" },
+  { href: "/insider", label: "Insider" },
   { href: "https://fcm-intelligence-nextjs.vercel.app", label: "FCM Intelligence", external: true },
 ];
 
@@ -38,7 +40,11 @@ export function Navbar() {
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noopener noreferrer" : undefined}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                className={
+                  link.label === "Insider"
+                    ? "text-sm font-semibold px-4 py-2 rounded-lg bg-primary text-black hover:bg-primary/90 transition-colors"
+                    : "text-sm text-muted-foreground hover:text-primary transition-colors"
+                }
               >
                 {link.label}
                 {link.external && " ↗"}
@@ -65,7 +71,11 @@ export function Navbar() {
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noopener noreferrer" : undefined}
                 onClick={() => setMobileOpen(false)}
-                className="block py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                className={
+                  link.label === "Insider"
+                    ? "block py-2 px-4 my-2 text-sm font-semibold rounded-lg bg-primary text-black text-center"
+                    : "block py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                }
               >
                 {link.label}
                 {link.external && " ↗"}

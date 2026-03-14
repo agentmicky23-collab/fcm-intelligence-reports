@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { BuyButton } from "@/components/buy-button";
 
 export default function ReportsPage() {
   return (
@@ -73,7 +74,7 @@ export default function ReportsPage() {
                 <p style={{ color: '#ef4444', padding: '4px 0' }}>❌ Consultation call</p>
               </div>
               <p className="text-sm mt-4" style={{ color: '#57606a' }}>Best for: Quick checks, early-stage interest, budget-conscious buyers</p>
-              <Link href="https://fcm-intelligence-nextjs.vercel.app/contact" className="btn-primary w-full mt-4">Get Basic Report</Link>
+              <BuyButton tier="basic" label="Buy Basic Report — £149" />
               <p className="text-xs mt-2 text-center" style={{ color: '#c9a227' }}>💡 Need financials? Upgrade to Professional</p>
             </div>
 
@@ -101,7 +102,7 @@ export default function ReportsPage() {
                 <p style={{ color: '#ef4444', padding: '4px 0' }}>❌ Catchment analysis</p>
               </div>
               <p className="text-sm mt-4" style={{ color: '#57606a' }}>Best for: Buyers who have the location sorted but need to verify the financials</p>
-              <Link href="https://fcm-intelligence-nextjs.vercel.app/contact" className="btn-primary w-full mt-4">Get Professional Report</Link>
+              <BuyButton tier="professional" label="Buy Professional Report — £249" />
               <p className="text-xs mt-2 text-center" style={{ color: '#c9a227' }}>💡 Want complete picture? Upgrade to Premium (+£200)</p>
             </div>
 
@@ -127,7 +128,7 @@ export default function ReportsPage() {
               </ul>
               <p className="text-sm mt-4 p-3 rounded-lg" style={{ background: 'rgba(201,162,39,0.1)', color: '#c9a227' }}>💰 Value: Location Intelligence alone is worth £149. You&apos;re getting it FREE with Premium!</p>
               <p className="text-sm mt-2" style={{ color: '#57606a' }}>Best for: Serious buyers who want the complete picture before committing</p>
-              <Link href="https://fcm-intelligence-nextjs.vercel.app/contact" className="btn-primary w-full mt-4">Get Premium Report</Link>
+              <BuyButton tier="premium" label="Buy Premium Report — £449" />
             </div>
 
             {/* Location Intelligence */}
@@ -155,7 +156,7 @@ export default function ReportsPage() {
                 <p style={{ color: '#ef4444', padding: '4px 0' }}>❌ Consultation call</p>
               </div>
               <p className="text-sm mt-4" style={{ color: '#57606a' }}>Best for: Buyers who already have accounts, investors comparing locations, add-on to Basic</p>
-              <Link href="https://fcm-intelligence-nextjs.vercel.app/contact" className="btn-primary w-full mt-4">Get Location Report</Link>
+              <BuyButton tier="location" label="Buy Location Report — £99" />
               <p className="text-xs mt-2 text-center" style={{ color: '#c9a227' }}>💡 Already bought Basic? Add this for complete coverage!</p>
             </div>
           </div>
@@ -167,7 +168,7 @@ export default function ReportsPage() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
           <p style={{ color: '#8b949e' }} className="mb-8 max-w-xl mx-auto">Tell us which listing interests you, and we&apos;ll deliver actionable intelligence within 48 hours.</p>
-          <Link href="https://fcm-intelligence-nextjs.vercel.app/contact" className="btn-primary text-lg px-10 py-4">Order Your Report</Link>
+          <Link href="#contact" className="btn-primary text-lg px-10 py-4">Order Your Report</Link>
         </div>
       </section>
     </AppLayout>
