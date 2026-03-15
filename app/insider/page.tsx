@@ -356,7 +356,12 @@ export default function InsiderPage() {
       <section id="signup-form" className="py-16 container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           {!submitted ? (
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form 
+              method="POST" 
+              action="https://formspree.io/f/xblgnqzj"
+              onSubmit={handleSubmit} 
+              className="space-y-6"
+            >
               <h2
                 className="text-3xl md:text-4xl font-bold text-center mb-8"
                 style={{ color: "#FFFFFF" }}
