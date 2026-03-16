@@ -42,6 +42,8 @@ interface CheckoutRequest {
   listing_url?: string;
   business_name?: string;
   postcode?: string;
+  town_city?: string;
+  company_name?: string;
   listing_source?: string;
   listing_id?: string;
   // Step 3: Customer details
@@ -64,6 +66,8 @@ export async function POST(request: NextRequest) {
       listing_url,
       business_name,
       postcode,
+      town_city,
+      company_name,
       listing_source,
       listing_id,
       customer_email,
@@ -119,6 +123,8 @@ export async function POST(request: NextRequest) {
       listing_url: (listing_url || "").slice(0, 500),
       business_name: (business_name || "").slice(0, 500),
       postcode: (postcode || "").slice(0, 500),
+      town_city: (town_city || "").slice(0, 500),
+      company_name: (company_name || "").slice(0, 500),
       listing_source: (listing_source || "").slice(0, 500),
       listing_id: (listing_id || "").slice(0, 500),
       customer_email: (customer_email || "").slice(0, 500),

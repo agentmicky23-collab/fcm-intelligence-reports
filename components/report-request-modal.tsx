@@ -9,6 +9,8 @@ interface ListingInfo {
   name: string;
   location?: string;
   postcode?: string;
+  town_city?: string;
+  company_name?: string;
   source?: string;
   id?: string;
   url?: string;
@@ -28,7 +30,10 @@ const TIER_INFO: Record<ReportTier, { name: string; price: number; description: 
   premium: { name: "Premium Report", price: 449, description: "Complete intelligence package", recommended: true },
 };
 
-const LISTING_SOURCES = ["Daltons", "RightBiz", "Christie & Co", "Other"];
+const LISTING_SOURCES = ["Daltons", "RightBiz", "Christie & Co", "BusinessesForSale", "Private Sale", "Other"];
+
+// UK postcode regex - validates format like AB12 3CD, AB1 2CD, A1 2BC, A12 3BC, etc.
+const UK_POSTCODE_REGEX = /^[A-Z]{1,2}[0-9][0-9A-Z]?\s*[0-9][A-Z]{2}$/i;
 
 export function ReportRequestModal({ isOpen, onClose, tier = "professional", listing }: ReportRequestModalProps) {
   const [mounted, setMounted] = useState(false);
@@ -41,7 +46,9 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
   const [listingUrl, setListingUrl] = useState(listing?.url || "");
   const [businessName, setBusinessName] = useState(listing?.name || "");
   const [postcode, setPostcode] = useState(listing?.postcode || listing?.location || "");
-  const [listingSource, setListingSource] = useState(listing?.source || "Daltons");
+  const [townCity, setTownCity] = useState(listing?.town_city || "");
+  const [companyName, setCompanyName] = useState(listing?.company_name || "");
+  const [listingSource, setListingSource] = useState(listing?.source || "");
 
   // Step 3: Customer details
   const [customerEmail, setCustomerEmail] = useState("");
@@ -66,7 +73,9 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
     if (listing) {
       setBusinessName(listing.name || "");
       setPostcode(listing.postcode || listing.location || "");
-      setListingSource(listing.source || "Daltons");
+      setTownCity(listing.town_city || "");
+      setCompanyName(listing.company_name || "");
+      setListingSource(listing.source || "");
       if (listing.url) setListingUrl(listing.url);
       setInputMode("manual");
     }
@@ -121,11 +130,27 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
         newErrors.listingUrl = "Please enter a valid URL starting with http:// or https://";
       }
     } else {
+      // Manual entry - all required fields
       if (!businessName.trim()) {
         newErrors.businessName = "Business name is required";
+      } else if (businessName.trim().length < 3) {
+        newErrors.businessName = "Business name must be at least 3 characters";
       }
+
       if (!postcode.trim()) {
-        newErrors.postcode = "Postcode is required";
+        newErrors.postcode = "Full postcode is required";
+      } else if (!UK_POSTCODE_REGEX.test(postcode.trim())) {
+        newErrors.postcode = "Please enter a valid UK postcode (e.g., CW11 1HN)";
+      }
+
+      if (!townCity.trim()) {
+        newErrors.townCity = "Town/City is required";
+      } else if (townCity.trim().length < 2) {
+        newErrors.townCity = "Town/City must be at least 2 characters";
+      }
+
+      if (!listingSource) {
+        newErrors.listingSource = "Please select where you found the listing";
       }
     }
 
@@ -161,6 +186,8 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
         listing_url: inputMode === "url" ? listingUrl : "",
         business_name: businessName,
         postcode: postcode,
+        town_city: townCity,
+        company_name: companyName,
         listing_source: listingSource,
         customer_email: customerEmail,
         customer_phone: customerPhone,
@@ -273,9 +300,12 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
                   </div>
                 </div>
                 <div className="flex-1">
-                  <span className="text-white font-medium">I have a listing URL:</span>
+                  <span className="text-white font-medium">I have a listing URL</span>
                   {inputMode === "url" && (
                     <div className="mt-3">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Listing URL <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="url"
                         value={listingUrl}
@@ -316,9 +346,10 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
                   </div>
                 </div>
                 <div className="flex-1">
-                  <span className="text-white font-medium">I&apos;ll enter details manually:</span>
+                  <span className="text-white font-medium">I&apos;ll enter details manually</span>
                   {inputMode === "manual" && (
                     <div className="mt-3 space-y-4">
+                      {/* Business Name */}
                       <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">
                           Business Name <span className="text-red-500">*</span>
@@ -338,41 +369,92 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
                           <p className="text-sm mt-2 text-red-500">{errors.businessName}</p>
                         )}
                       </div>
+
+                      {/* Postcode and Town/City - side by side */}
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Postcode <span className="text-red-500">*</span>
+                            Full Postcode <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="text"
                             value={postcode}
                             onChange={(e) => setPostcode(e.target.value.toUpperCase())}
-                            placeholder="AB12 3CD"
+                            placeholder="e.g., CW11 1HN"
                             className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none uppercase transition-all"
                             style={{
                               background: "#1a1a1a",
                               border: errors.postcode ? "2px solid #ef4444" : "1px solid #333",
                             }}
                           />
+                          <p className="text-xs mt-1.5 text-gray-500">Full postcode required for location intelligence</p>
                           {errors.postcode && (
-                            <p className="text-sm mt-2 text-red-500">{errors.postcode}</p>
+                            <p className="text-sm mt-1 text-red-500">{errors.postcode}</p>
                           )}
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Listing Source
+                            Town/City <span className="text-red-500">*</span>
                           </label>
-                          <select
-                            value={listingSource}
-                            onChange={(e) => setListingSource(e.target.value)}
-                            className="w-full px-4 py-3 rounded-lg text-white outline-none cursor-pointer"
-                            style={{ background: "#1a1a1a", border: "1px solid #333" }}
-                          >
-                            {LISTING_SOURCES.map((source) => (
-                              <option key={source} value={source}>{source}</option>
-                            ))}
-                          </select>
+                          <input
+                            type="text"
+                            value={townCity}
+                            onChange={(e) => setTownCity(e.target.value)}
+                            placeholder="e.g., Sandbach, Keith, Plymouth"
+                            className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none transition-all"
+                            style={{
+                              background: "#1a1a1a",
+                              border: errors.townCity ? "2px solid #ef4444" : "1px solid #333",
+                            }}
+                          />
+                          {errors.townCity && (
+                            <p className="text-sm mt-2 text-red-500">{errors.townCity}</p>
+                          )}
                         </div>
+                      </div>
+
+                      {/* Company Name (optional) */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Company Name (if Ltd)
+                        </label>
+                        <input
+                          type="text"
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          placeholder="e.g., Smith's Post Office Ltd (for Companies House lookup)"
+                          className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none transition-all"
+                          style={{
+                            background: "#1a1a1a",
+                            border: "1px solid #333",
+                          }}
+                        />
+                        <p className="text-xs mt-1.5 text-gray-500">Optional — helps us find financial records faster</p>
+                      </div>
+
+                      {/* Listing Source */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Listing Source <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          value={listingSource}
+                          onChange={(e) => setListingSource(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg text-white outline-none cursor-pointer"
+                          style={{ 
+                            background: "#1a1a1a", 
+                            border: errors.listingSource ? "2px solid #ef4444" : "1px solid #333",
+                            color: listingSource ? "#fff" : "#6b7280"
+                          }}
+                        >
+                          <option value="">Select where you found the listing...</option>
+                          {LISTING_SOURCES.map((source) => (
+                            <option key={source} value={source}>{source}</option>
+                          ))}
+                        </select>
+                        {errors.listingSource && (
+                          <p className="text-sm mt-2 text-red-500">{errors.listingSource}</p>
+                        )}
                       </div>
                     </div>
                   )}
