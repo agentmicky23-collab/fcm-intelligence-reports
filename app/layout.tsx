@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SessionProvider } from "@/components/providers/SessionProvider";
+import FeedbackButton from "@/components/feedback/FeedbackButton";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <SessionProvider>{children}</SessionProvider>
+        <FeedbackButton />
       </body>
     </html>
   );
