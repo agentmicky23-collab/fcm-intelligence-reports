@@ -22,25 +22,25 @@ export default function ReportsPage() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-4 flex-wrap text-sm">
             <div className="text-center px-4 py-2 rounded-lg" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-              <div className="font-bold" style={{ color: '#8b949e' }}>Location Intel</div>
+              <div className="font-bold" style={{ color: '#8b949e' }}>Location Report</div>
               <div className="font-mono font-bold" style={{ color: '#c9a227' }}>£99</div>
               <div className="text-xs" style={{ color: '#57606a' }}>Location only</div>
             </div>
             <div style={{ color: '#30363d' }}>→</div>
             <div className="text-center px-4 py-2 rounded-lg" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-              <div className="font-bold" style={{ color: '#8b949e' }}>Basic</div>
+              <div className="font-bold" style={{ color: '#8b949e' }}>Basic Report</div>
               <div className="font-mono font-bold" style={{ color: '#c9a227' }}>£149</div>
               <div className="text-xs" style={{ color: '#57606a' }}>Quick check</div>
             </div>
             <div style={{ color: '#30363d' }}>→</div>
             <div className="text-center px-4 py-2 rounded-lg" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-              <div className="font-bold" style={{ color: '#8b949e' }}>Professional</div>
+              <div className="font-bold" style={{ color: '#8b949e' }}>Professional Report</div>
               <div className="font-mono font-bold" style={{ color: '#c9a227' }}>£249</div>
               <div className="text-xs" style={{ color: '#57606a' }}>+ Financials</div>
             </div>
             <div style={{ color: '#30363d' }}>→</div>
             <div className="text-center px-4 py-2 rounded-lg" style={{ background: '#161b22', border: '2px solid #c9a227' }}>
-              <div className="font-bold" style={{ color: '#c9a227' }}>Premium</div>
+              <div className="font-bold" style={{ color: '#c9a227' }}>Premium Report</div>
               <div className="font-mono font-bold" style={{ color: '#c9a227' }}>£449</div>
               <div className="text-xs" style={{ color: '#57606a' }}>Complete</div>
             </div>
@@ -52,10 +52,10 @@ export default function ReportsPage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Basic */}
+            {/* Basic Report */}
             <div className="pricing-card-old" style={{ textAlign: 'left' }}>
-              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Basic</div>
-              <h3 className="text-2xl font-bold mb-2">Quick Due Diligence</h3>
+              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Essential</div>
+              <h3 className="text-2xl font-bold mb-2">Basic Report</h3>
               <div className="price-display" style={{ textAlign: 'left' }}>£149 <span className="text-base font-normal" style={{ color: '#8b949e' }}>one-time</span></div>
               <p style={{ color: '#8b949e', fontSize: '0.9rem', marginBottom: '20px' }}>Perfect for an initial sanity check before investing more time. Get the key facts fast.</p>
               <h4 className="font-bold text-sm mb-3" style={{ color: '#c9a227' }}>What&apos;s Included:</h4>
@@ -78,10 +78,10 @@ export default function ReportsPage() {
               <p className="text-xs mt-2 text-center" style={{ color: '#c9a227' }}>💡 Need financials? Upgrade to Professional</p>
             </div>
 
-            {/* Professional */}
+            {/* Professional Report */}
             <div className="pricing-card-old" style={{ textAlign: 'left' }}>
               <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Professional</div>
-              <h3 className="text-2xl font-bold mb-2">Full Business Analysis</h3>
+              <h3 className="text-2xl font-bold mb-2">Professional Report</h3>
               <div className="price-display" style={{ textAlign: 'left' }}>£249 <span className="text-base font-normal" style={{ color: '#8b949e' }}>one-time</span></div>
               <p style={{ color: '#8b949e', fontSize: '0.9rem', marginBottom: '20px' }}>Comprehensive financial analysis for serious buyers. Know the numbers before you negotiate.</p>
               <h4 className="font-bold text-sm mb-3" style={{ color: '#c9a227' }}>What&apos;s Included:</h4>
@@ -106,11 +106,11 @@ export default function ReportsPage() {
               <p className="text-xs mt-2 text-center" style={{ color: '#c9a227' }}>💡 Want complete picture? Upgrade to Premium (+£200)</p>
             </div>
 
-            {/* Premium ⭐ */}
+            {/* Premium Report ⭐ */}
             <div className="pricing-card-old popular" style={{ textAlign: 'left' }}>
               <div className="popular-badge">Most Popular</div>
               <div className="text-xs font-bold mb-2" style={{ color: '#c9a227' }}>Premium ⭐ Most Popular</div>
-              <h3 className="text-2xl font-bold mb-2">Complete Intelligence Package</h3>
+              <h3 className="text-2xl font-bold mb-2">Premium Report</h3>
               <div className="price-display" style={{ textAlign: 'left' }}>£449 <span className="text-base font-normal" style={{ color: '#8b949e' }}>one-time</span></div>
               <p style={{ color: '#8b949e', fontSize: '0.9rem', marginBottom: '20px' }}>Everything you need in one comprehensive report. Business financials + full location intelligence.</p>
               <h4 className="font-bold text-sm mb-3" style={{ color: '#c9a227' }}>What&apos;s Included:</h4>
@@ -126,15 +126,15 @@ export default function ReportsPage() {
                 <li>60-minute consultation call</li>
                 <li>Detailed action roadmap</li>
               </ul>
-              <p className="text-sm mt-4 p-3 rounded-lg" style={{ background: 'rgba(201,162,39,0.1)', color: '#c9a227' }}>💰 Value: Location Intelligence alone is worth £149. You&apos;re getting it FREE with Premium!</p>
+              <p className="text-sm mt-4 p-3 rounded-lg" style={{ background: 'rgba(201,162,39,0.1)', color: '#c9a227' }}>💰 Value: Location Intelligence alone is worth £99. You&apos;re getting it FREE with Premium!</p>
               <p className="text-sm mt-2" style={{ color: '#57606a' }}>Best for: Serious buyers who want the complete picture before committing</p>
               <BuyButton tier="premium" label="Buy Premium Report — £449" />
             </div>
 
-            {/* Location Intelligence */}
+            {/* Location Report */}
             <div className="pricing-card-old" style={{ textAlign: 'left' }}>
-              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Location Intelligence</div>
-              <h3 className="text-2xl font-bold mb-2">Standalone Location Analysis</h3>
+              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Add-On</div>
+              <h3 className="text-2xl font-bold mb-2">Location Report</h3>
               <div className="price-display" style={{ textAlign: 'left' }}>£99 <span className="text-base font-normal" style={{ color: '#8b949e' }}>one-time</span></div>
               <p style={{ color: '#8b949e', fontSize: '0.9rem', marginBottom: '20px' }}>Just need location data? Already have the financials? This is for you.</p>
               <h4 className="font-bold text-sm mb-3" style={{ color: '#c9a227' }}>What&apos;s Included:</h4>
@@ -167,8 +167,8 @@ export default function ReportsPage() {
       <section className="py-16 text-center" style={{ background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.1) 0%, rgba(30, 58, 95, 0.2) 100%)', borderTop: '1px solid rgba(201,162,39,0.3)' }}>
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-          <p style={{ color: '#8b949e' }} className="mb-8 max-w-xl mx-auto">Tell us which listing interests you, and we&apos;ll deliver actionable intelligence within 48 hours.</p>
-          <Link href="#contact" className="btn-primary text-lg px-10 py-4">Order Your Report</Link>
+          <p style={{ color: '#8b949e' }} className="mb-8 max-w-xl mx-auto">Click any Buy button above and tell us which business you need a report for. We&apos;ll deliver actionable intelligence within 48 hours.</p>
+          <Link href="/#contact" className="btn-primary text-lg px-10 py-4">Have Questions? Contact Us</Link>
         </div>
       </section>
     </AppLayout>

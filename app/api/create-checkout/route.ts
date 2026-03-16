@@ -10,12 +10,12 @@ function getStripe() {
 const PRICE_MAP: Record<string, { priceId: string; name: string; amount: number; isSubscription?: boolean }> = {
   location: {
     priceId: process.env.STRIPE_PRICE_LOCATION || "",
-    name: "Location Intelligence Report",
+    name: "Location Report",
     amount: 9900,
   },
   basic: {
     priceId: process.env.STRIPE_PRICE_BASIC || "",
-    name: "Basic Due Diligence Report",
+    name: "Basic Report",
     amount: 14900,
   },
   professional: {
@@ -25,21 +25,45 @@ const PRICE_MAP: Record<string, { priceId: string; name: string; amount: number;
   },
   premium: {
     priceId: process.env.STRIPE_PRICE_PREMIUM || "",
-    name: "Premium Intelligence Report",
+    name: "Premium Report",
     amount: 44900,
   },
   insider: {
     priceId: process.env.STRIPE_PRICE_INSIDER || "",
     name: "FCM Insider Subscription",
-    amount: 9700, // £97/month
+    amount: 1500, // £15/month
     isSubscription: true,
   },
 };
 
+interface CheckoutRequest {
+  tier: string;
+  // Business details
+  listingName?: string;
+  listingLocation?: string;
+  listingSource?: string;
+  listingUrl?: string;
+  listingId?: string;
+  // Customer details
+  customerEmail?: string;
+  customerPhone?: string;
+  customerQuestions?: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { tier, listingName } = body;
+    const body: CheckoutRequest = await request.json();
+    const {
+      tier,
+      listingName,
+      listingLocation,
+      listingSource,
+      listingUrl,
+      listingId,
+      customerEmail,
+      customerPhone,
+      customerQuestions,
+    } = body;
 
     const product = PRICE_MAP[tier];
     if (!product) {
@@ -76,37 +100,40 @@ export async function POST(request: NextRequest) {
 
     // Determine if this is a subscription or one-time payment
     const mode = product.isSubscription ? "subscription" : "payment";
-    
+
+    // Build metadata - Stripe limits values to 500 chars each
+    const metadata: Record<string, string> = {
+      tier,
+      listing_name: (listingName || "").slice(0, 500),
+      listing_location: (listingLocation || "").slice(0, 500),
+      listing_source: (listingSource || "").slice(0, 500),
+      listing_url: (listingUrl || "").slice(0, 500),
+      listing_id: (listingId || "").slice(0, 500),
+      customer_email: (customerEmail || "").slice(0, 500),
+      customer_phone: (customerPhone || "").slice(0, 500),
+      customer_questions: (customerQuestions || "").slice(0, 500),
+    };
+
+    // Build success URL with metadata for personalized confirmation
+    const successParams = new URLSearchParams({
+      session_id: "{CHECKOUT_SESSION_ID}",
+      tier,
+      listing: listingName || "",
+      email: customerEmail || "",
+      phone: customerPhone || "",
+    });
+
     // Build session params
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"],
       line_items: [lineItem],
       mode,
-      success_url: `${origin}/reports/success?session_id={CHECKOUT_SESSION_ID}&tier=${tier}`,
+      success_url: `${origin}/reports/success?${successParams.toString()}`,
       cancel_url: product.isSubscription ? `${origin}/#insider` : `${origin}/reports`,
-      metadata: {
-        tier,
-        listing_name: listingName || "",
-      },
+      metadata,
+      // Pre-fill customer email if provided
+      ...(customerEmail && { customer_email: customerEmail }),
     };
-
-    // Add custom fields only for one-time reports (not subscriptions)
-    if (!product.isSubscription) {
-      sessionParams.custom_fields = [
-        {
-          key: "listing_name",
-          label: { type: "custom", custom: "Branch / Listing Name" },
-          type: "text",
-          optional: false,
-        },
-        {
-          key: "phone",
-          label: { type: "custom", custom: "Phone Number (optional)" },
-          type: "text",
-          optional: true,
-        },
-      ];
-    }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
 
