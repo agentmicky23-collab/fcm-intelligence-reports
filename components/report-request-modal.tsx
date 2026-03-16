@@ -191,20 +191,22 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
   const tierInfo = TIER_INFO[selectedTier];
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0, 0, 0, 0.9)", backdropFilter: "blur(8px)" }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Dark backdrop - clicking this closes modal */}
+      <div 
+        className="absolute inset-0 bg-black/90 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Modal content - centered, doesn't close when clicked */}
       <div
-        className="w-full max-w-xl rounded-2xl relative max-h-[90vh] overflow-y-auto"
+        className="relative z-10 w-full max-w-xl rounded-2xl max-h-[90vh] overflow-y-auto"
         style={{
           background: "#0a0a0a",
           border: "1px solid #333",
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)",
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div
