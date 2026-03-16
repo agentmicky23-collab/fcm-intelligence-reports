@@ -386,7 +386,7 @@ export default function Home() {
             </div>
             
             <blockquote 
-              className="text-2xl md:text-4xl lg:text-5xl font-light leading-relaxed mb-8"
+              className="text-xl md:text-3xl lg:text-4xl font-light leading-relaxed mb-8"
               style={{ 
                 color: '#fff',
                 textShadow: '0 2px 20px rgba(0,0,0,0.3)',
@@ -405,7 +405,7 @@ export default function Home() {
             />
             
             <cite 
-              className="text-xl md:text-2xl font-semibold not-italic block"
+              className="text-lg md:text-xl font-semibold not-italic block"
               style={{ color: '#FFD700' }}
             >
               — 15 Years in Post Office Operations
