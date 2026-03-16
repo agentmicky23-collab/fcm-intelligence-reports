@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 type ReportTier = "location" | "basic" | "professional" | "premium";
 
@@ -30,6 +31,7 @@ const TIER_INFO: Record<ReportTier, { name: string; price: number; description: 
 const LISTING_SOURCES = ["Daltons", "RightBiz", "Christie & Co", "Other"];
 
 export function ReportRequestModal({ isOpen, onClose, tier = "professional", listing }: ReportRequestModalProps) {
+  const [mounted, setMounted] = useState(false);
   const [selectedTier, setSelectedTier] = useState<ReportTier>(tier);
   const [inputMode, setInputMode] = useState<"url" | "manual">(listing ? "manual" : "url");
   const [loading, setLoading] = useState(false);
@@ -53,6 +55,11 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
   const [hasTurnover, setHasTurnover] = useState(false);
   const [hasPoRemuneration, setHasPoRemuneration] = useState(false);
   const [hasNone, setHasNone] = useState(false);
+
+  // Mount state for SSR safety - MUST be first useEffect
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Pre-fill from listing if provided
   useEffect(() => {
@@ -186,12 +193,14 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
     }
   };
 
-  if (!isOpen) return null;
+  // Don't render until mounted (SSR safety) or if not open
+  if (!mounted || !isOpen) return null;
 
   const tierInfo = TIER_INFO[selectedTier];
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  // Modal content - will be portaled to document.body
+  const modalContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Dark backdrop - clicking this closes modal */}
       <div 
         className="absolute inset-0 bg-black/90 backdrop-blur-sm"
@@ -589,4 +598,7 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
       </div>
     </div>
   );
+
+  // Use portal to render to document.body - bypasses stacking context issues
+  return createPortal(modalContent, document.body);
 }
