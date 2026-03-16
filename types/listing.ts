@@ -26,6 +26,11 @@ export interface Listing {
   sourceUrl: string;
   notes: string;
   insiderVisible: boolean;
+  // Sold tracking
+  soldStatus?: 'active' | 'sold';
+  soldDate?: string | null;
+  // Listed date for urgency display
+  listedDate?: string;
   // Enriched fields from old site (optional for backwards compat)
   badge?: string;
   priceLabel?: string;

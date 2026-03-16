@@ -2,12 +2,35 @@
 
 import Link from "next/link";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { ListingCard } from "@/components/listing-card";
+import { ListingCard, isSoldListingVisible } from "@/components/listing-card";
 import { BuyButton } from "@/components/buy-button";
+import { ReportPreviewSection } from "@/components/report-preview-section";
 import { listings } from "@/lib/listings-data";
 
+// Get 3 featured listings with daily rotation
+function getFeaturedListings() {
+  // Filter to only active listings (or sold within 3 days)
+  const availableListings = listings.filter(listing => isSoldListingVisible(listing));
+  
+  // Daily rotation based on date
+  const today = new Date();
+  const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+  
+  // Rotate starting index based on day
+  const startIndex = dayOfYear % Math.max(1, availableListings.length - 2);
+  
+  // Get 3 listings starting from rotated index
+  const featured = [];
+  for (let i = 0; i < 3 && i < availableListings.length; i++) {
+    const idx = (startIndex + i) % availableListings.length;
+    featured.push(availableListings[idx]);
+  }
+  
+  return featured;
+}
+
 export default function Home() {
-  const featuredListings = listings.slice(0, 4);
+  const featuredListings = getFeaturedListings();
 
   return (
     <AppLayout>
@@ -120,7 +143,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ FEATURED LISTINGS ═══════════════════════════ */}
+      {/* ═══════════════════════════ FEATURED LISTINGS (3 with daily rotation) ═══════════════════════════ */}
       <section className="py-20 container mx-auto px-4" id="opportunities">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">🔥 Live Opportunities</h2>
@@ -129,7 +152,7 @@ export default function Home() {
             Showing {featuredListings.length} of {listings.length} opportunities • <Link href="/opportunities" className="underline" style={{ color: '#c9a227' }}>View All</Link>
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {featuredListings.map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
           ))}
@@ -199,125 +222,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ SAMPLE REPORT PREVIEW (old site exact) ═══════════════════════════ */}
-      <section className="py-20 container mx-auto px-4" id="report-preview">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">See What You Get</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {/* Basic Sample */}
-          <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '16px', padding: '24px', position: 'relative' }}>
-            <div className="text-xs font-bold mb-4" style={{ color: '#8b949e' }}>Basic</div>
-            <h4 className="font-bold mb-1">Sandbach Post Office</h4>
-            <p className="text-xs mb-4" style={{ color: '#57606a' }}>CW11 1HN • Generated Feb 2026</p>
-            <div className="text-center mb-4">
-              <span className="inline-block px-4 py-2 rounded-lg text-2xl font-bold" style={{ background: 'rgba(201,162,39,0.1)', color: '#c9a227' }}>B</span>
-              <p className="text-xs mt-2" style={{ color: '#8b949e' }}>Quick Assessment</p>
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.8rem' }}>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Business Overview</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Key Metrics Summary</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Red Flags Check</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Basic Recommendation</li>
-              <li style={{ padding: '4px 0', color: '#ef4444' }}>❌ Financial Deep Dive</li>
-              <li style={{ padding: '4px 0', color: '#ef4444' }}>❌ Location Intelligence</li>
-              <li style={{ padding: '4px 0', color: '#ef4444' }}>❌ Crime &amp; Safety Analysis</li>
-              <li style={{ padding: '4px 0', color: '#ef4444' }}>❌ Demographics</li>
-            </ul>
-          </div>
-          {/* Professional Sample */}
-          <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '16px', padding: '24px' }}>
-            <div className="text-xs font-bold mb-4" style={{ color: '#8b949e' }}>Professional</div>
-            <h4 className="font-bold mb-1">Sandbach Post Office</h4>
-            <p className="text-xs mb-4" style={{ color: '#57606a' }}>CW11 1HN • Generated Feb 2026</p>
-            <div className="text-center mb-4">
-              <span className="inline-block px-4 py-2 rounded-lg text-2xl font-bold" style={{ background: 'rgba(201,162,39,0.1)', color: '#c9a227' }}>B+</span>
-              <span className="text-sm font-mono ml-2" style={{ color: '#8b949e' }}>72/100</span>
-              <p className="text-xs mt-1" style={{ color: '#8b949e' }}>Business Score</p>
-            </div>
-            <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '8px', padding: '12px', marginBottom: '12px', fontSize: '0.8rem' }}>
-              <div className="flex justify-between mb-1"><span style={{ color: '#8b949e' }}>Est. Annual Revenue</span><span className="font-mono font-bold text-white">£185,000</span></div>
-              <div className="flex justify-between mb-1"><span style={{ color: '#8b949e' }}>PO Remuneration</span><span className="font-mono font-bold text-white">£67,400</span></div>
-              <div className="flex justify-between"><span style={{ color: '#8b949e' }}>Est. Net Profit</span><span className="font-mono font-bold text-white">£42,000</span></div>
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.8rem' }}>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Full Business Analysis</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Financial Deep Dive</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ P&amp;L Breakdown</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Remuneration Analysis</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Competition Overview</li>
-              <li style={{ padding: '4px 0', color: '#ef4444' }}>❌ Location Intelligence</li>
-              <li style={{ padding: '4px 0', color: '#ef4444' }}>❌ Demographics</li>
-              <li style={{ padding: '4px 0', color: '#ef4444' }}>❌ Crime Analysis</li>
-            </ul>
-          </div>
-          {/* Premium Sample */}
-          <div style={{ background: '#161b22', border: '2px solid #c9a227', borderRadius: '16px', padding: '24px', position: 'relative' }}>
-            <div className="text-xs font-bold mb-4" style={{ color: '#c9a227' }}>Premium ⭐</div>
-            <h4 className="font-bold mb-1">Sandbach Post Office</h4>
-            <p className="text-xs mb-4" style={{ color: '#57606a' }}>CW11 1HN • Generated Feb 2026</p>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="text-center">
-                <span className="inline-block px-3 py-1 rounded-lg text-lg font-bold" style={{ background: 'rgba(201,162,39,0.1)', color: '#c9a227' }}>B+</span>
-                <span className="text-xs font-mono ml-1" style={{ color: '#8b949e' }}>68/100</span>
-                <p className="text-xs" style={{ color: '#8b949e' }}>Overall Score</p>
-              </div>
-              <div className="text-center">
-                <span className="inline-block px-3 py-1 rounded-lg text-lg font-bold" style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e' }}>A</span>
-                <span className="text-xs font-mono ml-1" style={{ color: '#8b949e' }}>85/100</span>
-                <p className="text-xs" style={{ color: '#8b949e' }}>Location Score</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2 mb-3" style={{ fontSize: '0.75rem' }}>
-              <div className="text-center p-2 rounded" style={{ background: 'rgba(0,0,0,0.3)' }}>
-                <div className="font-mono font-bold text-white">£253K</div>
-                <div style={{ color: '#8b949e' }}>House Price</div>
-              </div>
-              <div className="text-center p-2 rounded" style={{ background: 'rgba(0,0,0,0.3)' }}>
-                <div className="font-mono font-bold text-white">73%</div>
-                <div style={{ color: '#8b949e' }}>Employment</div>
-              </div>
-              <div className="text-center p-2 rounded" style={{ background: 'rgba(0,0,0,0.3)' }}>
-                <div className="font-mono font-bold text-white">93</div>
-                <div style={{ color: '#8b949e' }}>Crime Incidents</div>
-              </div>
-              <div className="text-center p-2 rounded" style={{ background: 'rgba(0,0,0,0.3)' }}>
-                <div className="font-mono font-bold text-white">20</div>
-                <div style={{ color: '#8b949e' }}>Competitors</div>
-              </div>
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.8rem' }}>
-              <li style={{ padding: '3px 0', color: '#22c55e' }}>✅ Full Business + Financials</li>
-              <li style={{ padding: '3px 0', color: '#c9a227' }}>⭐ Location Intelligence</li>
-              <li style={{ padding: '3px 0', color: '#c9a227' }}>⭐ Demographics Analysis</li>
-              <li style={{ padding: '3px 0', color: '#c9a227' }}>⭐ Crime &amp; Safety</li>
-              <li style={{ padding: '3px 0', color: '#c9a227' }}>⭐ Competition Mapping</li>
-              <li style={{ padding: '3px 0', color: '#c9a227' }}>⭐ Footfall Analysis</li>
-            </ul>
-          </div>
-          {/* Location Intel Sample */}
-          <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '16px', padding: '24px' }}>
-            <div className="text-xs font-bold mb-4" style={{ color: '#8b949e' }}>Location Intel</div>
-            <h4 className="font-bold mb-1">CW11 1HN</h4>
-            <p className="text-xs mb-4" style={{ color: '#57606a' }}>Sandbach, Cheshire East</p>
-            <div className="text-center mb-4">
-              <span className="inline-block px-4 py-2 rounded-lg text-2xl font-bold" style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e' }}>A</span>
-              <span className="text-sm font-mono ml-2" style={{ color: '#8b949e' }}>85/100</span>
-              <p className="text-xs mt-1" style={{ color: '#8b949e' }}>Location Score</p>
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.8rem' }}>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Catchment Analysis</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Demographics Profile</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ House Prices &amp; Affluence</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Employment Data</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Consumer Segments</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Crime &amp; Safety</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Competition Map</li>
-              <li style={{ padding: '4px 0', color: '#22c55e' }}>✅ Footfall Drivers</li>
-            </ul>
-          </div>
-        </div>
-      </section>
+      {/* ═══════════════════════════ NEW SAMPLE REPORT PREVIEW (Toggle Section) ═══════════════════════════ */}
+      <ReportPreviewSection />
 
       {/* ═══════════════════════════ PRICING (old site exact: Location £99, Basic £149, Professional £249, Premium £449) ═══════════════════════════ */}
       <section className="py-20" id="pricing" style={{ background: '#0d1117' }}>
@@ -405,6 +311,7 @@ export default function Home() {
                 <li>Competition overview</li>
                 <li>20-25 page PDF report</li>
                 <li>30-min consultation call</li>
+                <li>Infrastructure analysis (NEW)</li>
               </ul>
               <div style={{ padding: '8px 0', borderTop: '1px solid #30363d', marginTop: '12px' }}>
                 <p className="text-xs" style={{ color: '#ef4444' }}>❌ Location Intelligence</p>
@@ -425,6 +332,7 @@ export default function Home() {
                 <li>🏠 Demographics &amp; Affluence</li>
                 <li>🛡️ Crime &amp; Safety Analysis</li>
                 <li>🏢 Competition Mapping</li>
+                <li>📡 Full Infrastructure Analysis</li>
                 <li>30-40 page PDF report</li>
                 <li>60-min consultation call</li>
                 <li>Action roadmap</li>
@@ -439,13 +347,74 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ QUOTE ═══════════════════════════ */}
-      <section className="py-20 container mx-auto px-4">
-        <div className="old-quote">
-          <blockquote>
-            We&apos;ve operated 40 Post Office branches. We&apos;ve seen what makes them succeed and what makes them fail. Now we&apos;re sharing that insight with buyers who want to make smarter decisions.
-          </blockquote>
-          <cite>— 15 Years in Post Office Operations</cite>
+      {/* ═══════════════════════════ TESTIMONIAL QUOTE (PROMINENT) ═══════════════════════════ */}
+      <section 
+        className="py-20 my-0" 
+        style={{ 
+          background: 'linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)',
+          borderTop: '2px solid rgba(255, 215, 0, 0.3)',
+          borderBottom: '2px solid rgba(255, 215, 0, 0.3)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Decorative background elements */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '800px',
+          height: '800px',
+          background: 'radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-5xl mx-auto text-center">
+            {/* Large decorative quote mark */}
+            <div 
+              className="mb-6"
+              style={{ 
+                fontSize: '6rem', 
+                lineHeight: 1, 
+                color: 'rgba(255, 215, 0, 0.3)',
+                fontFamily: 'Georgia, serif',
+              }}
+            >
+              &ldquo;
+            </div>
+            
+            <blockquote 
+              className="text-2xl md:text-4xl lg:text-5xl font-light leading-relaxed mb-8"
+              style={{ 
+                color: '#fff',
+                textShadow: '0 2px 20px rgba(0,0,0,0.3)',
+              }}
+            >
+              We&apos;ve operated <span style={{ color: '#FFD700', fontWeight: 600 }}>40 Post Office branches</span>. We&apos;ve seen what makes them succeed and what makes them fail. Now we&apos;re sharing that insight with buyers who want to make <span style={{ color: '#FFD700', fontWeight: 600 }}>smarter decisions</span>.
+            </blockquote>
+            
+            <div 
+              style={{ 
+                width: '100px', 
+                height: '3px', 
+                background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
+                margin: '0 auto 24px',
+              }}
+            />
+            
+            <cite 
+              className="text-xl md:text-2xl font-semibold not-italic block"
+              style={{ color: '#FFD700' }}
+            >
+              — 15 Years in Post Office Operations
+            </cite>
+            
+            <p className="mt-4 text-sm" style={{ color: '#8b949e' }}>
+              The team behind FCM Intelligence
+            </p>
+          </div>
         </div>
       </section>
 
