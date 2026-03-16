@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { writeFile, mkdir, readFile } from "fs/promises";
+import { join } from "path";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_TOTAL_SIZE = 25 * 1024 * 1024; // 25MB total (Resend limit)
+
+const ORDERS_PATH = '/Users/mickagent/.openclaw/reports/orders';
 
 const ACCEPTED_MIME_TYPES = [
   "application/pdf",
@@ -31,6 +35,10 @@ export async function POST(request: NextRequest) {
     const listingUrl = formData.get("listing_url") as string || "";
     const customerEmail = formData.get("customer_email") as string || "";
     const customerPhone = formData.get("customer_phone") as string || "";
+    
+    // Order tracking fields
+    const orderId = formData.get("orderId") as string || "";
+    const tempOrderId = formData.get("tempOrderId") as string || "";
     
     // Extract files
     const files = formData.getAll("files") as File[];
@@ -81,7 +89,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check for Resend API key
+    // =====================
+    // SAVE FILES LOCALLY
+    // =====================
+    let storagePath: string;
+    const savedFiles: string[] = [];
+    
+    if (orderId) {
+      // Post-payment: store in order folder
+      storagePath = join(ORDERS_PATH, orderId, 'files');
+    } else if (tempOrderId) {
+      // Pre-payment: store in temp folder
+      storagePath = join(ORDERS_PATH, 'temp', tempOrderId);
+    } else {
+      // Fallback: generate temp ID based on business name or timestamp
+      const safeName = (businessName || 'unknown').replace(/[^a-zA-Z0-9]/g, '-').slice(0, 30);
+      const tempId = `temp-${safeName}-${Date.now()}`;
+      storagePath = join(ORDERS_PATH, 'temp', tempId);
+    }
+    
+    try {
+      await mkdir(storagePath, { recursive: true });
+      
+      for (const file of validatedFiles) {
+        const filePath = join(storagePath, file.filename);
+        await writeFile(filePath, file.content);
+        savedFiles.push(file.filename);
+        console.log(`Saved file locally: ${filePath}`);
+      }
+      
+      // If this is for an existing order, update the order.json files list
+      if (orderId) {
+        try {
+          const orderJsonPath = join(ORDERS_PATH, orderId, 'order.json');
+          const orderData = await readFile(orderJsonPath, 'utf-8');
+          const order = JSON.parse(orderData);
+          order.files = [...(order.files || []), ...savedFiles];
+          await writeFile(orderJsonPath, JSON.stringify(order, null, 2));
+        } catch (e) {
+          console.log('Could not update order.json with file list:', e);
+        }
+      }
+    } catch (storageError) {
+      console.error('Failed to save files locally:', storageError);
+      // Continue to email even if local storage fails
+    }
+
+    // =====================
+    // SEND EMAIL
+    // =====================
     const resendApiKey = process.env.RESEND_API_KEY;
     
     if (!resendApiKey) {
@@ -97,12 +153,15 @@ export async function POST(request: NextRequest) {
       console.log("Customer Phone:", customerPhone);
       console.log("Tier:", tier);
       console.log("Files:", validatedFiles.map(f => f.filename).join(", "));
+      console.log("Saved to:", storagePath);
       console.log("==========================================");
       
       return NextResponse.json({
         success: true,
-        message: "Documents logged (email service not configured)",
+        message: "Documents saved locally (email service not configured)",
         fileCount: validatedFiles.length,
+        storagePath,
+        savedFiles,
       });
     }
 
@@ -157,6 +216,12 @@ export async function POST(request: NextRequest) {
                 <td style="padding: 8px 0; border-bottom: 1px solid #333;"><a href="${listingUrl}" style="color: #FFD700;">${listingUrl}</a></td>
               </tr>
               ` : ""}
+              ${orderId ? `
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #333;"><strong>Order ID:</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #333; color: #FFD700; font-family: monospace;">${orderId}</td>
+              </tr>
+              ` : ""}
             </table>
           </div>
 
@@ -179,6 +244,7 @@ export async function POST(request: NextRequest) {
             <ul style="color: #ccc; font-size: 14px; padding-left: 20px;">
               ${validatedFiles.map(f => `<li style="padding: 4px 0;">${f.filename}</li>`).join("")}
             </ul>
+            <p style="color: #666; font-size: 12px; margin-top: 12px;">Files also saved to: ${storagePath}</p>
           </div>
 
           <p style="color: #666; font-size: 12px; margin-top: 20px; text-align: center;">
@@ -202,9 +268,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Documents sent successfully",
+      message: "Documents sent and saved successfully",
       emailId: data?.id,
       fileCount: validatedFiles.length,
+      storagePath,
+      savedFiles,
     });
   } catch (err) {
     console.error("Upload documents error:", err);
