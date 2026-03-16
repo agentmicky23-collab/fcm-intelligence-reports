@@ -418,50 +418,35 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ SERVICES (old site exact 6 cards) ═══════════════════════════ */}
-      <section className="py-20" style={{ background: '#161b22', borderTop: '1px solid #30363d', borderBottom: '1px solid #30363d' }}>
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="feature-card-old" style={{ textAlign: 'left' }}>
-              <div className="icon" style={{ textAlign: 'center' }}>📋</div>
-              <h3 style={{ textAlign: 'center' }}>Business Plan &amp; Forecasts</h3>
-              <p style={{ textAlign: 'center' }}>Professional 3-year business plan with forecasted management accounts. Required for Post Office Ltd vetting and approval.</p>
-              <div className="text-center mt-4"><span className="font-mono font-bold text-xl" style={{ color: '#c9a227' }}>£850</span><span className="text-sm ml-2" style={{ color: '#8b949e' }}>One-time</span></div>
+      {/* ═══════════════════════════ CONSULTATION SERVICES TEASER ═══════════════════════════ */}
+      <section className="py-16" style={{ background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.08) 0%, rgba(30, 58, 95, 0.15) 100%)', borderTop: '1px solid rgba(201,162,39,0.2)', borderBottom: '1px solid rgba(201,162,39,0.2)' }}>
+        <div className="container mx-auto px-4 text-center">
+          <div className="inline-block px-4 py-1 rounded-full mb-6" style={{ background: 'rgba(201,162,39,0.2)', border: '1px solid rgba(201,162,39,0.4)', color: '#c9a227', fontSize: '0.85rem', fontWeight: 600 }}>
+            🎓 CONSULTATION SERVICES
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Need More Than Intelligence?</h2>
+          <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto mb-6 text-lg">
+            Business plans, interview prep, operator training, and ongoing advisory support — everything you need to succeed as a Post Office operator.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
+              <span>📋</span><span style={{ color: '#8b949e' }}>Business Plans</span>
             </div>
-            <div className="feature-card-old" style={{ textAlign: 'left' }}>
-              <div className="icon" style={{ textAlign: 'center' }}>🎤</div>
-              <h3 style={{ textAlign: 'center' }}>Interview Preparation</h3>
-              <p style={{ textAlign: 'center' }}>Post Office Ltd vets all new operators. Get mock interviews, coaching, and preparation to ace your approval interview.</p>
-              <div className="text-center mt-4"><span className="font-mono font-bold text-xl" style={{ color: '#c9a227' }}>£450</span><span className="text-sm ml-2" style={{ color: '#8b949e' }}>One-time</span></div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
+              <span>🎤</span><span style={{ color: '#8b949e' }}>Interview Prep</span>
             </div>
-            <div className="feature-card-old" style={{ textAlign: 'left' }}>
-              <div className="icon" style={{ textAlign: 'center' }}>🎓</div>
-              <h3 style={{ textAlign: 'center' }}>Operator Training</h3>
-              <p style={{ textAlign: 'center' }}>Learn to run a Post Office from operators with 40+ branches. Online, at our location, or on-site at your branch.</p>
-              <div className="text-center mt-4"><span className="font-mono font-bold text-xl" style={{ color: '#c9a227' }}>£500 - £1,500</span><span className="text-sm ml-2" style={{ color: '#8b949e' }}>Online / Offsite / Onsite</span></div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
+              <span>🎓</span><span style={{ color: '#8b949e' }}>Training</span>
             </div>
-            <div className="feature-card-old" style={{ textAlign: 'left' }}>
-              <div className="icon" style={{ textAlign: 'center' }}>🔧</div>
-              <h3 style={{ textAlign: 'center' }}>Business Setup Bundle</h3>
-              <p style={{ textAlign: 'center' }}>Company formation, bank account, insurance, utilities, EPOS setup - everything you need to open the doors.</p>
-              <div className="text-center mt-4"><span className="font-mono font-bold text-xl" style={{ color: '#c9a227' }}>£750</span><span className="text-sm ml-2" style={{ color: '#8b949e' }}>Complete package</span></div>
-            </div>
-            <div className="feature-card-old" style={{ textAlign: 'left' }}>
-              <div className="icon" style={{ textAlign: 'center' }}>💬</div>
-              <h3 style={{ textAlign: 'center' }}>Advisory Support</h3>
-              <p style={{ textAlign: 'center' }}>Ongoing email support and monthly calls. Get expert guidance as you navigate your first months of operation.</p>
-              <div className="text-center mt-4"><span className="font-mono font-bold text-xl" style={{ color: '#c9a227' }}>£200/mo</span><span className="text-sm ml-2" style={{ color: '#8b949e' }}>Cancel anytime</span></div>
-            </div>
-            <div className="feature-card-old" style={{ textAlign: 'left' }}>
-              <div className="icon" style={{ textAlign: 'center' }}>⭐</div>
-              <h3 style={{ textAlign: 'center' }}>Advisory Pro</h3>
-              <p style={{ textAlign: 'center' }}>Everything in Basic plus compliance checks, management reporting, and priority response times.</p>
-              <div className="text-center mt-4"><span className="font-mono font-bold text-xl" style={{ color: '#c9a227' }}>£400/mo</span><span className="text-sm ml-2" style={{ color: '#8b949e' }}>Cancel anytime</span></div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
+              <span>💬</span><span style={{ color: '#8b949e' }}>Advisory</span>
             </div>
           </div>
-          <div className="text-center mt-8">
-            <h3 className="text-xl font-bold mb-2">💰 Bundle &amp; Save</h3>
-            <p style={{ color: '#8b949e' }}>Professional report buyers get <strong className="text-white">10% off</strong> all services. Premium report buyers get <strong className="text-white">20% off</strong> all services.</p>
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full mb-6" style={{ background: 'rgba(201,162,39,0.15)', border: '1px solid #c9a227' }}>
+            <span style={{ color: '#c9a227', fontWeight: 700 }}>⭐ FCM Insiders save 15% on all services</span>
+          </div>
+          <div>
+            <Link href="/insider#services" className="btn-primary text-lg px-8 py-3">View Services &amp; Pricing</Link>
           </div>
         </div>
       </section>
@@ -531,11 +516,11 @@ export default function Home() {
                 <p className="text-sm" style={{ color: '#8b949e' }}>Access our hand-selected recommended listings before anyone else</p>
               </div>
             </div>
-            <div className="flex items-start gap-3 p-4 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
-              <span>💰</span>
+            <div className="flex items-start gap-3 p-4 rounded-lg" style={{ background: 'rgba(201,162,39,0.15)', border: '1px solid rgba(201,162,39,0.4)' }}>
+              <span>🎓</span>
               <div>
-                <h4 className="font-bold text-sm">5% Off All Reports</h4>
-                <p className="text-sm" style={{ color: '#8b949e' }}>Save on every intelligence report — pays for itself after 2 reports</p>
+                <h4 className="font-bold text-sm" style={{ color: '#c9a227' }}>15% Off All Services</h4>
+                <p className="text-sm" style={{ color: '#8b949e' }}>Business plans, training, advisory — save on every consultation service</p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-4 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
