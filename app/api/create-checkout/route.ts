@@ -38,16 +38,22 @@ const PRICE_MAP: Record<string, { priceId: string; name: string; amount: number;
 
 interface CheckoutRequest {
   tier: string;
-  // Business details
-  listingName?: string;
-  listingLocation?: string;
-  listingSource?: string;
-  listingUrl?: string;
-  listingId?: string;
-  // Customer details
-  customerEmail?: string;
-  customerPhone?: string;
-  customerQuestions?: string;
+  // Step 1: Business details
+  listing_url?: string;
+  business_name?: string;
+  postcode?: string;
+  listing_source?: string;
+  listing_id?: string;
+  // Step 3: Customer details
+  customer_email?: string;
+  customer_phone?: string;
+  // Step 4: Information checkboxes (Pro & Premium only)
+  has_financials?: boolean;
+  has_asking_price?: boolean;
+  has_lease_terms?: boolean;
+  has_staff_info?: boolean;
+  has_turnover?: boolean;
+  has_po_remuneration?: boolean;
 }
 
 export async function POST(request: NextRequest) {
@@ -55,14 +61,19 @@ export async function POST(request: NextRequest) {
     const body: CheckoutRequest = await request.json();
     const {
       tier,
-      listingName,
-      listingLocation,
-      listingSource,
-      listingUrl,
-      listingId,
-      customerEmail,
-      customerPhone,
-      customerQuestions,
+      listing_url,
+      business_name,
+      postcode,
+      listing_source,
+      listing_id,
+      customer_email,
+      customer_phone,
+      has_financials,
+      has_asking_price,
+      has_lease_terms,
+      has_staff_info,
+      has_turnover,
+      has_po_remuneration,
     } = body;
 
     const product = PRICE_MAP[tier];
@@ -89,8 +100,8 @@ export async function POST(request: NextRequest) {
             currency: "gbp",
             product_data: {
               name: product.name,
-              description: listingName
-                ? `Report for: ${listingName}`
+              description: business_name
+                ? `Report for: ${business_name}`
                 : "FCM Intelligence Report",
             },
             unit_amount: product.amount,
@@ -102,25 +113,32 @@ export async function POST(request: NextRequest) {
     const mode = product.isSubscription ? "subscription" : "payment";
 
     // Build metadata - Stripe limits values to 500 chars each
+    // Pass ALL collected data to Stripe for the fulfillment team
     const metadata: Record<string, string> = {
       tier,
-      listing_name: (listingName || "").slice(0, 500),
-      listing_location: (listingLocation || "").slice(0, 500),
-      listing_source: (listingSource || "").slice(0, 500),
-      listing_url: (listingUrl || "").slice(0, 500),
-      listing_id: (listingId || "").slice(0, 500),
-      customer_email: (customerEmail || "").slice(0, 500),
-      customer_phone: (customerPhone || "").slice(0, 500),
-      customer_questions: (customerQuestions || "").slice(0, 500),
+      listing_url: (listing_url || "").slice(0, 500),
+      business_name: (business_name || "").slice(0, 500),
+      postcode: (postcode || "").slice(0, 500),
+      listing_source: (listing_source || "").slice(0, 500),
+      listing_id: (listing_id || "").slice(0, 500),
+      customer_email: (customer_email || "").slice(0, 500),
+      customer_phone: (customer_phone || "").slice(0, 500),
+      // Checkbox values as strings
+      has_financials: String(has_financials || false),
+      has_asking_price: String(has_asking_price || false),
+      has_lease_terms: String(has_lease_terms || false),
+      has_staff_info: String(has_staff_info || false),
+      has_turnover: String(has_turnover || false),
+      has_po_remuneration: String(has_po_remuneration || false),
     };
 
     // Build success URL with metadata for personalized confirmation
     const successParams = new URLSearchParams({
       session_id: "{CHECKOUT_SESSION_ID}",
       tier,
-      listing: listingName || "",
-      email: customerEmail || "",
-      phone: customerPhone || "",
+      listing: business_name || "",
+      email: customer_email || "",
+      phone: customer_phone || "",
     });
 
     // Build session params
@@ -132,7 +150,7 @@ export async function POST(request: NextRequest) {
       cancel_url: product.isSubscription ? `${origin}/#insider` : `${origin}/reports`,
       metadata,
       // Pre-fill customer email if provided
-      ...(customerEmail && { customer_email: customerEmail }),
+      ...(customer_email && { customer_email: customer_email }),
     };
 
     const session = await stripe.checkout.sessions.create(sessionParams);

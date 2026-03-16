@@ -7,44 +7,60 @@ type ReportTier = "location" | "basic" | "professional" | "premium";
 interface ListingInfo {
   name: string;
   location?: string;
+  postcode?: string;
   source?: string;
   id?: string;
+  url?: string;
 }
 
 interface ReportRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
-  tier: ReportTier;
+  tier?: ReportTier;
   listing?: ListingInfo;
 }
 
-const TIER_INFO: Record<ReportTier, { name: string; price: number; description: string }> = {
-  location: { name: "Location Report", price: 99, description: "Location intelligence & demographics" },
-  basic: { name: "Basic Report", price: 149, description: "Quick assessment & red flags check" },
-  professional: { name: "Professional Report", price: 249, description: "Financial deep dive + 30min call" },
-  premium: { name: "Premium Report", price: 449, description: "Full intelligence package + 60min call" },
+const TIER_INFO: Record<ReportTier, { name: string; price: number; description: string; recommended?: boolean }> = {
+  location: { name: "Location Report", price: 99, description: "Location intelligence only" },
+  basic: { name: "Basic Report", price: 149, description: "Quick assessment & red flags" },
+  professional: { name: "Professional Report", price: 249, description: "Full financial analysis" },
+  premium: { name: "Premium Report", price: 449, description: "Complete intelligence package", recommended: true },
 };
 
-export function ReportRequestModal({ isOpen, onClose, tier, listing }: ReportRequestModalProps) {
+const LISTING_SOURCES = ["Daltons", "RightBiz", "Christie & Co", "Other"];
+
+export function ReportRequestModal({ isOpen, onClose, tier = "professional", listing }: ReportRequestModalProps) {
   const [selectedTier, setSelectedTier] = useState<ReportTier>(tier);
   const [inputMode, setInputMode] = useState<"url" | "manual">(listing ? "manual" : "url");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Form fields
-  const [listingUrl, setListingUrl] = useState("");
+  // Step 1: Business details
+  const [listingUrl, setListingUrl] = useState(listing?.url || "");
   const [businessName, setBusinessName] = useState(listing?.name || "");
-  const [postcode, setPostcode] = useState("");
-  const [listingSource, setListingSource] = useState(listing?.source || "");
+  const [postcode, setPostcode] = useState(listing?.postcode || listing?.location || "");
+  const [listingSource, setListingSource] = useState(listing?.source || "Daltons");
+
+  // Step 3: Customer details
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [customerQuestions, setCustomerQuestions] = useState("");
+
+  // Step 4: Information checkboxes (Pro & Premium only)
+  const [hasFinancials, setHasFinancials] = useState(false);
+  const [hasAskingPrice, setHasAskingPrice] = useState(false);
+  const [hasLeaseTerms, setHasLeaseTerms] = useState(false);
+  const [hasStaffInfo, setHasStaffInfo] = useState(false);
+  const [hasTurnover, setHasTurnover] = useState(false);
+  const [hasPoRemuneration, setHasPoRemuneration] = useState(false);
+  const [hasNone, setHasNone] = useState(false);
 
   // Pre-fill from listing if provided
   useEffect(() => {
     if (listing) {
       setBusinessName(listing.name || "");
-      setListingSource(listing.source || "");
+      setPostcode(listing.postcode || listing.location || "");
+      setListingSource(listing.source || "Daltons");
+      if (listing.url) setListingUrl(listing.url);
       setInputMode("manual");
     }
   }, [listing]);
@@ -66,28 +82,47 @@ export function ReportRequestModal({ isOpen, onClose, tier, listing }: ReportReq
     };
   }, [isOpen]);
 
+  // Handle "None" checkbox toggling off other checkboxes
+  const handleNoneChange = (checked: boolean) => {
+    setHasNone(checked);
+    if (checked) {
+      setHasFinancials(false);
+      setHasAskingPrice(false);
+      setHasLeaseTerms(false);
+      setHasStaffInfo(false);
+      setHasTurnover(false);
+      setHasPoRemuneration(false);
+    }
+  };
+
+  // Handle other checkbox toggling off "None"
+  const handleOtherCheckbox = (setter: (v: boolean) => void, value: boolean) => {
+    setter(value);
+    if (value) setHasNone(false);
+  };
+
+  const showStep4 = selectedTier === "professional" || selectedTier === "premium";
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Validate business details
-    if (!listing) {
-      if (inputMode === "url") {
-        if (!listingUrl.trim()) {
-          newErrors.listingUrl = "Please enter a listing URL";
-        } else if (!listingUrl.match(/^https?:\/\//)) {
-          newErrors.listingUrl = "Please enter a valid URL starting with http:// or https://";
-        }
-      } else {
-        if (!businessName.trim()) {
-          newErrors.businessName = "Business name is required";
-        }
-        if (!postcode.trim()) {
-          newErrors.postcode = "Postcode is required";
-        }
+    // Validate business details (Step 1)
+    if (inputMode === "url") {
+      if (!listingUrl.trim()) {
+        newErrors.listingUrl = "Please enter a listing URL";
+      } else if (!listingUrl.match(/^https?:\/\//)) {
+        newErrors.listingUrl = "Please enter a valid URL starting with http:// or https://";
+      }
+    } else {
+      if (!businessName.trim()) {
+        newErrors.businessName = "Business name is required";
+      }
+      if (!postcode.trim()) {
+        newErrors.postcode = "Postcode is required";
       }
     }
 
-    // Validate contact details
+    // Validate contact details (Step 3)
     if (!customerEmail.trim()) {
       newErrors.customerEmail = "Email is required";
     } else if (!customerEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
@@ -114,17 +149,21 @@ export function ReportRequestModal({ isOpen, onClose, tier, listing }: ReportReq
     setLoading(true);
 
     try {
-      // Build the request payload
       const payload = {
         tier: selectedTier,
-        listingName: listing?.name || businessName,
-        listingLocation: listing?.location || postcode,
-        listingSource: listing?.source || listingSource,
-        listingUrl: inputMode === "url" ? listingUrl : undefined,
-        listingId: listing?.id,
-        customerEmail,
-        customerPhone,
-        customerQuestions: customerQuestions.trim() || undefined,
+        listing_url: inputMode === "url" ? listingUrl : "",
+        business_name: businessName,
+        postcode: postcode,
+        listing_source: listingSource,
+        customer_email: customerEmail,
+        customer_phone: customerPhone,
+        has_financials: hasFinancials,
+        has_asking_price: hasAskingPrice,
+        has_lease_terms: hasLeaseTerms,
+        has_staff_info: hasStaffInfo,
+        has_turnover: hasTurnover,
+        has_po_remuneration: hasPoRemuneration,
+        listing_id: listing?.id,
       };
 
       const res = await fetch("/api/create-checkout", {
@@ -150,234 +189,241 @@ export function ReportRequestModal({ isOpen, onClose, tier, listing }: ReportReq
   if (!isOpen) return null;
 
   const tierInfo = TIER_INFO[selectedTier];
-  const hasListing = !!listing;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0, 0, 0, 0.85)", backdropFilter: "blur(8px)" }}
+      style={{ background: "rgba(0, 0, 0, 0.9)", backdropFilter: "blur(8px)" }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        className="w-full max-w-lg rounded-2xl relative max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-xl rounded-2xl relative max-h-[90vh] overflow-y-auto"
         style={{
-          background: "#0d1117",
-          border: "1px solid #30363d",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
+          background: "#0a0a0a",
+          border: "1px solid #333",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)",
         }}
       >
         {/* Header */}
         <div
-          className="sticky top-0 z-10 px-6 py-4 border-b"
-          style={{ background: "#0d1117", borderColor: "#30363d" }}
+          className="sticky top-0 z-10 px-6 py-5 border-b"
+          style={{ background: "#0a0a0a", borderColor: "#333" }}
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold" style={{ color: "#fff" }}>
-              Request a Report
+            <h2 className="text-2xl font-bold text-white tracking-tight">
+              REQUEST A REPORT
             </h2>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-800 transition-colors"
-              style={{ color: "#8b949e" }}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
             >
-              ✕
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Pre-filled listing info (if from listing) */}
-          {hasListing && (
-            <div
-              className="p-4 rounded-lg"
-              style={{ background: "rgba(201, 162, 39, 0.1)", border: "1px solid rgba(201, 162, 39, 0.3)" }}
-            >
-              <div className="text-sm font-medium mb-1" style={{ color: "#c9a227" }}>
-                Business
-              </div>
-              <div className="font-bold text-white">{listing.name}</div>
-              {listing.location && (
-                <div className="text-sm mt-1" style={{ color: "#8b949e" }}>
-                  📍 {listing.location}
-                </div>
-              )}
-              {listing.source && (
-                <div className="text-sm" style={{ color: "#8b949e" }}>
-                  Source: {listing.source}
-                </div>
-              )}
+        <form onSubmit={handleSubmit} className="p-6">
+          {/* ═══════════════════════════════════════════════════════════ */}
+          {/* STEP 1: WHICH BUSINESS? */}
+          {/* ═══════════════════════════════════════════════════════════ */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold" style={{ background: "#FFD700", color: "#000" }}>
+                1
+              </span>
+              <h3 className="text-lg font-semibold text-white">WHICH BUSINESS?</h3>
             </div>
-          )}
+            <div className="h-px w-full mb-5" style={{ background: "#333" }} />
 
-          {/* Business details (if NOT from listing) */}
-          {!hasListing && (
-            <div>
-              <div className="text-sm font-semibold mb-3" style={{ color: "#c9d1d9" }}>
-                Which business do you need a report for?
-              </div>
-
-              {/* Input mode toggle */}
-              <div className="flex gap-2 mb-4">
-                <button
-                  type="button"
-                  onClick={() => setInputMode("url")}
-                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-                    inputMode === "url"
-                      ? "bg-[#c9a227] text-black"
-                      : "bg-[#161b22] text-[#8b949e] border border-[#30363d]"
-                  }`}
-                >
-                  I have a listing URL
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setInputMode("manual")}
-                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-                    inputMode === "manual"
-                      ? "bg-[#c9a227] text-black"
-                      : "bg-[#161b22] text-[#8b949e] border border-[#30363d]"
-                  }`}
-                >
-                  Enter details manually
-                </button>
-              </div>
-
-              {inputMode === "url" ? (
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: "#c9d1d9" }}>
-                    Listing URL <span style={{ color: "#ef4444" }}>*</span>
-                  </label>
+            {/* Radio: URL or Manual */}
+            <div className="space-y-4">
+              {/* Option: URL */}
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="mt-1">
                   <input
-                    type="url"
-                    value={listingUrl}
-                    onChange={(e) => setListingUrl(e.target.value)}
-                    placeholder="https://rightbiz.co.uk/listing/..."
-                    className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none"
-                    style={{
-                      background: "#161b22",
-                      border: errors.listingUrl ? "1px solid #ef4444" : "1px solid #30363d",
-                    }}
+                    type="radio"
+                    name="inputMode"
+                    checked={inputMode === "url"}
+                    onChange={() => setInputMode("url")}
+                    className="sr-only"
                   />
-                  {errors.listingUrl && (
-                    <p className="text-sm mt-1" style={{ color: "#ef4444" }}>
-                      {errors.listingUrl}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: "#c9d1d9" }}>
-                      Business Name <span style={{ color: "#ef4444" }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={businessName}
-                      onChange={(e) => setBusinessName(e.target.value)}
-                      placeholder="e.g., Keith Post Office"
-                      className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none"
-                      style={{
-                        background: "#161b22",
-                        border: errors.businessName ? "1px solid #ef4444" : "1px solid #30363d",
-                      }}
-                    />
-                    {errors.businessName && (
-                      <p className="text-sm mt-1" style={{ color: "#ef4444" }}>
-                        {errors.businessName}
-                      </p>
-                    )}
+                  <div
+                    className="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
+                    style={{
+                      borderColor: inputMode === "url" ? "#FFD700" : "#555",
+                      background: inputMode === "url" ? "#FFD700" : "transparent",
+                    }}
+                  >
+                    {inputMode === "url" && <div className="w-2 h-2 rounded-full bg-black" />}
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: "#c9d1d9" }}>
-                        Postcode <span style={{ color: "#ef4444" }}>*</span>
-                      </label>
+                </div>
+                <div className="flex-1">
+                  <span className="text-white font-medium">I have a listing URL:</span>
+                  {inputMode === "url" && (
+                    <div className="mt-3">
                       <input
-                        type="text"
-                        value={postcode}
-                        onChange={(e) => setPostcode(e.target.value.toUpperCase())}
-                        placeholder="AB12 3CD"
-                        className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none uppercase"
+                        type="url"
+                        value={listingUrl}
+                        onChange={(e) => setListingUrl(e.target.value)}
+                        placeholder="https://daltonsbusiness.com/listing/..."
+                        className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none transition-all"
                         style={{
-                          background: "#161b22",
-                          border: errors.postcode ? "1px solid #ef4444" : "1px solid #30363d",
+                          background: "#1a1a1a",
+                          border: errors.listingUrl ? "2px solid #ef4444" : "1px solid #333",
                         }}
                       />
-                      {errors.postcode && (
-                        <p className="text-sm mt-1" style={{ color: "#ef4444" }}>
-                          {errors.postcode}
-                        </p>
+                      {errors.listingUrl && (
+                        <p className="text-sm mt-2 text-red-500">{errors.listingUrl}</p>
                       )}
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: "#c9d1d9" }}>
-                        Listing Source
-                      </label>
-                      <select
-                        value={listingSource}
-                        onChange={(e) => setListingSource(e.target.value)}
-                        className="w-full px-4 py-3 rounded-lg text-white outline-none"
-                        style={{ background: "#161b22", border: "1px solid #30363d" }}
-                      >
-                        <option value="">Select...</option>
-                        <option value="RightBiz">RightBiz</option>
-                        <option value="Daltons">Daltons</option>
-                        <option value="Christie & Co">Christie & Co</option>
-                        <option value="BusinessesForSale">BusinessesForSale</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    </div>
+                  )}
+                </div>
+              </label>
+
+              {/* Option: Manual */}
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="mt-1">
+                  <input
+                    type="radio"
+                    name="inputMode"
+                    checked={inputMode === "manual"}
+                    onChange={() => setInputMode("manual")}
+                    className="sr-only"
+                  />
+                  <div
+                    className="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
+                    style={{
+                      borderColor: inputMode === "manual" ? "#FFD700" : "#555",
+                      background: inputMode === "manual" ? "#FFD700" : "transparent",
+                    }}
+                  >
+                    {inputMode === "manual" && <div className="w-2 h-2 rounded-full bg-black" />}
                   </div>
                 </div>
-              )}
+                <div className="flex-1">
+                  <span className="text-white font-medium">I&apos;ll enter details manually:</span>
+                  {inputMode === "manual" && (
+                    <div className="mt-3 space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Business Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          placeholder="e.g., Keith Post Office"
+                          className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none transition-all"
+                          style={{
+                            background: "#1a1a1a",
+                            border: errors.businessName ? "2px solid #ef4444" : "1px solid #333",
+                          }}
+                        />
+                        {errors.businessName && (
+                          <p className="text-sm mt-2 text-red-500">{errors.businessName}</p>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Postcode <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={postcode}
+                            onChange={(e) => setPostcode(e.target.value.toUpperCase())}
+                            placeholder="AB12 3CD"
+                            className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none uppercase transition-all"
+                            style={{
+                              background: "#1a1a1a",
+                              border: errors.postcode ? "2px solid #ef4444" : "1px solid #333",
+                            }}
+                          />
+                          {errors.postcode && (
+                            <p className="text-sm mt-2 text-red-500">{errors.postcode}</p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Listing Source
+                          </label>
+                          <select
+                            value={listingSource}
+                            onChange={(e) => setListingSource(e.target.value)}
+                            className="w-full px-4 py-3 rounded-lg text-white outline-none cursor-pointer"
+                            style={{ background: "#1a1a1a", border: "1px solid #333" }}
+                          >
+                            {LISTING_SOURCES.map((source) => (
+                              <option key={source} value={source}>{source}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </label>
             </div>
-          )}
+          </div>
 
-          {/* Report tier selection */}
-          <div>
-            <div className="text-sm font-semibold mb-3" style={{ color: "#c9d1d9" }}>
-              Select Report Type
+          {/* ═══════════════════════════════════════════════════════════ */}
+          {/* STEP 2: SELECT REPORT TYPE */}
+          {/* ═══════════════════════════════════════════════════════════ */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold" style={{ background: "#FFD700", color: "#000" }}>
+                2
+              </span>
+              <h3 className="text-lg font-semibold text-white">SELECT REPORT TYPE</h3>
             </div>
-            <div className="space-y-2">
+            <div className="h-px w-full mb-5" style={{ background: "#333" }} />
+
+            <div className="space-y-3">
               {(Object.keys(TIER_INFO) as ReportTier[]).map((t) => {
                 const info = TIER_INFO[t];
+                const isSelected = selectedTier === t;
                 return (
                   <label
                     key={t}
-                    className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
-                      selectedTier === t ? "ring-2 ring-[#c9a227]" : ""
-                    }`}
+                    className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
                     style={{
-                      background: selectedTier === t ? "rgba(201, 162, 39, 0.1)" : "#161b22",
-                      border: selectedTier === t ? "1px solid #c9a227" : "1px solid #30363d",
+                      background: isSelected ? "rgba(255, 215, 0, 0.1)" : "#1a1a1a",
+                      border: isSelected ? "2px solid #FFD700" : "1px solid #333",
                     }}
                   >
                     <input
                       type="radio"
                       name="tier"
                       value={t}
-                      checked={selectedTier === t}
+                      checked={isSelected}
                       onChange={() => setSelectedTier(t)}
                       className="sr-only"
                     />
                     <div
-                      className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                      className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
                       style={{
-                        borderColor: selectedTier === t ? "#c9a227" : "#30363d",
-                        background: selectedTier === t ? "#c9a227" : "transparent",
+                        borderColor: isSelected ? "#FFD700" : "#555",
+                        background: isSelected ? "#FFD700" : "transparent",
                       }}
                     >
-                      {selectedTier === t && <div className="w-2 h-2 rounded-full bg-black" />}
+                      {isSelected && <div className="w-2 h-2 rounded-full bg-black" />}
                     </div>
                     <div className="flex-1">
-                      <div className="font-semibold text-white">{info.name}</div>
-                      <div className="text-sm" style={{ color: "#8b949e" }}>
-                        {info.description}
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-white">{info.name}</span>
+                        {info.recommended && (
+                          <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "#FFD700", color: "#000" }}>
+                            ⭐ RECOMMENDED
+                          </span>
+                        )}
                       </div>
+                      <div className="text-sm text-gray-400 mt-0.5">{info.description}</div>
                     </div>
-                    <div className="font-mono font-bold" style={{ color: "#c9a227" }}>
+                    <div className="font-mono font-bold text-lg" style={{ color: "#FFD700" }}>
                       £{info.price}
                     </div>
                   </label>
@@ -386,85 +432,157 @@ export function ReportRequestModal({ isOpen, onClose, tier, listing }: ReportReq
             </div>
           </div>
 
-          {/* Contact details */}
-          <div>
-            <div className="text-sm font-semibold mb-3" style={{ color: "#c9d1d9" }}>
-              Your Details
+          {/* ═══════════════════════════════════════════════════════════ */}
+          {/* STEP 3: YOUR DETAILS */}
+          {/* ═══════════════════════════════════════════════════════════ */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold" style={{ background: "#FFD700", color: "#000" }}>
+                3
+              </span>
+              <h3 className="text-lg font-semibold text-white">YOUR DETAILS</h3>
             </div>
+            <div className="h-px w-full mb-5" style={{ background: "#333" }} />
+
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: "#c9d1d9" }}>
-                  Email <span style={{ color: "#ef4444" }}>*</span>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none"
+                  className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none transition-all"
                   style={{
-                    background: "#161b22",
-                    border: errors.customerEmail ? "1px solid #ef4444" : "1px solid #30363d",
+                    background: "#1a1a1a",
+                    border: errors.customerEmail ? "2px solid #ef4444" : "1px solid #333",
                   }}
                 />
                 {errors.customerEmail && (
-                  <p className="text-sm mt-1" style={{ color: "#ef4444" }}>
-                    {errors.customerEmail}
-                  </p>
+                  <p className="text-sm mt-2 text-red-500">{errors.customerEmail}</p>
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: "#c9d1d9" }}>
-                  Phone <span style={{ color: "#ef4444" }}>*</span>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Phone <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="07xxx xxxxxx"
-                  className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none"
+                  className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none transition-all"
                   style={{
-                    background: "#161b22",
-                    border: errors.customerPhone ? "1px solid #ef4444" : "1px solid #30363d",
+                    background: "#1a1a1a",
+                    border: errors.customerPhone ? "2px solid #ef4444" : "1px solid #333",
                   }}
                 />
                 {errors.customerPhone && (
-                  <p className="text-sm mt-1" style={{ color: "#ef4444" }}>
-                    {errors.customerPhone}
-                  </p>
+                  <p className="text-sm mt-2 text-red-500">{errors.customerPhone}</p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Questions (optional) */}
-          <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "#c9d1d9" }}>
-              Specific questions? <span style={{ color: "#8b949e" }}>(optional)</span>
-            </label>
-            <textarea
-              value={customerQuestions}
-              onChange={(e) => setCustomerQuestions(e.target.value)}
-              placeholder="Any specific areas you'd like us to focus on..."
-              rows={3}
-              className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none resize-none"
-              style={{ background: "#161b22", border: "1px solid #30363d" }}
-            />
+          {/* ═══════════════════════════════════════════════════════════ */}
+          {/* STEP 4: INFORMATION YOU HAVE (Pro & Premium only) */}
+          {/* ═══════════════════════════════════════════════════════════ */}
+          {showStep4 && (
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold" style={{ background: "#FFD700", color: "#000" }}>
+                  4
+                </span>
+                <h3 className="text-lg font-semibold text-white">INFORMATION YOU HAVE</h3>
+              </div>
+              <div className="h-px w-full mb-5" style={{ background: "#333" }} />
+
+              <p className="text-gray-400 text-sm mb-4">Help us prepare a better report:</p>
+
+              <div className="space-y-3">
+                {[
+                  { label: "I have company financials/accounts", checked: hasFinancials, onChange: (v: boolean) => handleOtherCheckbox(setHasFinancials, v) },
+                  { label: "I have confirmed asking price", checked: hasAskingPrice, onChange: (v: boolean) => handleOtherCheckbox(setHasAskingPrice, v) },
+                  { label: "I have lease terms/rent details", checked: hasLeaseTerms, onChange: (v: boolean) => handleOtherCheckbox(setHasLeaseTerms, v) },
+                  { label: "I have staff/payroll information", checked: hasStaffInfo, onChange: (v: boolean) => handleOtherCheckbox(setHasStaffInfo, v) },
+                  { label: "I have current turnover figures", checked: hasTurnover, onChange: (v: boolean) => handleOtherCheckbox(setHasTurnover, v) },
+                  { label: "I have PO remuneration details", checked: hasPoRemuneration, onChange: (v: boolean) => handleOtherCheckbox(setHasPoRemuneration, v) },
+                ].map((item, idx) => (
+                  <label key={idx} className="flex items-center gap-3 cursor-pointer group">
+                    <div
+                      className="w-5 h-5 rounded border-2 flex items-center justify-center transition-all"
+                      style={{
+                        borderColor: item.checked ? "#FFD700" : "#555",
+                        background: item.checked ? "#FFD700" : "transparent",
+                      }}
+                    >
+                      {item.checked && (
+                        <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={item.checked}
+                      onChange={(e) => item.onChange(e.target.checked)}
+                      className="sr-only"
+                    />
+                    <span className="text-white">{item.label}</span>
+                  </label>
+                ))}
+
+                {/* None option */}
+                <label className="flex items-center gap-3 cursor-pointer group mt-2 pt-2 border-t border-gray-800">
+                  <div
+                    className="w-5 h-5 rounded border-2 flex items-center justify-center transition-all"
+                    style={{
+                      borderColor: hasNone ? "#FFD700" : "#555",
+                      background: hasNone ? "#FFD700" : "transparent",
+                    }}
+                  >
+                    {hasNone && (
+                      <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={hasNone}
+                    onChange={(e) => handleNoneChange(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <span className="text-gray-400">None — I just have the listing</span>
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════ */}
+          {/* SUBMIT BUTTON */}
+          {/* ═══════════════════════════════════════════════════════════ */}
+          <div className="pt-4 border-t" style={{ borderColor: "#333" }}>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 rounded-xl text-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
+              style={{ background: "#FFD700", color: "#000" }}
+            >
+              {loading ? "Processing..." : `PROCEED TO PAYMENT — £${tierInfo.price}`}
+            </button>
+
+            <div className="flex items-center justify-center gap-6 mt-4 text-sm text-gray-400">
+              <span className="flex items-center gap-2">
+                <span>🔒</span> Secure payment via Stripe
+              </span>
+              <span className="flex items-center gap-2">
+                <span>📧</span> Report delivered within 48 hours
+              </span>
+            </div>
           </div>
-
-          {/* Submit button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-4 rounded-lg text-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
-            style={{ background: "#c9a227", color: "#000" }}
-          >
-            {loading ? "Processing..." : `Proceed to Payment — £${tierInfo.price}`}
-          </button>
-
-          <p className="text-center text-sm" style={{ color: "#8b949e" }}>
-            🔒 Secure payment via Stripe. Report delivered within 48 hours.
-          </p>
         </form>
       </div>
     </div>

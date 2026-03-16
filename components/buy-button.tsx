@@ -8,18 +8,20 @@ type ReportTier = "location" | "basic" | "professional" | "premium" | "insider";
 interface ListingInfo {
   name: string;
   location?: string;
+  postcode?: string;
   source?: string;
   id?: string;
+  url?: string;
 }
 
 interface BuyButtonProps {
-  tier: ReportTier;
+  tier?: ReportTier;
   label?: string;
   className?: string;
   listing?: ListingInfo;
 }
 
-export function BuyButton({ tier, label, className = "btn-primary w-full mt-4", listing }: BuyButtonProps) {
+export function BuyButton({ tier = "professional", label, className = "btn-primary w-full mt-4", listing }: BuyButtonProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 

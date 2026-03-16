@@ -6,7 +6,6 @@
 "use client";
 
 import { useState } from 'react';
-import Link from 'next/link';
 import type { Listing } from '@/types/listing';
 import { ReportRequestModal } from './report-request-modal';
 
@@ -34,6 +33,14 @@ export function isSoldListingVisible(listing: Listing): boolean {
   return daysSinceSold <= 3;
 }
 
+// Extract postcode from location string (e.g., "Bristol, BS1 4DJ" -> "BS1 4DJ")
+function extractPostcode(location?: string): string {
+  if (!location) return "";
+  // UK postcode pattern
+  const postcodeMatch = location.match(/[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}/i);
+  return postcodeMatch ? postcodeMatch[0].toUpperCase() : "";
+}
+
 export function ListingCard({ listing }: ListingCardProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -52,12 +59,14 @@ export function ListingCard({ listing }: ListingCardProps) {
   const isSold = listing.soldStatus === 'sold';
   const daysOnMarket = getDaysOnMarket(listing.listedDate);
 
-  // Build listing info for the modal
+  // Build listing info for the modal with ALL relevant data
   const listingInfo = {
     name: listing.businessName,
     location: listing.location,
+    postcode: extractPostcode(listing.location),
     source: listing.source,
     id: listing.id,
+    url: listing.originalUrl,
   };
 
   return (
@@ -225,11 +234,11 @@ export function ListingCard({ listing }: ListingCardProps) {
         </div>
       </div>
 
-      {/* Report Request Modal */}
+      {/* Report Request Modal - defaults to Professional tier */}
       <ReportRequestModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        tier="basic"
+        tier="professional"
         listing={listingInfo}
       />
     </>
