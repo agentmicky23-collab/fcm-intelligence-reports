@@ -56,6 +56,9 @@ interface CheckoutRequest {
   has_staff_info?: boolean;
   has_turnover?: boolean;
   has_po_remuneration?: boolean;
+  // File upload tracking
+  has_uploaded_files?: boolean;
+  uploaded_file_names?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -78,6 +81,8 @@ export async function POST(request: NextRequest) {
       has_staff_info,
       has_turnover,
       has_po_remuneration,
+      has_uploaded_files,
+      uploaded_file_names,
     } = body;
 
     const product = PRICE_MAP[tier];
@@ -136,6 +141,9 @@ export async function POST(request: NextRequest) {
       has_staff_info: String(has_staff_info || false),
       has_turnover: String(has_turnover || false),
       has_po_remuneration: String(has_po_remuneration || false),
+      // File upload tracking
+      has_uploaded_files: String(has_uploaded_files || false),
+      uploaded_file_names: (uploaded_file_names || "").slice(0, 500),
     };
 
     // Build success URL with metadata for personalized confirmation

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 type ReportTier = "location" | "basic" | "professional" | "premium";
@@ -9,8 +9,7 @@ interface ListingInfo {
   name: string;
   location?: string;
   postcode?: string;
-  town_city?: string;
-  company_name?: string;
+  town?: string;
   source?: string;
   id?: string;
   url?: string;
@@ -30,10 +29,21 @@ const TIER_INFO: Record<ReportTier, { name: string; price: number; description: 
   premium: { name: "Premium Report", price: 449, description: "Complete intelligence package", recommended: true },
 };
 
-const LISTING_SOURCES = ["Daltons", "RightBiz", "Christie & Co", "BusinessesForSale", "Private Sale", "Other"];
+const LISTING_SOURCES = ["Daltons", "RightBiz", "Christie & Co", "Other"];
 
-// UK postcode regex - validates format like AB12 3CD, AB1 2CD, A1 2BC, A12 3BC, etc.
-const UK_POSTCODE_REGEX = /^[A-Z]{1,2}[0-9][0-9A-Z]?\s*[0-9][A-Z]{2}$/i;
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ACCEPTED_FILE_TYPES = [
+  ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".jpeg", ".png"
+];
+const ACCEPTED_MIME_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "image/jpeg",
+  "image/png"
+];
 
 export function ReportRequestModal({ isOpen, onClose, tier = "professional", listing }: ReportRequestModalProps) {
   const [mounted, setMounted] = useState(false);
@@ -46,9 +56,14 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
   const [listingUrl, setListingUrl] = useState(listing?.url || "");
   const [businessName, setBusinessName] = useState(listing?.name || "");
   const [postcode, setPostcode] = useState(listing?.postcode || listing?.location || "");
-  const [townCity, setTownCity] = useState(listing?.town_city || "");
-  const [companyName, setCompanyName] = useState(listing?.company_name || "");
-  const [listingSource, setListingSource] = useState(listing?.source || "");
+  const [townCity, setTownCity] = useState(listing?.town || "");
+  const [companyName, setCompanyName] = useState("");
+  const [listingSource, setListingSource] = useState(listing?.source || "Daltons");
+
+  // File upload state
+  const [files, setFiles] = useState<File[]>([]);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Step 3: Customer details
   const [customerEmail, setCustomerEmail] = useState("");
@@ -73,9 +88,8 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
     if (listing) {
       setBusinessName(listing.name || "");
       setPostcode(listing.postcode || listing.location || "");
-      setTownCity(listing.town_city || "");
-      setCompanyName(listing.company_name || "");
-      setListingSource(listing.source || "");
+      setTownCity(listing.town || "");
+      setListingSource(listing.source || "Daltons");
       if (listing.url) setListingUrl(listing.url);
       setInputMode("manual");
     }
@@ -117,6 +131,72 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
     if (value) setHasNone(false);
   };
 
+  // File upload handlers
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      addFiles(Array.from(e.target.files));
+    }
+  };
+
+  const addFiles = (newFiles: File[]) => {
+    const validFiles = newFiles.filter(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`${file.name} is too large. Maximum size is 10MB.`);
+        return false;
+      }
+      if (!ACCEPTED_MIME_TYPES.includes(file.type)) {
+        alert(`${file.name} is not an accepted file type.`);
+        return false;
+      }
+      return true;
+    });
+    setFiles(prev => [...prev, ...validFiles]);
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      addFiles(Array.from(e.dataTransfer.files));
+    }
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const getFileIcon = (fileName: string): string => {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    switch (ext) {
+      case 'pdf': return '📄';
+      case 'doc':
+      case 'docx': return '📝';
+      case 'xls':
+      case 'xlsx': return '📊';
+      case 'jpg':
+      case 'jpeg':
+      case 'png': return '🖼️';
+      default: return '📎';
+    }
+  };
+
   const showStep4 = selectedTier === "professional" || selectedTier === "premium";
 
   const validateForm = (): boolean => {
@@ -130,27 +210,14 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
         newErrors.listingUrl = "Please enter a valid URL starting with http:// or https://";
       }
     } else {
-      // Manual entry - all required fields
       if (!businessName.trim()) {
         newErrors.businessName = "Business name is required";
-      } else if (businessName.trim().length < 3) {
-        newErrors.businessName = "Business name must be at least 3 characters";
       }
-
       if (!postcode.trim()) {
-        newErrors.postcode = "Full postcode is required";
-      } else if (!UK_POSTCODE_REGEX.test(postcode.trim())) {
-        newErrors.postcode = "Please enter a valid UK postcode (e.g., CW11 1HN)";
+        newErrors.postcode = "Postcode is required";
       }
-
       if (!townCity.trim()) {
         newErrors.townCity = "Town/City is required";
-      } else if (townCity.trim().length < 2) {
-        newErrors.townCity = "Town/City must be at least 2 characters";
-      }
-
-      if (!listingSource) {
-        newErrors.listingSource = "Please select where you found the listing";
       }
     }
 
@@ -181,6 +248,34 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
     setLoading(true);
 
     try {
+      // If files are uploaded, send them via email first
+      if (files.length > 0) {
+        const formData = new FormData();
+        files.forEach((file) => {
+          formData.append('files', file);
+        });
+        formData.append('tier', selectedTier);
+        formData.append('business_name', businessName);
+        formData.append('postcode', postcode);
+        formData.append('town_city', townCity);
+        formData.append('company_name', companyName);
+        formData.append('listing_source', listingSource);
+        formData.append('listing_url', listingUrl);
+        formData.append('customer_email', customerEmail);
+        formData.append('customer_phone', customerPhone);
+
+        const uploadRes = await fetch('/api/upload-documents', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          const uploadError = await uploadRes.json();
+          console.error('Document upload error:', uploadError);
+          // Continue with checkout even if upload fails - we'll note it
+        }
+      }
+
       const payload = {
         tier: selectedTier,
         listing_url: inputMode === "url" ? listingUrl : "",
@@ -198,6 +293,8 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
         has_turnover: hasTurnover,
         has_po_remuneration: hasPoRemuneration,
         listing_id: listing?.id,
+        has_uploaded_files: files.length > 0,
+        uploaded_file_names: files.map(f => f.name).join(', '),
       };
 
       const res = await fetch("/api/create-checkout", {
@@ -300,12 +397,9 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
                   </div>
                 </div>
                 <div className="flex-1">
-                  <span className="text-white font-medium">I have a listing URL</span>
+                  <span className="text-white font-medium">I have a listing URL:</span>
                   {inputMode === "url" && (
                     <div className="mt-3">
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Listing URL <span className="text-red-500">*</span>
-                      </label>
                       <input
                         type="url"
                         value={listingUrl}
@@ -346,7 +440,7 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
                   </div>
                 </div>
                 <div className="flex-1">
-                  <span className="text-white font-medium">I&apos;ll enter details manually</span>
+                  <span className="text-white font-medium">I&apos;ll enter details manually:</span>
                   {inputMode === "manual" && (
                     <div className="mt-3 space-y-4">
                       {/* Business Name */}
@@ -365,12 +459,15 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
                             border: errors.businessName ? "2px solid #ef4444" : "1px solid #333",
                           }}
                         />
+                        <p className="text-xs text-gray-500 mt-1.5 italic">
+                          Exact name helps us identify the correct branch
+                        </p>
                         {errors.businessName && (
-                          <p className="text-sm mt-2 text-red-500">{errors.businessName}</p>
+                          <p className="text-sm mt-1 text-red-500">{errors.businessName}</p>
                         )}
                       </div>
 
-                      {/* Postcode and Town/City - side by side */}
+                      {/* Postcode & Town/City */}
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -380,14 +477,16 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
                             type="text"
                             value={postcode}
                             onChange={(e) => setPostcode(e.target.value.toUpperCase())}
-                            placeholder="e.g., CW11 1HN"
+                            placeholder="AB12 3CD"
                             className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none uppercase transition-all"
                             style={{
                               background: "#1a1a1a",
                               border: errors.postcode ? "2px solid #ef4444" : "1px solid #333",
                             }}
                           />
-                          <p className="text-xs mt-1.5 text-gray-500">Full postcode required for location intelligence</p>
+                          <p className="text-xs text-gray-500 mt-1.5 italic">
+                            For demographics, crime data & competition mapping
+                          </p>
                           {errors.postcode && (
                             <p className="text-sm mt-1 text-red-500">{errors.postcode}</p>
                           )}
@@ -400,66 +499,146 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
                             type="text"
                             value={townCity}
                             onChange={(e) => setTownCity(e.target.value)}
-                            placeholder="e.g., Sandbach, Keith, Plymouth"
+                            placeholder="e.g., Keith"
                             className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none transition-all"
                             style={{
                               background: "#1a1a1a",
                               border: errors.townCity ? "2px solid #ef4444" : "1px solid #333",
                             }}
                           />
+                          <p className="text-xs text-gray-500 mt-1.5 italic">
+                            Helps verify & cross-reference location
+                          </p>
                           {errors.townCity && (
-                            <p className="text-sm mt-2 text-red-500">{errors.townCity}</p>
+                            <p className="text-sm mt-1 text-red-500">{errors.townCity}</p>
                           )}
                         </div>
                       </div>
 
-                      {/* Company Name (optional) */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Company Name (if Ltd)
-                        </label>
-                        <input
-                          type="text"
-                          value={companyName}
-                          onChange={(e) => setCompanyName(e.target.value)}
-                          placeholder="e.g., Smith's Post Office Ltd (for Companies House lookup)"
-                          className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none transition-all"
-                          style={{
-                            background: "#1a1a1a",
-                            border: "1px solid #333",
-                          }}
-                        />
-                        <p className="text-xs mt-1.5 text-gray-500">Optional — helps us find financial records faster</p>
-                      </div>
-
-                      {/* Listing Source */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Listing Source <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          value={listingSource}
-                          onChange={(e) => setListingSource(e.target.value)}
-                          className="w-full px-4 py-3 rounded-lg text-white outline-none cursor-pointer"
-                          style={{ 
-                            background: "#1a1a1a", 
-                            border: errors.listingSource ? "2px solid #ef4444" : "1px solid #333",
-                            color: listingSource ? "#fff" : "#6b7280"
-                          }}
-                        >
-                          <option value="">Select where you found the listing...</option>
-                          {LISTING_SOURCES.map((source) => (
-                            <option key={source} value={source}>{source}</option>
-                          ))}
-                        </select>
-                        {errors.listingSource && (
-                          <p className="text-sm mt-2 text-red-500">{errors.listingSource}</p>
-                        )}
+                      {/* Company Name & Listing Source */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Company Name (if Ltd)
+                          </label>
+                          <input
+                            type="text"
+                            value={companyName}
+                            onChange={(e) => setCompanyName(e.target.value)}
+                            placeholder="e.g., Keith Retail Ltd"
+                            className="w-full px-4 py-3 rounded-lg text-white placeholder-gray-500 outline-none transition-all"
+                            style={{
+                              background: "#1a1a1a",
+                              border: "1px solid #333",
+                            }}
+                          />
+                          <p className="text-xs text-gray-500 mt-1.5 italic">
+                            Lets us pull official accounts from Companies House
+                          </p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Listing Source <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            value={listingSource}
+                            onChange={(e) => setListingSource(e.target.value)}
+                            className="w-full px-4 py-3 rounded-lg text-white outline-none cursor-pointer"
+                            style={{ background: "#1a1a1a", border: "1px solid #333" }}
+                          >
+                            {LISTING_SOURCES.map((source) => (
+                              <option key={source} value={source}>{source}</option>
+                            ))}
+                          </select>
+                          <p className="text-xs text-gray-500 mt-1.5 italic">
+                            So we can find and verify the listing details
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
                 </div>
               </label>
+            </div>
+
+            {/* ═══════════════════════════════════════════════════════════ */}
+            {/* FILE UPLOAD SECTION */}
+            {/* ═══════════════════════════════════════════════════════════ */}
+            <div className="mt-8 pt-6" style={{ borderTop: "1px dashed #333" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-lg">📎</span>
+                <h4 className="text-base font-medium text-white">SUPPORTING DOCUMENTS</h4>
+                <span className="text-sm text-gray-500">(Optional)</span>
+              </div>
+              
+              <p className="text-sm text-gray-400 mb-4">
+                Have information from the broker? Upload it here for a more detailed report.
+              </p>
+
+              {/* Drop zone */}
+              <div
+                className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer ${
+                  dragActive ? "border-yellow-500 bg-yellow-500/10" : "border-zinc-600 hover:border-zinc-500"
+                }`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept={ACCEPTED_FILE_TYPES.join(",")}
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <div className="text-zinc-400">
+                  <span className="text-yellow-500 font-medium">📎 Drop files here</span> or click to upload
+                </div>
+                <div className="text-sm text-zinc-500 mt-2">
+                  PDF, DOC, XLS, JPG, PNG (Max 10MB each)
+                </div>
+              </div>
+
+              {/* Selected files list */}
+              {files.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-sm text-zinc-400 mb-2">Selected files:</p>
+                  <div className="space-y-2">
+                    {files.map((file, i) => (
+                      <div 
+                        key={i} 
+                        className="flex items-center justify-between p-3 rounded-lg"
+                        style={{ background: "#1a1a1a", border: "1px solid #333" }}
+                      >
+                        <div className="flex items-center gap-2 text-sm text-white">
+                          <span>{getFileIcon(file.name)}</span>
+                          <span className="truncate max-w-[200px]">{file.name}</span>
+                          <span className="text-zinc-500">({formatFileSize(file.size)})</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFile(i);
+                          }}
+                          className="text-zinc-500 hover:text-red-500 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <p className="text-xs text-zinc-500 mt-3">
+                Examples: Email correspondence, company accounts, broker info packs, lease agreements, PO remuneration statements
+              </p>
             </div>
           </div>
 
