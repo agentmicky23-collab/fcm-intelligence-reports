@@ -6,7 +6,7 @@ import { Suspense } from "react";
 
 function ErrorContent() {
   const searchParams = useSearchParams();
-  const error = searchParams?.get("error") ?? null;
+  const error = searchParams ? searchParams.get("error") : null;
 
   const errorMessages: Record<string, { title: string; message: string }> = {
     Configuration: {
