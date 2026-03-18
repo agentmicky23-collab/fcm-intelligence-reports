@@ -26,10 +26,10 @@ export function BuyButton({ tier = "professional", label, className = "btn-prima
   const [loading, setLoading] = useState(false);
 
   const defaultLabels: Record<string, string> = {
-    location: "Buy Location Report",
-    basic: "Buy Basic Report",
-    professional: "Buy Professional Report",
-    premium: "Buy Premium Report",
+    location: "Buy Scout Report",
+    basic: "Buy Insight Report",
+    professional: "Buy Analysis Report",
+    premium: "Buy Intelligence Report",
     insider: "Become an Insider",
   };
 

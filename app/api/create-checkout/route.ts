@@ -10,22 +10,22 @@ function getStripe() {
 const PRICE_MAP: Record<string, { priceId: string; name: string; amount: number; isSubscription?: boolean }> = {
   location: {
     priceId: process.env.STRIPE_PRICE_LOCATION || "",
-    name: "Location Report",
+    name: "Scout Report",
     amount: 9900,
   },
   basic: {
     priceId: process.env.STRIPE_PRICE_BASIC || "",
-    name: "Basic Report",
+    name: "Insight Report",
     amount: 14900,
   },
   professional: {
     priceId: process.env.STRIPE_PRICE_PROFESSIONAL || "",
-    name: "Professional Report",
+    name: "Analysis Report",
     amount: 24900,
   },
   premium: {
     priceId: process.env.STRIPE_PRICE_PREMIUM || "",
-    name: "Premium Report",
+    name: "Intelligence Report",
     amount: 44900,
   },
   insider: {

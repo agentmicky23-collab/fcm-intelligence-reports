@@ -9,9 +9,11 @@ interface ReportInfo {
   tier: ReportTier;
   name: string;
   price: string;
+  tagline: string;
   description: string;
   features: string[];
   notIncluded: string[];
+  upgradeTip?: string;
   sampleContent: {
     title: string;
     location: string;
@@ -24,149 +26,133 @@ interface ReportInfo {
 const reportData: ReportInfo[] = [
   {
     tier: "location",
-    name: "Location Report",
+    name: "Scout Report",
     price: "£99",
-    description: "Comprehensive location analysis. Perfect for investors evaluating catchment potential or as an add-on to any business report.",
+    tagline: "Should I even look at this?",
+    description: "Quick viability check. Get the key location data and competition picture before investing any more time.",
     features: [
-      "Location Score (A-F rating)",
-      "Street View & Maps integration",
-      "Demographics profile (age, income, employment)",
-      "House prices & affluence indicators",
-      "Crime & safety data analysis",
-      "Competition mapping (500m-2km radius)",
-      "Footfall analysis & drivers",
-      "15-20 page PDF report",
+      "Executive Summary & Verdict",
+      "Location Intelligence (maps, Street View, photos)",
+      "Competition Mapping",
+      "Risk Assessment (checklist)",
+      "8-12 page PDF report",
     ],
     notIncluded: [
-      "Business financials",
-      "Revenue analysis",
+      "Demographics & crime analysis",
+      "Financial analysis",
       "Consultation call",
     ],
+    upgradeTip: "Want more detail? Upgrade to Insight (+£50)",
     sampleContent: {
-      title: "Location Intelligence Report",
+      title: "Scout Report",
       location: "CW11 1HN • Sandbach, Cheshire East",
-      score: "A",
-      scoreLabel: "Location Score: 85/100",
+      score: "B+",
+      scoreLabel: "Viability: Worth investigating",
       sections: [
-        { title: "📍 Catchment Analysis", content: "Primary catchment: 8,450 residents within 1km. High street location with daily footfall of 3,200+. Anchor stores: Tesco Express, Boots, Costa." },
-        { title: "👥 Demographics", content: "Median age: 42. Household income: £38,400 (12% above regional avg). Home ownership: 68%. Retired population: 22%." },
-        { title: "🏠 Property & Affluence", content: "Average house price: £253,000. Property transactions: 124/year. ACORN classification: Comfortable Communities." },
-        { title: "🛡️ Crime & Safety", content: "Crime rate: 42 per 1,000 (Low). Anti-social behaviour: Below average. Shoplifting incidents: 8/year (Low risk)." },
+        { title: "📋 Executive Summary", content: "Main Post Office with retail counter on a busy high street. Good visibility and footfall. Initial indicators positive — recommend further analysis." },
+        { title: "📍 Location Intelligence", content: "High street location with daily footfall of 3,200+. Anchor stores: Tesco Express, Boots, Costa. Good visibility from main road." },
         { title: "🏢 Competition Map", content: "Nearest Post Office: 2.8km (Sandbach Heath). Competing retailers: 12 within 500m. Market saturation: Low." },
+        { title: "⚠️ Risk Checklist", content: "✅ Active PO branch on branch finder\n✅ No major redevelopment planned\n⚠️ Parking limited to 4 spaces\n✅ Lease details appear standard" },
       ],
     },
   },
   {
     tier: "basic",
-    name: "Basic Report",
+    name: "Insight Report",
     price: "£149",
-    description: "Quick sanity check before investing serious time. Get the fundamentals and our Go/No-Go recommendation in 24-48 hours.",
+    tagline: "Is this area any good?",
+    description: "Full location intelligence with demographics, crime data, footfall analysis, and comprehensive competition mapping.",
     features: [
-      "Business overview & summary",
-      "Key metrics at a glance",
-      "Red flags identification",
-      "Go/No-Go recommendation",
-      "6-10 page PDF report",
-      "24-48 hour turnaround",
+      "Executive Summary & Verdict",
+      "Location Intelligence (Street View, maps, photos)",
+      "Demographics & Community Profile",
+      "Crime & Safety Analysis",
+      "Competition Mapping",
+      "Footfall Analysis",
+      "Infrastructure & Connectivity",
+      "Online Presence & Reviews",
+      "Risk Assessment (full)",
+      "15-22 page PDF report",
     ],
     notIncluded: [
-      "Financial deep dive",
-      "Location Intelligence",
-      "P&L breakdown",
+      "Financial analysis",
+      "PO remuneration breakdown",
       "Consultation call",
     ],
+    upgradeTip: "Want financials? Upgrade to Analysis (+£100)",
     sampleContent: {
-      title: "Basic Due Diligence Report",
-      location: "Sandbach Post Office • CW11 1HN",
-      score: "B",
-      scoreLabel: "Quick Assessment",
+      title: "Insight Report",
+      location: "CW11 1HN • Sandbach, Cheshire East",
+      score: "A",
+      scoreLabel: "Location Score: 85/100",
       sections: [
-        { title: "📋 Business Overview", content: "Main Post Office with retail counter. Trading 6 days/week. Current owner: 8 years. Reason for sale: Retirement." },
-        { title: "📊 Key Metrics", content: "Asking Price: £125,000. PO Remuneration: £67,400/yr. Estimated sessions: 40,000/yr. Staff: 2 PT employees." },
-        { title: "⚠️ Red Flags Check", content: "✅ No pending Post Office contract issues\n✅ Lease has 12+ years remaining\n✅ No major competition changes planned\n⚠️ Parking limited to 4 spaces" },
-        { title: "✅ Recommendation", content: "GO — Solid fundamentals. Recommend Professional Report for full financial analysis before making an offer." },
+        { title: "📍 Location Intelligence", content: "Primary catchment: 8,450 residents within 1km. High street location with daily footfall of 3,200+. Anchor stores: Tesco Express, Boots, Costa." },
+        { title: "👥 Demographics", content: "Median age: 42. Household income: £38,400 (12% above regional avg). Home ownership: 68%. Retired population: 22%." },
+        { title: "🛡️ Crime & Safety", content: "Crime rate: 42 per 1,000 (Low). Anti-social behaviour: Below average. Shoplifting incidents: 8/year (Low risk)." },
+        { title: "🏢 Competition Map", content: "Nearest Post Office: 2.8km (Sandbach Heath). Competing retailers: 12 within 500m. Market saturation: Low." },
+        { title: "📡 Infrastructure", content: "Mobile: EE 4G excellent, 5G available. Broadband: FTTP available (500Mbps). Power: Stable grid." },
       ],
     },
   },
   {
     tier: "professional",
-    name: "Professional Report",
+    name: "Analysis Report",
     price: "£249",
-    description: "Comprehensive financial analysis for serious buyers. Includes everything in Basic plus deep-dive financials and a 30-minute consultation call.",
+    tagline: "Should I make an offer?",
+    description: "Everything in Insight plus full financial analysis, PO remuneration breakdown, staffing costs, and future outlook.",
     features: [
-      "Everything in Basic Report",
-      "Financial deep dive",
-      "P&L breakdown analysis",
-      "PO Remuneration analysis",
-      "Competition overview",
-      "Revenue stream breakdown",
-      "20-25 page PDF report",
-      "30-minute consultation call",
-      "Infrastructure Analysis (NEW)",
-      "— Mobile network performance",
-      "— Fixed broadband (FTTP status)",
-      "— Connectivity reliability scores",
-      "— Power infrastructure assessment",
-      "— Transport & EV charging access",
+      "Everything in Insight",
+      "Financial Analysis (P&L, benchmarks, valuation)",
+      "PO Remuneration Analysis (income breakdown, donut chart)",
+      "Staffing & Hidden Costs (true employment cost calculator)",
+      "Future Outlook (5-year timeline, planning, developments)",
+      "30-40 page PDF report",
     ],
     notIncluded: [
-      "Full Location Intelligence",
-      "Demographics deep-dive",
-      "Crime & safety analysis",
+      "Profit improvement plan",
+      "Due diligence pack",
+      "Consultation call",
     ],
+    upgradeTip: "Want the full package? Upgrade to Intelligence (+£200)",
     sampleContent: {
-      title: "Professional Intelligence Report",
+      title: "Analysis Report",
       location: "Sandbach Post Office • CW11 1HN",
       score: "B+",
       scoreLabel: "Business Score: 72/100",
       sections: [
         { title: "💰 Financial Summary", content: "Est. Annual Revenue: £185,000\nPO Remuneration: £67,400 (36%)\nRetail Gross Profit: £48,000\nEst. Net Profit: £42,000\nROI at asking price: 33.6%" },
         { title: "📈 P&L Breakdown", content: "Wages: £28,400 (15%)\nRent: £18,000 (10%)\nUtilities: £4,800 (3%)\nStock: £62,000 (34%)\nOther: £8,000 (4%)" },
-        { title: "🏢 Competition Analysis", content: "Primary competitor: WHSmith (1.2km). Parcel shop competition: Low. Banking services: Nearest bank branch closing Q3 2026 — OPPORTUNITY." },
-        { title: "📡 Infrastructure", content: "Mobile: EE 4G excellent, 5G available. Broadband: FTTP available (500Mbps). Power: Stable grid, UPS recommended. EV charging: 2 points within 200m." },
-        { title: "💡 Profit Improvement", content: "1. Add parcel locker (£3-5k revenue)\n2. Extend banking hours (£2-4k revenue)\n3. Lottery terminal upgrade (£1-2k revenue)\nTotal potential uplift: £6-11k/year" },
+        { title: "👥 Staffing & Hidden Costs", content: "Staff: 2 PT employees\nTrue employment cost: £32,800 (inc. NI, pension, holiday cover)\nOwner hours: 50/week estimated" },
+        { title: "📡 Future Outlook", content: "Bank branch closing Q3 2026 — OPPORTUNITY for banking services.\nNew housing development (200 units) 0.8km away — increased catchment by ~15%.\nFTTP rollout complete — supports modern PO services." },
       ],
     },
   },
   {
     tier: "premium",
-    name: "Premium Report",
+    name: "Intelligence Report",
     price: "£449",
-    description: "The complete picture. Full business analysis PLUS comprehensive location intelligence. Everything you need to make a confident acquisition decision.",
+    tagline: "Help me buy it.",
+    description: "The complete intelligence package. Everything in Analysis plus profit improvement plan, due diligence & negotiation pack, and a 60-minute consultation call.",
     features: [
-      "Everything in Professional Report",
-      "📍 Full Location Intelligence",
-      "🏠 Demographics & Affluence analysis",
-      "🛡️ Crime & Safety deep-dive",
-      "🏢 Competition Mapping (2km radius)",
-      "👣 Footfall Analysis & drivers",
-      "30-40 page PDF report",
+      "Everything in Analysis",
+      "Profit Improvement Plan (evidence-based, tied to findings)",
+      "Due Diligence Pack (documents checklist, seller questions, landlord questions)",
+      "Negotiation Strategy (buyer/seller leverage, suggested offer range)",
       "60-minute consultation call",
-      "Action roadmap & recommendations",
-      "Full Infrastructure Analysis:",
-      "— Mobile network performance",
-      "— Fixed broadband (FTTP status)",
-      "— Connectivity reliability",
-      "— Power infrastructure (UPS/generator recs)",
-      "— Transport & accessibility (EV charging)",
-      "— Utilities resilience assessment",
-      "— Emergency services response times",
-      "— Digital roadmap (FTTP rollout, 5G)",
-      "— Cost-benefit analysis",
-      "— Infrastructure risk matrix",
+      "40-55 page PDF report",
     ],
     notIncluded: [],
     sampleContent: {
-      title: "Premium Intelligence Report",
+      title: "Intelligence Report",
       location: "Sandbach Post Office • CW11 1HN",
       score: "B+",
       scoreLabel: "Overall: 72/100 | Location: A (85/100)",
       sections: [
         { title: "🎯 Executive Summary", content: "Strong acquisition opportunity. Business score B+ with excellent A-rated location. Projected 3-year ROI: 98%. Key risk: Limited parking. Key opportunity: Banking services expansion." },
         { title: "💰 Financial Analysis", content: "Est. Annual Revenue: £185,000\nPO Remuneration: £67,400\nNet Profit: £42,000\nValuation: Fair at asking price\nRecommended offer: £115,000-£120,000" },
-        { title: "📍 Location Score: A", content: "Catchment: 8,450 residents (1km)\nFootfall: 3,200+ daily\nCompetition: Low\nCrime: Low (42/1,000)\nAffluence: Above average" },
-        { title: "📡 Infrastructure Analysis", content: "Mobile: EE/Vodafone 4G excellent, 5G planned Q4 2026\nBroadband: FTTP available, 500Mbps\nPower: Stable, UPS recommended for PO equipment\nEV: 2 charging points within 200m\nEmergency response: 8min average" },
-        { title: "🚀 Action Roadmap", content: "Month 1-3: Complete acquisition, maintain operations\nMonth 4-6: Add parcel locker, extend banking hours\nMonth 7-12: Marketing push, loyalty programme\nYear 2: Consider retail expansion into adjacent unit" },
+        { title: "🚀 Profit Improvement Plan", content: "1. Add parcel locker (£3-5k revenue)\n2. Extend banking hours (£2-4k revenue)\n3. Lottery terminal upgrade (£1-2k revenue)\nTotal potential uplift: £6-11k/year" },
+        { title: "📋 Due Diligence Pack", content: "✅ 23 documents to request from seller\n✅ 12 questions for the landlord\n✅ PO contract verification checklist\n✅ Lease review framework" },
+        { title: "🤝 Negotiation Strategy", content: "Seller leverage: Medium (retirement sale, motivated)\nBuyer leverage: Strong (parking issue, retail margin below average)\nSuggested opening offer: £95,000\nWalk-away price: £120,000" },
       ],
     },
   },
@@ -181,7 +167,7 @@ export function ReportPreviewSection() {
       <div className="text-center mb-8">
         <h2 className="text-3xl md:text-5xl font-bold mb-4">See What You Get</h2>
         <p style={{ color: "#8b949e" }} className="max-w-2xl mx-auto">
-          Choose a report tier to see exactly what&apos;s included
+          One report, four tiers. Pay more = see more. Choose a tier to preview.
         </p>
       </div>
 
@@ -226,7 +212,10 @@ export function ReportPreviewSection() {
               </div>
             )}
 
-            <h3 className="text-2xl font-bold mb-2">{activeReport.name}</h3>
+            <h3 className="text-2xl font-bold mb-1">{activeReport.name}</h3>
+            <p className="text-sm mb-4 italic" style={{ color: "#c9a227" }}>
+              &ldquo;{activeReport.tagline}&rdquo;
+            </p>
             
             <div className="mb-6">
               <span
@@ -254,14 +243,10 @@ export function ReportPreviewSection() {
                   <li
                     key={idx}
                     className="flex items-start gap-2 text-sm"
-                    style={{ color: feature.startsWith("—") ? "#8b949e" : "#fff" }}
+                    style={{ color: "#fff" }}
                   >
-                    {!feature.startsWith("—") && (
-                      <span style={{ color: "#22c55e" }}>✓</span>
-                    )}
-                    <span style={{ marginLeft: feature.startsWith("—") ? "16px" : 0 }}>
-                      {feature}
-                    </span>
+                    <span style={{ color: "#22c55e" }}>✓</span>
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -282,6 +267,13 @@ export function ReportPreviewSection() {
                   ))}
                 </ul>
               </div>
+            )}
+
+            {/* Upgrade tip */}
+            {activeReport.upgradeTip && (
+              <p className="text-xs mb-4" style={{ color: "#c9a227" }}>
+                💡 {activeReport.upgradeTip}
+              </p>
             )}
 
             {/* Buy Button */}
@@ -398,6 +390,16 @@ export function ReportPreviewSection() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Upgrade messaging */}
+      <div className="text-center mt-8">
+        <p className="text-sm" style={{ color: "#8b949e" }}>
+          Pay the difference to upgrade anytime — no new research needed.
+        </p>
+        <p className="text-xs mt-1" style={{ color: "#57606a" }}>
+          Scout → Insight (+£50) | Insight → Analysis (+£100) | Analysis → Intelligence (+£200)
+        </p>
       </div>
     </section>
   );

@@ -37,11 +37,11 @@ export default function PremiumReportPage() {
             className="text-4xl md:text-6xl font-bold mb-6"
             style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.2 }}
           >
-            Complete Intelligence Package
+            Intelligence Report
           </h1>
 
           <p className="text-xl mb-8 max-w-3xl" style={{ color: "#8b949e" }}>
-            Everything you need in one comprehensive report. Business financials + full location intelligence.
+            Help me buy it. The complete intelligence package. Everything in Analysis plus profit improvement plan, due diligence &amp; negotiation pack, and a 60-minute consultation call.
           </p>
 
           <div className="flex items-baseline gap-3 mb-8">
@@ -56,12 +56,12 @@ export default function PremiumReportPage() {
 
           <div className="mb-8 p-4 rounded-lg inline-block" style={{ background: "rgba(255, 215, 0, 0.1)", border: "1px solid #FFD700" }}>
             <p className="text-sm" style={{ color: "#FFD700" }}>
-              💰 <strong>Best Value:</strong> Location Intelligence alone is worth £149 — you're getting it FREE with Premium!
+              📞 <strong>Includes 60-minute consultation call</strong> — not available separately or with other tiers.
             </p>
           </div>
 
           <div>
-            <BuyButton tier="premium" label="Buy Premium Report — £449" className="btn-primary text-lg px-8 py-4" />
+            <BuyButton tier="premium" label="Buy Intelligence Report — £449" className="btn-primary text-lg px-8 py-4" />
           </div>
         </div>
       </section>
@@ -76,29 +76,29 @@ export default function PremiumReportPage() {
           {/* Business Analysis */}
           <div className="mb-12">
             <h3 className="text-2xl font-bold mb-6" style={{ color: "#FFD700" }}>
-              📊 Complete Business Analysis
+              📊 Intelligence-Exclusive Sections
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 {
                   icon: "✅",
-                  title: "Everything in Professional Report",
-                  desc: "Full financial deep dive + P&L breakdown",
+                  title: "Everything in Analysis Report",
+                  desc: "Full financial deep dive + location intelligence",
                 },
                 {
-                  icon: "💰",
-                  title: "Revenue Stream Analysis",
-                  desc: "Where every pound comes from",
+                  icon: "🚀",
+                  title: "Profit Improvement Plan",
+                  desc: "Evidence-based recommendations tied to report findings",
                 },
                 {
-                  icon: "📮",
-                  title: "Post Office Remuneration Verification",
-                  desc: "Benchmarked against NFSP data",
+                  icon: "📋",
+                  title: "Due Diligence Pack",
+                  desc: "Documents checklist, seller & landlord questions",
                 },
                 {
                   icon: "🤝",
-                  title: "60-Minute Consultation Call",
-                  desc: "Deep dive with an FCM operator",
+                  title: "Negotiation Strategy + 60-min Consultation",
+                  desc: "Leverage analysis, suggested offer range, expert call",
                 },
               ].map((item, i) => (
                 <div
@@ -123,7 +123,7 @@ export default function PremiumReportPage() {
           {/* Location Intelligence */}
           <div>
             <h3 className="text-2xl font-bold mb-6" style={{ color: "#FFD700" }}>
-              📍 Full Location Intelligence (£149 value — included!)
+              📍 Full Location Intelligence (included from Insight tier)
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
@@ -205,7 +205,7 @@ export default function PremiumReportPage() {
               Example: Executive Summary — Bilsborrow Branch
             </h3>
             <p className="text-sm mb-6" style={{ color: "#8b949e" }}>
-              From a real Premium Report (simplified)
+              From a real Intelligence Report (simplified)
             </p>
 
             <div className="space-y-6 mb-6">
@@ -358,10 +358,10 @@ export default function PremiumReportPage() {
               style={{ background: "#1A1A1A", border: "1px solid #333333" }}
             >
               <h3 className="text-lg font-semibold mb-2" style={{ color: "#FFD700" }}>
-                Why is Premium better value than buying separate reports?
+                Why Intelligence over Analysis?
               </h3>
               <p style={{ color: "#8b949e" }}>
-                Professional (£249) + Location Analysis (£99) = £348 separately. Premium is £449 but includes a longer consultation (60 min vs 30 min) and a complete action roadmap. You save time and get better integration.
+                Intelligence adds the profit improvement plan, full due diligence pack, negotiation strategy, and a 60-minute consultation call. It&apos;s the difference between knowing the numbers and knowing how to act on them.
               </p>
             </div>
           </div>
@@ -389,7 +389,7 @@ export default function PremiumReportPage() {
           <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: "#8b949e" }}>
             Business financials + location intelligence + expert consultation = confidence to move forward.
           </p>
-          <BuyButton tier="premium" label="Get Premium Report — £449" className="btn-primary text-lg px-10 py-4" />
+          <BuyButton tier="premium" label="Get Intelligence Report — £449" className="btn-primary text-lg px-10 py-4" />
           <div className="mt-6 flex items-center justify-center gap-4 text-sm" style={{ color: "#8b949e" }}>
             <span className="flex items-center gap-2">
               <span style={{ color: "#FFD700" }}>🔒</span> Secure payment via Stripe

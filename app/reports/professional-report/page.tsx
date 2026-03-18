@@ -31,18 +31,18 @@ export default function ProfessionalReportPage() {
               color: "#FFD700",
             }}
           >
-            Professional Report
+            Analysis Report
           </div>
 
           <h1
             className="text-4xl md:text-6xl font-bold mb-6"
             style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.2 }}
           >
-            Full Business Analysis
+            Analysis Report
           </h1>
 
           <p className="text-xl mb-8 max-w-3xl" style={{ color: "#8b949e" }}>
-            Comprehensive financial analysis for serious buyers. Know the numbers before you negotiate.
+            Should you make an offer? Everything in Insight plus full financial analysis, PO remuneration, staffing costs, and future outlook.
           </p>
 
           <div className="flex items-baseline gap-3 mb-8">
@@ -55,7 +55,7 @@ export default function ProfessionalReportPage() {
             <span style={{ color: "#8b949e" }}>inc. VAT | One-time payment</span>
           </div>
 
-          <BuyButton tier="professional" label="Buy Professional Report — £249" className="btn-primary text-lg px-8 py-4" />
+          <BuyButton tier="professional" label="Buy Analysis Report — £249" className="btn-primary text-lg px-8 py-4" />
         </div>
       </section>
 
@@ -70,8 +70,8 @@ export default function ProfessionalReportPage() {
             {[
               {
                 icon: "✅",
-                title: "Everything in Basic Report",
-                desc: "Business overview, red flags, viability assessment",
+                title: "Everything in Insight Report",
+                desc: "Full location intelligence, demographics, crime, competition",
               },
               {
                 icon: "💰",
@@ -99,14 +99,14 @@ export default function ProfessionalReportPage() {
                 desc: "Who else is operating nearby and how they impact you",
               },
               {
-                icon: "📞",
-                title: "30-Minute Consultation Call",
-                desc: "Talk through the report with an FCM operator",
+                icon: "📈",
+                title: "Staffing & Hidden Costs",
+                desc: "True employment cost calculator — NI, pension, holiday cover",
               },
               {
-                icon: "🤝",
-                title: "Negotiation Guidance",
-                desc: "What to offer, what to ask for, how to structure the deal",
+                icon: "🔮",
+                title: "Future Outlook",
+                desc: "5-year timeline, local planning, infrastructure developments",
               },
             ].map((item, i) => (
               <div
@@ -130,15 +130,16 @@ export default function ProfessionalReportPage() {
           {/* Not Included */}
           <div className="mt-12 p-6 rounded-lg" style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)" }}>
             <h3 className="font-bold text-lg mb-4" style={{ color: "#ef4444" }}>
-              Not Included in Professional:
+              Not Included in Analysis:
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-              <p style={{ color: "#ef4444" }}>❌ Location Intelligence (demographics, crime)</p>
-              <p style={{ color: "#ef4444" }}>❌ Street View & mapping</p>
-              <p style={{ color: "#ef4444" }}>❌ Catchment analysis</p>
+              <p style={{ color: "#ef4444" }}>❌ Profit improvement plan</p>
+              <p style={{ color: "#ef4444" }}>❌ Due diligence pack</p>
+              <p style={{ color: "#ef4444" }}>❌ Negotiation strategy</p>
+              <p style={{ color: "#ef4444" }}>❌ Consultation call</p>
             </div>
             <p className="mt-4 text-sm" style={{ color: "#8b949e" }}>
-              💡 Want the complete picture? Upgrade to <Link href="/reports/premium-report" className="underline" style={{ color: "#FFD700" }}>Premium (£449)</Link> and get Location Intelligence included (£149 value!)
+              💡 Want the full package? Upgrade to <Link href="/reports/premium-report" className="underline" style={{ color: "#FFD700" }}>Intelligence (+£200)</Link> — pay the difference anytime.
             </p>
           </div>
         </div>
@@ -159,7 +160,7 @@ export default function ProfessionalReportPage() {
               Example: Financial Breakdown — Altrincham Branch
             </h3>
             <p className="text-sm mb-6" style={{ color: "#8b949e" }}>
-              From a real Professional Report (simplified)
+              From a real Analysis Report (simplified)
             </p>
 
             <div className="space-y-6 mb-6" style={{ fontFamily: "JetBrains Mono", fontSize: "0.9rem" }}>
@@ -301,10 +302,10 @@ export default function ProfessionalReportPage() {
               style={{ background: "#1A1A1A", border: "1px solid #333333" }}
             >
               <h3 className="text-lg font-semibold mb-2" style={{ color: "#FFD700" }}>
-                When is the consultation call?
+                Can I upgrade later?
               </h3>
               <p style={{ color: "#8b949e" }}>
-                Scheduled after you've reviewed the report. 30 minutes to discuss findings and answer your questions.
+                Yes — upgrade to Intelligence (+£200) anytime to get the profit improvement plan, due diligence pack, negotiation strategy, and a 60-minute consultation call. Just pay the difference.
               </p>
             </div>
           </div>
@@ -318,7 +319,7 @@ export default function ProfessionalReportPage() {
             Best For:
           </h3>
           <p className="text-lg" style={{ color: "#8b949e" }}>
-            Buyers who have the location sorted but need to verify the financials • Serious acquisition candidates
+            Serious buyers ready to evaluate financials and make an informed offer
           </p>
         </div>
       </section>
@@ -332,7 +333,7 @@ export default function ProfessionalReportPage() {
           <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: "#8b949e" }}>
             Comprehensive financial analysis + expert consultation to help you make the right offer.
           </p>
-          <BuyButton tier="professional" label="Get Professional Report — £249" className="btn-primary text-lg px-10 py-4" />
+          <BuyButton tier="professional" label="Get Analysis Report — £249" className="btn-primary text-lg px-10 py-4" />
           <div className="mt-6 flex items-center justify-center gap-4 text-sm" style={{ color: "#8b949e" }}>
             <span className="flex items-center gap-2">
               <span style={{ color: "#FFD700" }}>🔒</span> Secure payment via Stripe

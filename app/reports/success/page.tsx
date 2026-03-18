@@ -6,10 +6,10 @@ import { Suspense } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 
 const TIER_LABELS: Record<string, { name: string; price: string; turnaround: string; isSubscription?: boolean }> = {
-  location: { name: "Location Report", price: "£99", turnaround: "24-48 hours" },
-  basic: { name: "Basic Report", price: "£149", turnaround: "24-48 hours" },
-  professional: { name: "Professional Report", price: "£249", turnaround: "48-72 hours" },
-  premium: { name: "Premium Report", price: "£449", turnaround: "3-5 business days" },
+  location: { name: "Scout Report", price: "£99", turnaround: "24-48 hours" },
+  basic: { name: "Insight Report", price: "£149", turnaround: "24-48 hours" },
+  professional: { name: "Analysis Report", price: "£249", turnaround: "48-72 hours" },
+  premium: { name: "Intelligence Report", price: "£449", turnaround: "3-5 business days" },
   insider: { name: "FCM Insider Subscription", price: "£15/month", turnaround: "immediate", isSubscription: true },
 };
 

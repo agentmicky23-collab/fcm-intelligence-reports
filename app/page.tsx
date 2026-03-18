@@ -225,124 +225,120 @@ export default function Home() {
       {/* ═══════════════════════════ NEW SAMPLE REPORT PREVIEW (Toggle Section) ═══════════════════════════ */}
       <ReportPreviewSection />
 
-      {/* ═══════════════════════════ PRICING (old site exact: Location £99, Basic £149, Professional £249, Premium £449) ═══════════════════════════ */}
+      {/* ═══════════════════════════ PRICING (Scout £99, Insight £149, Analysis £249, Intelligence £449) ═══════════════════════════ */}
       <section className="py-20" id="pricing" style={{ background: '#0d1117' }}>
         <div className="container mx-auto px-4">
           {/* Pricing comparison strip */}
           <div className="flex items-center justify-center gap-4 mb-12 flex-wrap text-sm">
             <div className="text-center px-4 py-2 rounded-lg" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-              <div className="font-bold" style={{ color: '#8b949e' }}>Location Intel</div>
+              <div className="font-bold" style={{ color: '#8b949e' }}>Scout</div>
               <div className="font-mono font-bold" style={{ color: '#c9a227' }}>£99</div>
-              <div className="text-xs" style={{ color: '#57606a' }}>Location only</div>
+              <div className="text-xs" style={{ color: '#57606a' }}>Should I look?</div>
             </div>
             <div style={{ color: '#30363d' }}>→</div>
             <div className="text-center px-4 py-2 rounded-lg" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-              <div className="font-bold" style={{ color: '#8b949e' }}>Basic</div>
+              <div className="font-bold" style={{ color: '#8b949e' }}>Insight</div>
               <div className="font-mono font-bold" style={{ color: '#c9a227' }}>£149</div>
-              <div className="text-xs" style={{ color: '#57606a' }}>Quick check</div>
+              <div className="text-xs" style={{ color: '#57606a' }}>Is the area good?</div>
             </div>
             <div style={{ color: '#30363d' }}>→</div>
             <div className="text-center px-4 py-2 rounded-lg" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-              <div className="font-bold" style={{ color: '#8b949e' }}>Professional</div>
+              <div className="font-bold" style={{ color: '#8b949e' }}>Analysis</div>
               <div className="font-mono font-bold" style={{ color: '#c9a227' }}>£249</div>
-              <div className="text-xs" style={{ color: '#57606a' }}>+ Financials</div>
+              <div className="text-xs" style={{ color: '#57606a' }}>Make an offer?</div>
             </div>
             <div style={{ color: '#30363d' }}>→</div>
             <div className="text-center px-4 py-2 rounded-lg" style={{ background: '#161b22', border: '2px solid #c9a227' }}>
-              <div className="font-bold" style={{ color: '#c9a227' }}>Premium</div>
+              <div className="font-bold" style={{ color: '#c9a227' }}>Intelligence</div>
               <div className="font-mono font-bold" style={{ color: '#c9a227' }}>£449</div>
-              <div className="text-xs" style={{ color: '#57606a' }}>Complete</div>
+              <div className="text-xs" style={{ color: '#57606a' }}>Help me buy it</div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {/* Location Intel */}
+            {/* Scout */}
             <div className="pricing-card-old">
-              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Add-On</div>
-              <h3 className="text-lg font-bold mb-2">Location Report</h3>
+              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Entry Level</div>
+              <h3 className="text-lg font-bold mb-2">Scout Report</h3>
               <div className="price-display">£99</div>
               <div className="price-subtitle">one-time</div>
-              <p style={{ color: '#8b949e', fontSize: '0.85rem', marginBottom: '16px' }}>Standalone location analysis. Perfect add-on or for investors.</p>
+              <p style={{ color: '#8b949e', fontSize: '0.85rem', marginBottom: '16px' }}>Quick viability check. Should you even look at this business? Get the key location data and competition picture.</p>
               <ul>
-                <li>Location Score (A-F)</li>
-                <li>Street View &amp; Maps</li>
-                <li>Demographics profile</li>
-                <li>House prices &amp; affluence</li>
-                <li>Crime &amp; safety data</li>
-                <li>Competition mapping</li>
-                <li>Footfall analysis</li>
-                <li>15-20 page PDF report</li>
+                <li>Executive Summary &amp; Verdict</li>
+                <li>Location Intelligence (maps, Street View)</li>
+                <li>Competition Mapping</li>
+                <li>Risk Assessment (checklist)</li>
+                <li>8-12 page PDF report</li>
               </ul>
-              <BuyButton tier="location" label="Buy Location Report — £99" />
+              <p className="text-xs mt-3" style={{ color: '#c9a227' }}>💡 Want more detail? Upgrade to Insight (+£50) — pay the difference anytime.</p>
+              <BuyButton tier="location" label="Buy Scout Report — £99" />
             </div>
-            {/* Basic */}
+            {/* Insight */}
             <div className="pricing-card-old">
-              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Essential</div>
-              <h3 className="text-lg font-bold mb-2">Basic Report</h3>
+              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Popular</div>
+              <h3 className="text-lg font-bold mb-2">Insight Report</h3>
               <div className="price-display">£149</div>
               <div className="price-subtitle">one-time</div>
-              <p style={{ color: '#8b949e', fontSize: '0.85rem', marginBottom: '16px' }}>Initial sanity check before investing more time.</p>
+              <p style={{ color: '#8b949e', fontSize: '0.85rem', marginBottom: '16px' }}>Is this area any good? Full location intelligence with demographics, crime, footfall, and competition.</p>
               <ul>
-                <li>Business overview</li>
-                <li>Key metrics summary</li>
-                <li>Red flags check</li>
-                <li>Go/No-Go recommendation</li>
-                <li>6-10 page PDF report</li>
+                <li>Executive Summary &amp; Verdict</li>
+                <li>Location Intelligence (Street View, maps, photos)</li>
+                <li>Demographics &amp; Community Profile</li>
+                <li>Crime &amp; Safety Analysis</li>
+                <li>Competition Mapping</li>
+                <li>Footfall Analysis</li>
+                <li>Infrastructure &amp; Connectivity</li>
+                <li>Online Presence &amp; Reviews</li>
+                <li>Risk Assessment (full)</li>
+                <li>15-22 page PDF report</li>
               </ul>
-              <div style={{ padding: '8px 0', borderTop: '1px solid #30363d', marginTop: '12px' }}>
-                <p className="text-xs" style={{ color: '#ef4444' }}>❌ Financial deep dive</p>
-                <p className="text-xs" style={{ color: '#ef4444' }}>❌ Location Intelligence</p>
-                <p className="text-xs" style={{ color: '#ef4444' }}>❌ Consultation call</p>
-              </div>
-              <BuyButton tier="basic" label="Buy Basic Report — £149" />
+              <p className="text-xs mt-3" style={{ color: '#c9a227' }}>💡 Want financials? Upgrade to Analysis (+£100)</p>
+              <BuyButton tier="basic" label="Buy Insight Report — £149" />
             </div>
-            {/* Professional */}
+            {/* Analysis */}
             <div className="pricing-card-old">
-              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Professional</div>
-              <h3 className="text-lg font-bold mb-2">Professional Report</h3>
+              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Recommended</div>
+              <h3 className="text-lg font-bold mb-2">Analysis Report</h3>
               <div className="price-display">£249</div>
               <div className="price-subtitle">one-time</div>
-              <p style={{ color: '#8b949e', fontSize: '0.85rem', marginBottom: '16px' }}>Comprehensive financial analysis for serious buyers.</p>
+              <p style={{ color: '#8b949e', fontSize: '0.85rem', marginBottom: '16px' }}>Should you make an offer? Everything in Insight plus full financial analysis, PO remuneration, staffing costs, and future outlook.</p>
               <ul>
-                <li>Everything in Basic</li>
-                <li>Financial deep dive</li>
-                <li>P&amp;L breakdown</li>
-                <li>Remuneration analysis</li>
-                <li>Competition overview</li>
-                <li>20-25 page PDF report</li>
-                <li>30-min consultation call</li>
-                <li>Infrastructure analysis (NEW)</li>
+                <li>Everything in Insight</li>
+                <li>Financial Analysis (P&amp;L, benchmarks, valuation)</li>
+                <li>PO Remuneration Analysis (income breakdown)</li>
+                <li>Staffing &amp; Hidden Costs</li>
+                <li>Future Outlook (5-year timeline)</li>
+                <li>30-40 page PDF report</li>
               </ul>
-              <div style={{ padding: '8px 0', borderTop: '1px solid #30363d', marginTop: '12px' }}>
-                <p className="text-xs" style={{ color: '#ef4444' }}>❌ Location Intelligence</p>
-              </div>
-              <BuyButton tier="professional" label="Buy Professional Report — £249" />
+              <p className="text-xs mt-3" style={{ color: '#c9a227' }}>💡 Want the full package? Upgrade to Intelligence (+£200)</p>
+              <BuyButton tier="professional" label="Buy Analysis Report — £249" />
             </div>
-            {/* Premium ⭐ */}
+            {/* Intelligence ⭐ */}
             <div className="pricing-card-old popular">
               <div className="popular-badge">Recommended</div>
-              <div className="text-xs font-bold mb-2" style={{ color: '#c9a227' }}>Premium ⭐ Most Popular</div>
-              <h3 className="text-lg font-bold mb-2">Premium Report</h3>
+              <div className="text-xs font-bold mb-2" style={{ color: '#c9a227' }}>⭐ Most Popular</div>
+              <h3 className="text-lg font-bold mb-2">Intelligence Report</h3>
               <div className="price-display">£449</div>
               <div className="price-subtitle">one-time</div>
-              <p style={{ color: '#8b949e', fontSize: '0.85rem', marginBottom: '16px' }}>Full business + location intelligence. Complete picture.</p>
+              <p style={{ color: '#8b949e', fontSize: '0.85rem', marginBottom: '16px' }}>Help me buy it. The complete intelligence package. Everything in Analysis plus profit improvement plan, due diligence &amp; negotiation pack, and a 60-minute consultation call.</p>
               <ul>
-                <li>Everything in Professional</li>
-                <li>📍 Full Location Intelligence</li>
-                <li>🏠 Demographics &amp; Affluence</li>
-                <li>🛡️ Crime &amp; Safety Analysis</li>
-                <li>🏢 Competition Mapping</li>
-                <li>📡 Full Infrastructure Analysis</li>
-                <li>30-40 page PDF report</li>
-                <li>60-min consultation call</li>
-                <li>Action roadmap</li>
+                <li>Everything in Analysis</li>
+                <li>Profit Improvement Plan</li>
+                <li>Due Diligence Pack</li>
+                <li>Negotiation Strategy</li>
+                <li>60-minute consultation call</li>
+                <li>40-55 page PDF report</li>
               </ul>
-              <BuyButton tier="premium" label="Buy Premium Report — £449" />
+              <p className="text-xs mt-3" style={{ color: '#c9a227' }}>Intelligence tier includes a 60-minute consultation call — not available separately or with other tiers.</p>
+              <BuyButton tier="premium" label="Buy Intelligence Report — £449" />
             </div>
           </div>
 
           <p className="text-center mt-8 text-sm" style={{ color: '#8b949e' }}>
-            💡 Already bought Basic or Professional? Add Location Report for £99 to complete your due diligence.
+            💡 One report. Unlock more as you need it. Pay the difference to upgrade — no new research needed.
+          </p>
+          <p className="text-center mt-2 text-xs" style={{ color: '#57606a' }}>
+            Scout → Insight (+£50) | Insight → Analysis (+£100) | Analysis → Intelligence (+£200)
           </p>
         </div>
       </section>
@@ -466,10 +462,10 @@ export default function Home() {
             <div className="form-group">
               <label htmlFor="report-type">Report Type</label>
               <select id="report-type" name="report-type">
-                <option value="premium">Premium Report — £449</option>
-                <option value="professional">Professional Report — £249</option>
-                <option value="basic">Basic Report — £149</option>
-                <option value="location">Location Intelligence — £99</option>
+                <option value="premium">Intelligence Report — £449</option>
+                <option value="professional">Analysis Report — £249</option>
+                <option value="basic">Insight Report — £149</option>
+                <option value="location">Scout Report — £99</option>
                 <option value="consultation">Consultation Call</option>
               </select>
             </div>

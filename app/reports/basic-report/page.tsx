@@ -31,18 +31,18 @@ export default function BasicReportPage() {
               color: "#FFD700",
             }}
           >
-            Basic Report
+            Insight Report
           </div>
 
           <h1
             className="text-4xl md:text-6xl font-bold mb-6"
             style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.2 }}
           >
-            Quick Due Diligence
+            Insight Report
           </h1>
 
           <p className="text-xl mb-8 max-w-3xl" style={{ color: "#8b949e" }}>
-            Perfect for an initial sanity check before investing more time. Get the key facts fast.
+            Is this area any good? Full location intelligence with demographics, crime, footfall, and competition.
           </p>
 
           <div className="flex items-baseline gap-3 mb-8">
@@ -55,7 +55,7 @@ export default function BasicReportPage() {
             <span style={{ color: "#8b949e" }}>inc. VAT | One-time payment</span>
           </div>
 
-          <BuyButton tier="basic" label="Buy Basic Report — £149" className="btn-primary text-lg px-8 py-4" />
+          <BuyButton tier="basic" label="Buy Insight Report — £149" className="btn-primary text-lg px-8 py-4" />
         </div>
       </section>
 
@@ -115,16 +115,16 @@ export default function BasicReportPage() {
           {/* Not Included */}
           <div className="mt-12 p-6 rounded-lg" style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)" }}>
             <h3 className="font-bold text-lg mb-4" style={{ color: "#ef4444" }}>
-              Not Included in Basic:
+              Not Included in Insight:
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-              <p style={{ color: "#ef4444" }}>❌ Detailed financial analysis</p>
-              <p style={{ color: "#ef4444" }}>❌ Location intelligence</p>
-              <p style={{ color: "#ef4444" }}>❌ Competition mapping</p>
+              <p style={{ color: "#ef4444" }}>❌ Financial analysis</p>
+              <p style={{ color: "#ef4444" }}>❌ PO remuneration breakdown</p>
+              <p style={{ color: "#ef4444" }}>❌ Staffing &amp; hidden costs</p>
               <p style={{ color: "#ef4444" }}>❌ Consultation call</p>
             </div>
             <p className="mt-4 text-sm" style={{ color: "#8b949e" }}>
-              💡 Need more depth? Upgrade to <Link href="/reports/professional-report" className="underline" style={{ color: "#FFD700" }}>Professional (£249)</Link> or <Link href="/reports/premium-report" className="underline" style={{ color: "#FFD700" }}>Premium (£449)</Link>
+              💡 Want financials? Upgrade to <Link href="/reports/professional-report" className="underline" style={{ color: "#FFD700" }}>Analysis (+£100)</Link> or <Link href="/reports/premium-report" className="underline" style={{ color: "#FFD700" }}>Intelligence (+£300)</Link> — pay the difference anytime.
             </p>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function BasicReportPage() {
               Example: Bolton High Street Post Office
             </h3>
             <p className="text-sm mb-6" style={{ color: "#8b949e" }}>
-              From a real Basic Report
+              From a real Insight Report
             </p>
 
             <div className="space-y-4 mb-6">
@@ -279,7 +279,7 @@ export default function BasicReportPage() {
                 What if I need more detail?
               </h3>
               <p style={{ color: "#8b949e" }}>
-                You can upgrade to Professional (£100 extra) or Premium (£300 extra) at any time. We'll credit your Basic Report payment.
+                You can upgrade to Analysis (+£100) or Intelligence (+£300) at any time. Just pay the difference — no new research needed.
               </p>
             </div>
           </div>
@@ -307,7 +307,7 @@ export default function BasicReportPage() {
           <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: "#8b949e" }}>
             Fast, affordable due diligence that tells you if an opportunity is worth pursuing.
           </p>
-          <BuyButton tier="basic" label="Get Basic Report — £149" className="btn-primary text-lg px-10 py-4" />
+          <BuyButton tier="basic" label="Get Insight Report — £149" className="btn-primary text-lg px-10 py-4" />
           <div className="mt-6 flex items-center justify-center gap-4 text-sm" style={{ color: "#8b949e" }}>
             <span className="flex items-center gap-2">
               <span style={{ color: "#FFD700" }}>🔒</span> Secure payment via Stripe

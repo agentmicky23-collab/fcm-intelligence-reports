@@ -23,10 +23,10 @@ interface ReportRequestModalProps {
 }
 
 const TIER_INFO: Record<ReportTier, { name: string; price: number; description: string; recommended?: boolean }> = {
-  location: { name: "Location Report", price: 99, description: "Location intelligence only" },
-  basic: { name: "Basic Report", price: 149, description: "Quick assessment & red flags" },
-  professional: { name: "Professional Report", price: 249, description: "Full financial analysis" },
-  premium: { name: "Premium Report", price: 449, description: "Complete intelligence package", recommended: true },
+  location: { name: "Scout Report", price: 99, description: "Should I even look at this?" },
+  basic: { name: "Insight Report", price: 149, description: "Is this area any good?" },
+  professional: { name: "Analysis Report", price: 249, description: "Should I make an offer?" },
+  premium: { name: "Intelligence Report", price: 449, description: "Help me buy it.", recommended: true },
 };
 
 const LISTING_SOURCES = ["Daltons", "RightBiz", "Christie & Co", "Other"];

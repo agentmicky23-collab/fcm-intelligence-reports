@@ -31,18 +31,18 @@ export default function LocationAnalysisPage() {
               color: "#FFD700",
             }}
           >
-            Location Intelligence
+            Scout Report
           </div>
 
           <h1
             className="text-4xl md:text-6xl font-bold mb-6"
             style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.2 }}
           >
-            Location Analysis Report
+            Scout Report
           </h1>
 
           <p className="text-xl mb-8 max-w-3xl" style={{ color: "#8b949e" }}>
-            Standalone location intelligence for any Post Office or retail property. Know the area before you buy.
+            Should you even look at this business? Quick viability check with location data and competition mapping.
           </p>
 
           <div className="flex items-baseline gap-3 mb-8">
@@ -55,7 +55,7 @@ export default function LocationAnalysisPage() {
             <span style={{ color: "#8b949e" }}>inc. VAT | One-time payment</span>
           </div>
 
-          <BuyButton tier="location" label="Buy Location Report — £99" className="btn-primary text-lg px-8 py-4" />
+          <BuyButton tier="location" label="Buy Scout Report — £99" className="btn-primary text-lg px-8 py-4" />
         </div>
       </section>
 
@@ -269,10 +269,10 @@ export default function LocationAnalysisPage() {
               style={{ background: "#1A1A1A", border: "1px solid #333333" }}
             >
               <h3 className="text-lg font-semibold mb-2" style={{ color: "#FFD700" }}>
-                Can I combine this with other reports?
+                Can I upgrade later?
               </h3>
               <p style={{ color: "#8b949e" }}>
-                Absolutely! Add Location Analysis to any Basic or Professional report. Or upgrade to Premium to get everything in one package.
+                Absolutely! Upgrade to Insight (+£50) for full location intelligence, or go all the way to Intelligence for the complete package. Just pay the difference — no new research needed.
               </p>
             </div>
           </div>
@@ -288,7 +288,7 @@ export default function LocationAnalysisPage() {
           <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: "#8b949e" }}>
             Get the location intelligence you need to make a smart decision.
           </p>
-          <BuyButton tier="location" label="Get Location Report — £99" className="btn-primary text-lg px-10 py-4" />
+          <BuyButton tier="location" label="Get Scout Report — £99" className="btn-primary text-lg px-10 py-4" />
           <div className="mt-6 flex items-center justify-center gap-4 text-sm" style={{ color: "#8b949e" }}>
             <span className="flex items-center gap-2">
               <span style={{ color: "#FFD700" }}>🔒</span> Secure payment via Stripe
