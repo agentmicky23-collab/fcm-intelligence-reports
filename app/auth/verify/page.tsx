@@ -13,7 +13,7 @@ function VerifyContent() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const token = searchParams.get("token");
+    const token = searchParams?.get("token");
     if (!token) {
       setStatus("error");
       setErrorMessage("No verification token found.");
