@@ -24,29 +24,68 @@ export async function POST(req: NextRequest) {
     const session = event.data.object as Stripe.Checkout.Session;
     const metadata = session.metadata || {};
 
-    // Skip if this is a subscription (Insider) - handle separately
+    // ============================================================
+    // UPGRADE PAYMENT (Insight → Intelligence)
+    // ============================================================
+    if (metadata.upgrade_from && metadata.upgrade_to && metadata.order_id) {
+      console.log(`Processing upgrade for order_id ${metadata.order_id}: ${metadata.upgrade_from} → ${metadata.upgrade_to}`);
+
+      try {
+        const { data, error } = await supabase
+          .from('reports')
+          .update({ tier: metadata.upgrade_to })
+          .eq('order_id', metadata.order_id)
+          .eq('tier', metadata.upgrade_from)
+          .select();
+
+        if (error) {
+          console.error('Supabase upgrade error:', error);
+        } else if (data && data.length > 0) {
+          console.log(`✅ Order ${metadata.order_id} upgraded to ${metadata.upgrade_to}`);
+
+          // Log notification for Discord
+          await supabase.from('notifications').insert({
+            order_id: metadata.order_id,
+            event: 'report_upgraded',
+            message: `⬆️ **Report Upgraded**\n📋 Order ${metadata.order_id}: ${metadata.upgrade_from} → ${metadata.upgrade_to}\n💰 £300 upgrade payment received`,
+          });
+        } else {
+          console.warn(`Order ${metadata.order_id} not found or already upgraded`);
+        }
+      } catch (err) {
+        console.error('Failed to process upgrade:', err);
+      }
+
+      return NextResponse.json({ received: true });
+    }
+
+    // ============================================================
+    // INSIDER SUBSCRIPTION
+    // ============================================================
     if (metadata.tier === 'insider') {
       console.log('Insider subscription completed - handled separately');
       return NextResponse.json({ received: true });
     }
 
-    // Generate order ID: YYYY-MM-DD-XXX
+    // ============================================================
+    // NEW REPORT ORDER
+    // ============================================================
     const now = new Date();
     const dateStr = now.toISOString().split('T')[0];
-    
+
     // Count today's orders for sequential numbering
     const { count } = await supabase
       .from('orders')
       .select('*', { count: 'exact', head: true })
       .gte('created_at', `${dateStr}T00:00:00Z`);
-    
+
     const orderNum = String((count || 0) + 1).padStart(3, '0');
     const orderId = `${dateStr}-${orderNum}`;
 
     // Get price from session
     const price = session.amount_total ? session.amount_total / 100 : 0;
 
-    // 3. Insert order into Supabase
+    // Insert order into Supabase
     const { error: insertError } = await supabase.from('orders').insert({
       id: orderId,
       status: 'received',
@@ -89,7 +128,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Database error' }, { status: 500 });
     }
 
-    // 4. Log notification for Discord
+    // Log notification for Discord
     await supabase.from('notifications').insert({
       order_id: orderId,
       event: 'order_received',
