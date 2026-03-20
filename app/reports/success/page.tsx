@@ -15,10 +15,10 @@ const TIER_LABELS: Record<string, { name: string; price: string; turnaround: str
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const tier = searchParams.get("tier") || "premium";
-  const listingName = searchParams.get("listing") || "";
-  const customerEmail = searchParams.get("email") || "";
-  const customerPhone = searchParams.get("phone") || "";
+  const tier = searchParams?.get("tier") || "premium";
+  const listingName = searchParams?.get("listing") || "";
+  const customerEmail = searchParams?.get("email") || "";
+  const customerPhone = searchParams?.get("phone") || "";
   const info = TIER_LABELS[tier] || TIER_LABELS.premium;
 
   return (
