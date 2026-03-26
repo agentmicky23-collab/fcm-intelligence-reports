@@ -234,11 +234,11 @@ export function ListingCard({ listing }: ListingCardProps) {
         </div>
       </div>
 
-      {/* Report Request Modal - defaults to Professional tier */}
+      {/* Report Request Modal - defaults to Intelligence tier */}
       <ReportRequestModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        tier="professional"
+        tier="intelligence"
         listing={listingInfo}
       />
     </>

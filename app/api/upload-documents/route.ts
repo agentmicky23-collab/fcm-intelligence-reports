@@ -169,10 +169,8 @@ export async function POST(request: NextRequest) {
     const resend = new Resend(resendApiKey);
 
     const tierNames: Record<string, string> = {
-      location: "Scout Report",
-      basic: "Insight Report",
-      professional: "Analysis Report",
-      premium: "Intelligence Report",
+      insight: "Insight Report",
+      intelligence: "Intelligence Report",
     };
 
     const { data, error } = await resend.emails.send({

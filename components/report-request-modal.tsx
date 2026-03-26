@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
-type ReportTier = "location" | "basic" | "professional" | "premium";
+type ReportTier = "insight" | "intelligence";
 
 interface ListingInfo {
   name: string;
@@ -23,10 +23,8 @@ interface ReportRequestModalProps {
 }
 
 const TIER_INFO: Record<ReportTier, { name: string; price: number; description: string; recommended?: boolean }> = {
-  location: { name: "Scout Report", price: 99, description: "Should I even look at this?" },
-  basic: { name: "Insight Report", price: 149, description: "Is this area any good?" },
-  professional: { name: "Analysis Report", price: 249, description: "Should I make an offer?" },
-  premium: { name: "Intelligence Report", price: 449, description: "Help me buy it.", recommended: true },
+  insight: { name: "Insight Report", price: 199, description: "Is this the right business?" },
+  intelligence: { name: "Intelligence Report", price: 499, description: "Help me buy it.", recommended: true },
 };
 
 const LISTING_SOURCES = ["Daltons", "RightBiz", "Christie & Co", "Other"];
@@ -45,7 +43,7 @@ const ACCEPTED_MIME_TYPES = [
   "image/png"
 ];
 
-export function ReportRequestModal({ isOpen, onClose, tier = "professional", listing }: ReportRequestModalProps) {
+export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", listing }: ReportRequestModalProps) {
   const [mounted, setMounted] = useState(false);
   const [selectedTier, setSelectedTier] = useState<ReportTier>(tier);
   const [inputMode, setInputMode] = useState<"url" | "manual">(listing ? "manual" : "url");
@@ -197,7 +195,7 @@ export function ReportRequestModal({ isOpen, onClose, tier = "professional", lis
     }
   };
 
-  const showStep4 = selectedTier === "professional" || selectedTier === "premium";
+  const showStep4 = selectedTier === "intelligence";
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};

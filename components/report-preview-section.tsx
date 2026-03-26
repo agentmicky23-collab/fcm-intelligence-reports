@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { BuyButton } from "./buy-button";
 
-type ReportTier = "location" | "basic" | "professional" | "premium";
+type ReportTier = "insight" | "intelligence";
 
 interface ReportInfo {
   tier: ReportTier;
@@ -25,121 +25,57 @@ interface ReportInfo {
 
 const reportData: ReportInfo[] = [
   {
-    tier: "location",
-    name: "Scout Report",
-    price: "£99",
-    tagline: "Should I even look at this?",
-    description: "Quick viability check. Get the key location data and competition picture before investing any more time.",
-    features: [
-      "Executive Summary & Verdict",
-      "Location Intelligence (maps, Street View, photos)",
-      "Competition Mapping",
-      "Risk Assessment (checklist)",
-      "8-12 page PDF report",
-    ],
-    notIncluded: [
-      "Demographics & crime analysis",
-      "Financial analysis",
-      "Consultation call",
-    ],
-    upgradeTip: "Want more detail? Upgrade to Insight (+£50)",
-    sampleContent: {
-      title: "Scout Report",
-      location: "CW11 1HN • Sandbach, Cheshire East",
-      score: "B+",
-      scoreLabel: "Viability: Worth investigating",
-      sections: [
-        { title: "📋 Executive Summary", content: "Main Post Office with retail counter on a busy high street. Good visibility and footfall. Initial indicators positive — recommend further analysis." },
-        { title: "📍 Location Intelligence", content: "High street location with daily footfall of 3,200+. Anchor stores: Tesco Express, Boots, Costa. Good visibility from main road." },
-        { title: "🏢 Competition Map", content: "Nearest Post Office: 2.8km (Sandbach Heath). Competing retailers: 12 within 500m. Market saturation: Low." },
-        { title: "⚠️ Risk Checklist", content: "✅ Active PO branch on branch finder\n✅ No major redevelopment planned\n⚠️ Parking limited to 4 spaces\n✅ Lease details appear standard" },
-      ],
-    },
-  },
-  {
-    tier: "basic",
+    tier: "insight",
     name: "Insight Report",
-    price: "£149",
-    tagline: "Is this area any good?",
-    description: "Full location intelligence with demographics, crime data, footfall analysis, and comprehensive competition mapping.",
+    price: "£199",
+    tagline: "Is this the right business?",
+    description: "Full location intelligence with demographics, crime data, footfall analysis, competition mapping, and comprehensive risk assessment. 10 sections covering everything you need to decide if a business is worth pursuing.",
     features: [
       "Executive Summary & Verdict",
+      "PO Remuneration Analysis",
+      "Online Presence & Reviews",
       "Location Intelligence (Street View, maps, photos)",
       "Demographics & Community Profile",
       "Crime & Safety Analysis",
       "Competition Mapping",
       "Footfall Analysis",
       "Infrastructure & Connectivity",
-      "Online Presence & Reviews",
-      "Risk Assessment (full)",
-      "15-22 page PDF report",
+      "Risk Assessment",
     ],
     notIncluded: [
       "Financial analysis",
-      "PO remuneration breakdown",
-      "Consultation call",
+      "Staffing & hidden costs",
+      "Profit improvement plan",
+      "Due diligence pack",
     ],
-    upgradeTip: "Want financials? Upgrade to Analysis (+£100)",
+    upgradeTip: "Want the full picture? Upgrade to Intelligence (+£300)",
     sampleContent: {
       title: "Insight Report",
       location: "CW11 1HN • Sandbach, Cheshire East",
       score: "A",
       scoreLabel: "Location Score: 85/100",
       sections: [
-        { title: "📍 Location Intelligence", content: "Primary catchment: 8,450 residents within 1km. High street location with daily footfall of 3,200+. Anchor stores: Tesco Express, Boots, Costa." },
+        { title: "📋 Executive Summary", content: "Main Post Office with retail counter on a busy high street. Good visibility and footfall. Initial indicators positive — strong location fundamentals with manageable competition." },
+        { title: "📍 Location Intelligence", content: "High street location with daily footfall of 3,200+. Anchor stores: Tesco Express, Boots, Costa. Good visibility from main road." },
         { title: "👥 Demographics", content: "Median age: 42. Household income: £38,400 (12% above regional avg). Home ownership: 68%. Retired population: 22%." },
         { title: "🛡️ Crime & Safety", content: "Crime rate: 42 per 1,000 (Low). Anti-social behaviour: Below average. Shoplifting incidents: 8/year (Low risk)." },
         { title: "🏢 Competition Map", content: "Nearest Post Office: 2.8km (Sandbach Heath). Competing retailers: 12 within 500m. Market saturation: Low." },
-        { title: "📡 Infrastructure", content: "Mobile: EE 4G excellent, 5G available. Broadband: FTTP available (500Mbps). Power: Stable grid." },
       ],
     },
   },
   {
-    tier: "professional",
-    name: "Analysis Report",
-    price: "£249",
-    tagline: "Should I make an offer?",
-    description: "Everything in Insight plus full financial analysis, PO remuneration breakdown, staffing costs, and future outlook.",
+    tier: "intelligence",
+    name: "Intelligence Report",
+    price: "£499",
+    tagline: "Help me buy it.",
+    description: "The complete intelligence package. Everything in Insight plus financial analysis, staffing costs, future outlook, profit improvement plan, and due diligence pack. All 15 sections.",
     features: [
-      "Everything in Insight",
+      "Everything in Insight (10 sections)",
       "Financial Analysis (P&L, benchmarks, valuation)",
-      "PO Remuneration Analysis (income breakdown, donut chart)",
       "Staffing & Hidden Costs (true employment cost calculator)",
       "Future Outlook (5-year timeline, planning, developments)",
-      "30-40 page PDF report",
-    ],
-    notIncluded: [
-      "Profit improvement plan",
-      "Due diligence pack",
-      "Consultation call",
-    ],
-    upgradeTip: "Want the full package? Upgrade to Intelligence (+£200)",
-    sampleContent: {
-      title: "Analysis Report",
-      location: "Sandbach Post Office • CW11 1HN",
-      score: "B+",
-      scoreLabel: "Business Score: 72/100",
-      sections: [
-        { title: "💰 Financial Summary", content: "Est. Annual Revenue: £185,000\nPO Remuneration: £67,400 (36%)\nRetail Gross Profit: £48,000\nEst. Net Profit: £42,000\nROI at asking price: 33.6%" },
-        { title: "📈 P&L Breakdown", content: "Wages: £28,400 (15%)\nRent: £18,000 (10%)\nUtilities: £4,800 (3%)\nStock: £62,000 (34%)\nOther: £8,000 (4%)" },
-        { title: "👥 Staffing & Hidden Costs", content: "Staff: 2 PT employees\nTrue employment cost: £32,800 (inc. NI, pension, holiday cover)\nOwner hours: 50/week estimated" },
-        { title: "📡 Future Outlook", content: "Bank branch closing Q3 2026 — OPPORTUNITY for banking services.\nNew housing development (200 units) 0.8km away — increased catchment by ~15%.\nFTTP rollout complete — supports modern PO services." },
-      ],
-    },
-  },
-  {
-    tier: "premium",
-    name: "Intelligence Report",
-    price: "£449",
-    tagline: "Help me buy it.",
-    description: "The complete intelligence package. Everything in Analysis plus profit improvement plan, due diligence & negotiation pack, and a 60-minute consultation call.",
-    features: [
-      "Everything in Analysis",
       "Profit Improvement Plan (evidence-based, tied to findings)",
-      "Due Diligence Pack (documents checklist, seller questions, landlord questions)",
-      "Negotiation Strategy (buyer/seller leverage, suggested offer range)",
-      "60-minute consultation call",
-      "40-55 page PDF report",
+      "Due Diligence Pack (documents checklist, seller & landlord questions)",
     ],
     notIncluded: [],
     sampleContent: {
@@ -159,7 +95,7 @@ const reportData: ReportInfo[] = [
 ];
 
 export function ReportPreviewSection() {
-  const [activeTier, setActiveTier] = useState<ReportTier>("premium");
+  const [activeTier, setActiveTier] = useState<ReportTier>("intelligence");
   const activeReport = reportData.find((r) => r.tier === activeTier)!;
 
   return (
@@ -167,17 +103,17 @@ export function ReportPreviewSection() {
       <div className="text-center mb-8">
         <h2 className="text-3xl md:text-5xl font-bold mb-4">See What You Get</h2>
         <p style={{ color: "#8b949e" }} className="max-w-2xl mx-auto">
-          One report, four tiers. Pay more = see more. Choose a tier to preview.
+          Two tiers. Choose the depth that fits your stage.
         </p>
       </div>
 
       {/* Toggle Buttons */}
-      <div className="flex flex-wrap justify-center gap-2 mb-12">
+      <div className="flex flex-wrap justify-center gap-3 mb-12">
         {reportData.map((report) => (
           <button
             key={report.tier}
             onClick={() => setActiveTier(report.tier)}
-            className="px-6 py-3 rounded-lg font-semibold transition-all duration-200"
+            className="px-8 py-3 rounded-lg font-semibold transition-all duration-200"
             style={{
               background: activeTier === report.tier ? "#FFD700" : "#161b22",
               color: activeTier === report.tier ? "#000" : "#fff",
@@ -185,7 +121,7 @@ export function ReportPreviewSection() {
               transform: activeTier === report.tier ? "scale(1.05)" : "scale(1)",
             }}
           >
-            {report.name}
+            {report.name} — {report.price}
           </button>
         ))}
       </div>
@@ -197,13 +133,13 @@ export function ReportPreviewSection() {
           <div
             style={{
               background: "#161b22",
-              border: activeTier === "premium" ? "2px solid #FFD700" : "1px solid #30363d",
+              border: activeTier === "intelligence" ? "2px solid #FFD700" : "1px solid #30363d",
               borderRadius: "16px",
               padding: "32px",
               height: "100%",
             }}
           >
-            {activeTier === "premium" && (
+            {activeTier === "intelligence" && (
               <div
                 className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4"
                 style={{ background: "rgba(255, 215, 0, 0.2)", color: "#FFD700" }}
@@ -395,10 +331,7 @@ export function ReportPreviewSection() {
       {/* Upgrade messaging */}
       <div className="text-center mt-8">
         <p className="text-sm" style={{ color: "#8b949e" }}>
-          Pay the difference to upgrade anytime — no new research needed.
-        </p>
-        <p className="text-xs mt-1" style={{ color: "#57606a" }}>
-          Scout → Insight (+£50) | Insight → Analysis (+£100) | Analysis → Intelligence (+£200)
+          Start with Insight. Upgrade to Intelligence anytime — pay the difference (£300), no new research needed.
         </p>
       </div>
     </section>

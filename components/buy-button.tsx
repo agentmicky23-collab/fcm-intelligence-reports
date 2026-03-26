@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ReportRequestModal } from "./report-request-modal";
 
-type ReportTier = "location" | "basic" | "professional" | "premium" | "insider";
+type ReportTier = "insight" | "intelligence" | "insider";
 
 interface ListingInfo {
   name: string;
@@ -21,15 +21,13 @@ interface BuyButtonProps {
   listing?: ListingInfo;
 }
 
-export function BuyButton({ tier = "professional", label, className = "btn-primary w-full mt-4", listing }: BuyButtonProps) {
+export function BuyButton({ tier = "intelligence", label, className = "btn-primary w-full mt-4", listing }: BuyButtonProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const defaultLabels: Record<string, string> = {
-    location: "Buy Scout Report",
-    basic: "Buy Insight Report",
-    professional: "Buy Analysis Report",
-    premium: "Buy Intelligence Report",
+    insight: "Buy Insight Report — £199",
+    intelligence: "Buy Intelligence Report — £499",
     insider: "Become an Insider",
   };
 

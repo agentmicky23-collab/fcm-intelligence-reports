@@ -6,10 +6,8 @@ import { Suspense } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 
 const TIER_LABELS: Record<string, { name: string; price: string; turnaround: string; isSubscription?: boolean }> = {
-  location: { name: "Scout Report", price: "£99", turnaround: "24-48 hours" },
-  basic: { name: "Insight Report", price: "£149", turnaround: "24-48 hours" },
-  professional: { name: "Analysis Report", price: "£249", turnaround: "48-72 hours" },
-  premium: { name: "Intelligence Report", price: "£449", turnaround: "3-5 business days" },
+  insight: { name: "Insight Report", price: "£199", turnaround: "24-48 hours" },
+  intelligence: { name: "Intelligence Report", price: "£499", turnaround: "3-5 business days" },
   insider: { name: "FCM Insider Subscription", price: "£15/month", turnaround: "immediate", isSubscription: true },
 };
 
@@ -19,7 +17,7 @@ function SuccessContent() {
   const listingName = searchParams?.get("listing") || "";
   const customerEmail = searchParams?.get("email") || "";
   const customerPhone = searchParams?.get("phone") || "";
-  const info = TIER_LABELS[tier] || TIER_LABELS.premium;
+  const info = TIER_LABELS[tier] || TIER_LABELS.intelligence;
 
   return (
     <AppLayout>
@@ -201,7 +199,7 @@ function SuccessContent() {
                     3
                   </span>
                   <span>
-                    Your completed PDF report will be delivered to your email within{" "}
+                    Your completed web report will be delivered to your email within{" "}
                     <strong className="text-white">{info.turnaround}</strong>.
                   </span>
                 </li>
@@ -219,7 +217,7 @@ function SuccessContent() {
                     </span>
                   </li>
                 )}
-                {(tier === "professional" || tier === "premium") && (
+                {tier === "intelligence" && (
                   <li className="flex gap-3">
                     <span
                       className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold"
@@ -228,9 +226,7 @@ function SuccessContent() {
                       {customerPhone ? 5 : 4}
                     </span>
                     <span>
-                      We&apos;ll schedule your{" "}
-                      {tier === "premium" ? "60-minute" : "30-minute"} consultation
-                      call.
+                      Your completed web report will be delivered within the estimated timeframe.
                     </span>
                   </li>
                 )}
