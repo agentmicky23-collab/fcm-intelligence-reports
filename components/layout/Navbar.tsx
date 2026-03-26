@@ -37,8 +37,6 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                target={link.external ? "_blank" : undefined}
-                rel={link.external ? "noopener noreferrer" : undefined}
                 className={
                   link.label === "Insider"
                     ? "text-sm font-semibold px-4 py-2 rounded-lg bg-primary text-black hover:bg-primary/90 transition-colors"
@@ -46,7 +44,6 @@ export function Navbar() {
                 }
               >
                 {link.label}
-                {link.external && " ↗"}
               </Link>
             ))}
           </nav>
@@ -67,8 +64,6 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                target={link.external ? "_blank" : undefined}
-                rel={link.external ? "noopener noreferrer" : undefined}
                 onClick={() => setMobileOpen(false)}
                 className={
                   link.label === "Insider"
@@ -77,7 +72,6 @@ export function Navbar() {
                 }
               >
                 {link.label}
-                {link.external && " ↗"}
               </Link>
             ))}
           </nav>
