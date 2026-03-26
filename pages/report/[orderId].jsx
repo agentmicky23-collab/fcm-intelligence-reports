@@ -510,15 +510,16 @@ export default function ReportPage() {
   const [loading, setLoading] = useState(true);
 
   // Check if already verified (sessionStorage for this tab only)
+  // Depend on router.isReady so orderId is populated after hydration
   useEffect(() => {
-    if (!orderId) return;
+    if (!router.isReady || !orderId) return;
     const cached = sessionStorage.getItem(`fcm-verified-${orderId}`);
     if (cached) {
       fetchReport(orderId);
     } else {
       setLoading(false);
     }
-  }, [orderId]);
+  }, [router.isReady, orderId]);
 
   const fetchReport = async (id) => {
     try {
@@ -547,8 +548,8 @@ export default function ReportPage() {
     sessionStorage.setItem(`fcm-verified-${orderId}`, "true");
   };
 
-  // Wait for router to be ready (static export hydrates query params async)
-  if (!orderId) {
+  // Guard: wait for router to hydrate (critical for static export)
+  if (!router.isReady || !orderId) {
     return (
       <div style={{
         minHeight: "100vh", background: T.navy,
