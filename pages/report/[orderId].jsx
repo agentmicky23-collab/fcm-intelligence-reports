@@ -547,7 +547,24 @@ export default function ReportPage() {
     sessionStorage.setItem(`fcm-verified-${orderId}`, "true");
   };
 
-  if (!orderId) return null;
+  // Wait for router to be ready (static export hydrates query params async)
+  if (!orderId) {
+    return (
+      <div style={{
+        minHeight: "100vh", background: T.navy,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontFamily: T.body, fontSize: 14, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "3px", marginBottom: 16 }}>
+            FCM INTELLIGENCE
+          </div>
+          <div style={{ fontFamily: T.body, fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
+            Loading report...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
