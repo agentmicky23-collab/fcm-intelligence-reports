@@ -500,9 +500,9 @@ function UpgradeSuccess() {
 // ============================================================
 // PAGE COMPONENT (Next.js)
 // ============================================================
-export default function ReportPage() {
+export default function ReportPage({ orderId }) {
   const router = useRouter();
-  const { orderId, upgraded } = router.query;
+  const { upgraded } = router.query;
 
   const [verified, setVerified] = useState(false);
   const [reportData, setReportData] = useState(null);
@@ -512,8 +512,7 @@ export default function ReportPage() {
 
   // ── DEBUG: Log every render cycle ──
   console.log('[DEBUG] ReportPage render', {
-    routerReady: router.isReady,
-    orderId,
+    orderId,  // from getServerSideProps — always available
     verified,
     tier,
     loading,
@@ -522,10 +521,11 @@ export default function ReportPage() {
   });
 
   // Check if already verified (sessionStorage for this tab only)
-  // Depend on router.isReady so orderId is populated after hydration
+  // orderId now comes from getServerSideProps — always available on first render
   useEffect(() => {
-    if (!router.isReady || !orderId) {
-      console.log('[DEBUG] useEffect skipped — router not ready or no orderId', { isReady: router.isReady, orderId });
+    if (!orderId) {
+      console.log('[DEBUG] useEffect skipped — no orderId');
+      setLoading(false);
       return;
     }
     console.log('[DEBUG] useEffect running for orderId:', orderId);
@@ -542,7 +542,7 @@ export default function ReportPage() {
       console.error('[DEBUG] sessionStorage access error:', err);
       setLoading(false);
     }
-  }, [router.isReady, orderId]);
+  }, [orderId]);
 
   const fetchReport = async (id) => {
     console.log('[DEBUG] fetchReport called for id:', id);
@@ -655,25 +655,6 @@ export default function ReportPage() {
       setFetchError(`Failed to process report data: ${err.message}`);
     }
   };
-
-  // Guard: wait for router to hydrate (critical for static export)
-  if (!router.isReady || !orderId) {
-    return (
-      <div style={{
-        minHeight: "100vh", background: T.navy,
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontFamily: T.body, fontSize: 14, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "3px", marginBottom: 16 }}>
-            FCM INTELLIGENCE
-          </div>
-          <div style={{ fontFamily: T.body, fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
-            Loading report...
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -793,4 +774,13 @@ export default function ReportPage() {
       <ReportViewer reportData={reportData} tier={tier} orderId={orderId} />
     </>
   );
+}
+
+// ============================================================
+// SERVER-SIDE PROPS — orderId available immediately, no hydration delay
+// ============================================================
+export async function getServerSideProps({ params }) {
+  return {
+    props: { orderId: params.orderId },
+  };
 }
