@@ -10,7 +10,6 @@ const navLinks = [
   { href: "/reports", label: "Reports" },
   { href: "/opportunities", label: "Opportunities" },
   { href: "/insider", label: "Insider" },
-  { href: "https://fcm-intelligence-nextjs.vercel.app", label: "FCM Intelligence", external: true },
 ];
 
 export function Navbar() {

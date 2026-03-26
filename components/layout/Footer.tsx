@@ -26,16 +26,8 @@ export function Footer() {
             <ul className="space-y-2">
               <li><Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">All Listings</Link></li>
               <li><Link href="/reports" className="text-sm text-muted-foreground hover:text-primary transition-colors">Report Pricing</Link></li>
-              <li>
-                <a href="https://fcm-intelligence-nextjs.vercel.app" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  FCM Intelligence ↗
-                </a>
-              </li>
-              <li>
-                <a href="https://fcm-intelligence-nextjs.vercel.app/contact" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Contact Us ↗
-                </a>
-              </li>
+              <li><Link href="/opportunities" className="text-sm text-muted-foreground hover:text-primary transition-colors">Opportunities</Link></li>
+              <li><Link href="/insider" className="text-sm text-muted-foreground hover:text-primary transition-colors">Insider</Link></li>
             </ul>
           </div>
 

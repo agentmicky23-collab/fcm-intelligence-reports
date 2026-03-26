@@ -329,7 +329,7 @@ export default function InsiderPage() {
               </div>
 
               <p style={{ color: "#8b949e", fontSize: "0.875rem" }}>
-                Want the full intelligence report? Get 21-point due diligence
+                Want the full intelligence report? Order an Insight or Intelligence report
                 for any listing.
               </p>
             </div>
@@ -344,7 +344,7 @@ export default function InsiderPage() {
             className="text-2xl md:text-3xl font-bold mb-4"
             style={{ color: "#FFD700" }}
           >
-            First 3 Weekly Reports FREE
+            First 3 Weekly Alerts FREE
           </h3>
           <p className="text-lg" style={{ color: "#8b949e" }}>
             No credit card required. Then £15/month to continue.

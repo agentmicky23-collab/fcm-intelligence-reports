@@ -81,7 +81,8 @@ export default function ListingDetailPage({ params }: PageProps) {
             <nav className="hidden md:flex items-center gap-6">
               <a href="/" className="text-fcm-gold font-semibold">Listings</a>
               <a href="/reports" className="text-gray-400 hover:text-fcm-gold transition-colors">Reports</a>
-              <a href="https://fcm-intelligence-nextjs.vercel.app" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-fcm-gold transition-colors">FCM Intelligence ↗</a>
+              <a href="/opportunities" className="text-gray-400 hover:text-fcm-gold transition-colors">Opportunities</a>
+              <a href="/insider" className="text-gray-400 hover:text-fcm-gold transition-colors">Insider</a>
             </nav>
           </div>
         </div>
@@ -283,12 +284,10 @@ export default function ListingDetailPage({ params }: PageProps) {
                 Get in touch with our team to learn more and arrange a viewing.
               </p>
               <a 
-                href="https://fcm-intelligence-nextjs.vercel.app/contact" 
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/#contact"
                 className="inline-block px-8 py-4 bg-black text-fcm-gold font-bold text-lg rounded-lg hover:bg-gray-900 transition-colors"
               >
-                Request More Information ↗
+                Request More Information
               </a>
             </div>
           </div>
@@ -312,9 +311,9 @@ export default function ListingDetailPage({ params }: PageProps) {
               © {new Date().getFullYear()} FCM Intelligence. All rights reserved.
             </div>
             <div className="flex gap-6 text-sm">
-              <a href="https://fcm-intelligence-nextjs.vercel.app" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-fcm-gold transition-colors">FCM Intelligence</a>
+              <a href="/opportunities" className="text-gray-400 hover:text-fcm-gold transition-colors">Opportunities</a>
               <a href="/reports" className="text-gray-400 hover:text-fcm-gold transition-colors">Reports</a>
-              <a href="https://fcm-intelligence-nextjs.vercel.app/contact" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-fcm-gold transition-colors">Contact</a>
+              <a href="/insider" className="text-gray-400 hover:text-fcm-gold transition-colors">Insider</a>
             </div>
           </div>
         </div>

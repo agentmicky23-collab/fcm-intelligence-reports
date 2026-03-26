@@ -122,7 +122,7 @@ export default function ReportDetailPage({ params }: { params: { slug: string } 
                   <div className="text-6xl mb-4">📄</div>
                   <p className="text-gray-400 mb-4">Sample reports available on request</p>
                   <Link 
-                    href="https://fcm-intelligence-nextjs.vercel.app/contact"
+                    href="/#contact"
                     className="inline-block text-[var(--fcm-gold)] hover:underline font-semibold"
                   >
                     Contact us to request a sample →
@@ -150,7 +150,7 @@ export default function ReportDetailPage({ params }: { params: { slug: string } 
                 </div>
                 
                 <Link
-                  href="https://fcm-intelligence-nextjs.vercel.app/contact"
+                  href="/#contact"
                   className="block w-full px-6 py-4 bg-[var(--fcm-gold)] text-[var(--fcm-dark)] font-semibold text-center rounded-lg hover:bg-[var(--fcm-gold-hover)] transition-colors mb-4"
                 >
                   Request Report
@@ -163,7 +163,7 @@ export default function ReportDetailPage({ params }: { params: { slug: string } 
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[var(--fcm-gold)]">✓</span>
-                    <span>Professional PDF format</span>
+                    <span>Professional online report</span>
                   </div>
                   {report.consultationIncluded && (
                     <div className="flex items-center gap-2">
@@ -182,7 +182,7 @@ export default function ReportDetailPage({ params }: { params: { slug: string } 
                     Questions?
                   </div>
                   <Link 
-                    href="https://fcm-intelligence-nextjs.vercel.app/contact"
+                    href="/#contact"
                     className="text-sm text-[var(--fcm-gold)] hover:underline"
                   >
                     Contact us for guidance

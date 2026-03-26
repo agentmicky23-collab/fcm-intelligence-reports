@@ -51,7 +51,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/reports" className="btn-primary text-lg px-8 py-3 w-full sm:w-auto">View Pricing</Link>
-            <Link href="#report-preview" className="btn-secondary text-lg px-8 py-3 w-full sm:w-auto">See Sample Report</Link>
+            <Link href="/reports" className="btn-secondary text-lg px-8 py-3 w-full sm:w-auto">See Sample Report</Link>
           </div>
         </div>
       </section>
