@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ListingCard, isSoldListingVisible } from "@/components/listing-card";
 import { BuyButton } from "@/components/buy-button";
-import { ReportPreviewSection } from "@/components/report-preview-section";
+
 import { listings } from "@/lib/listings-data";
 
 // Get 3 featured listings with daily rotation
@@ -222,63 +222,90 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ NEW SAMPLE REPORT PREVIEW (Toggle Section) ═══════════════════════════ */}
-      <ReportPreviewSection />
-
-      {/* ═══════════════════════════ PRICING (Insight £199, Intelligence £499) ═══════════════════════════ */}
+      {/* ═══════════════════════════ SEE WHAT YOU GET — TWO-TIER PRICING ═══════════════════════════ */}
       <section className="py-20" id="pricing" style={{ background: '#0d1117' }}>
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">Choose Your Report</h2>
-            <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto">Two tiers. One goal: smarter acquisitions.</p>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">See What You Get</h2>
+            <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto text-lg">
+              Two tiers. One report. All the intelligence you need.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Insight */}
-            <div className="pricing-card-old">
-              <div className="text-xs font-bold mb-2" style={{ color: '#8b949e' }}>Essential</div>
-              <h3 className="text-lg font-bold mb-2">Insight Report</h3>
-              <div className="price-display">£199</div>
-              <div className="price-subtitle">one-time</div>
-              <p className="text-sm italic mb-4" style={{ color: '#c9a227' }}>&ldquo;Is this the right business?&rdquo;</p>
-              <p style={{ color: '#8b949e', fontSize: '0.85rem', marginBottom: '16px' }}>Full location intelligence with demographics, crime, footfall, competition, and risk assessment. Everything you need to decide if a business is worth pursuing.</p>
-              <ul>
-                <li>Executive Summary &amp; Verdict</li>
-                <li>PO Remuneration Analysis</li>
-                <li>Online Presence &amp; Reviews</li>
-                <li>Location Intelligence</li>
-                <li>Demographics &amp; Community Profile</li>
-                <li>Crime &amp; Safety Analysis</li>
-                <li>Competition Mapping</li>
-                <li>Footfall Analysis</li>
-                <li>Infrastructure &amp; Connectivity</li>
-                <li>Risk Assessment</li>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-start">
+            {/* ── Insight Report ── */}
+            <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '16px', padding: '36px', position: 'relative' }}>
+              <h3 className="text-2xl font-bold mb-1">Insight Report — <span style={{ color: '#FFD700' }}>£199</span></h3>
+              <p className="text-sm italic mb-5" style={{ color: '#c9a227' }}>&ldquo;Is this the right business?&rdquo;</p>
+
+              <p className="font-semibold text-sm mb-3 uppercase tracking-wider" style={{ color: '#c9a227' }}>10 sections included:</p>
+              <ul className="space-y-2 mb-6">
+                {[
+                  'Executive Summary & Verdict',
+                  'PO Remuneration Analysis',
+                  'Online Presence & Reviews',
+                  'Location Intelligence',
+                  'Demographics & Community Profile',
+                  'Crime & Safety Analysis',
+                  'Competition Mapping',
+                  'Footfall Analysis',
+                  'Infrastructure & Connectivity',
+                  'Risk Assessment',
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm">
+                    <span style={{ color: '#22c55e' }}>✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
               </ul>
-              <BuyButton tier="insight" label="Buy Insight Report — £199" />
+
+              <p className="text-sm mb-6" style={{ color: '#8b949e', lineHeight: 1.7 }}>
+                Delivered as an interactive online report within 48 hours.
+              </p>
+
+              <p className="text-xs mb-5" style={{ color: '#c9a227' }}>
+                💡 Want the full picture? Upgrade to Intelligence for £300.
+              </p>
+
+              <BuyButton tier="insight" label="Buy Insight Report — £199" className="btn-primary w-full text-lg py-3" />
             </div>
-            {/* Intelligence ⭐ */}
-            <div className="pricing-card-old popular">
-              <div className="popular-badge">MOST POPULAR</div>
-              <div className="text-xs font-bold mb-2" style={{ color: '#c9a227' }}>⭐ Most Popular</div>
-              <h3 className="text-lg font-bold mb-2">Intelligence Report</h3>
-              <div className="price-display">£499</div>
-              <div className="price-subtitle">one-time</div>
-              <p className="text-sm italic mb-4" style={{ color: '#c9a227' }}>&ldquo;Help me buy it.&rdquo;</p>
-              <p style={{ color: '#8b949e', fontSize: '0.85rem', marginBottom: '16px' }}>The complete intelligence package. Everything in Insight plus financial analysis, staffing, future outlook, profit improvement plan, and due diligence pack.</p>
-              <ul>
-                <li>Everything in Insight (10 sections)</li>
-                <li>Financial Analysis (P&amp;L, benchmarks, valuation)</li>
-                <li>Staffing &amp; Hidden Costs</li>
-                <li>Future Outlook (5-year timeline)</li>
-                <li>Profit Improvement Plan</li>
-                <li>Due Diligence Pack</li>
+
+            {/* ── Intelligence Report ⭐ ── */}
+            <div style={{ background: '#161b22', border: '2px solid #FFD700', borderRadius: '16px', padding: '36px', position: 'relative' }}>
+              <div className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: 'rgba(255,215,0,0.2)', color: '#FFD700' }}>
+                ⭐ MOST POPULAR
+              </div>
+
+              <h3 className="text-2xl font-bold mb-1">Intelligence Report — <span style={{ color: '#FFD700' }}>£499</span></h3>
+              <p className="text-sm italic mb-5" style={{ color: '#c9a227' }}>&ldquo;Help me buy it.&rdquo;</p>
+
+              <p className="font-semibold text-sm mb-3 uppercase tracking-wider" style={{ color: '#c9a227' }}>All 15 sections:</p>
+              <p className="text-sm mb-3" style={{ color: '#8b949e' }}>Everything in Insight, plus:</p>
+              <ul className="space-y-2 mb-6">
+                {[
+                  'Financial Analysis',
+                  'Staffing & Hidden Costs',
+                  'Future Outlook',
+                  'Profit Improvement Plan',
+                  'Due Diligence & Negotiation',
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm">
+                    <span style={{ color: '#22c55e' }}>✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
               </ul>
-              <BuyButton tier="intelligence" label="Buy Intelligence Report — £499" />
+
+              <p className="text-sm mb-6" style={{ color: '#8b949e', lineHeight: 1.7 }}>
+                Delivered as an interactive online report within 48 hours.
+              </p>
+
+              <BuyButton tier="intelligence" label="Buy Intelligence Report — £499" className="btn-primary w-full text-lg py-3" />
             </div>
           </div>
 
-          <p className="text-center mt-8 text-sm" style={{ color: '#8b949e' }}>
-            💡 Start with Insight. Upgrade to Intelligence anytime — pay the difference (£300), no new research needed.
+          <p className="text-center mt-10 text-sm" style={{ color: '#8b949e' }}>
+            💡 Already bought Insight? Upgrade to Intelligence for £300 — no new research needed.
           </p>
         </div>
       </section>
