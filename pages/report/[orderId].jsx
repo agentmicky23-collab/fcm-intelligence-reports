@@ -508,20 +508,44 @@ export default function ReportPage() {
   const [reportData, setReportData] = useState(null);
   const [tier, setTier] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+
+  // ── DEBUG: Log every render cycle ──
+  console.log('[DEBUG] ReportPage render', {
+    routerReady: router.isReady,
+    orderId,
+    verified,
+    tier,
+    loading,
+    hasReportData: !!reportData,
+    fetchError,
+  });
 
   // Check if already verified (sessionStorage for this tab only)
   // Depend on router.isReady so orderId is populated after hydration
   useEffect(() => {
-    if (!router.isReady || !orderId) return;
-    const cached = sessionStorage.getItem(`fcm-verified-${orderId}`);
-    if (cached) {
-      fetchReport(orderId);
-    } else {
+    if (!router.isReady || !orderId) {
+      console.log('[DEBUG] useEffect skipped — router not ready or no orderId', { isReady: router.isReady, orderId });
+      return;
+    }
+    console.log('[DEBUG] useEffect running for orderId:', orderId);
+
+    try {
+      const cached = sessionStorage.getItem(`fcm-verified-${orderId}`);
+      console.log('[DEBUG] sessionStorage cached:', cached);
+      if (cached) {
+        fetchReport(orderId);
+      } else {
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('[DEBUG] sessionStorage access error:', err);
       setLoading(false);
     }
   }, [router.isReady, orderId]);
 
   const fetchReport = async (id) => {
+    console.log('[DEBUG] fetchReport called for id:', id);
     try {
       const { data, error } = await supabase
         .from("reports")
@@ -529,23 +553,107 @@ export default function ReportPage() {
         .eq("order_id", id)
         .single();
 
-      if (data && !error) {
-        setReportData(data.report_json);
-        setTier(data.tier);
-        setVerified(true);
-        sessionStorage.setItem(`fcm-verified-${id}`, "true");
+      console.log('[DEBUG] Supabase response:', {
+        hasData: !!data,
+        error: error || null,
+        tier: data?.tier,
+        hasReportJson: !!data?.report_json,
+        reportJsonType: typeof data?.report_json,
+        reportJsonKeys: data?.report_json ? Object.keys(data.report_json) : [],
+      });
+
+      if (error) {
+        console.error('[DEBUG] Supabase query error:', error);
+        setFetchError(`Database error: ${error.message}`);
+        setLoading(false);
+        return;
       }
+
+      if (!data) {
+        console.error('[DEBUG] No data returned from Supabase');
+        setFetchError('Report not found in database.');
+        setLoading(false);
+        return;
+      }
+
+      if (!data.report_json) {
+        console.error('[DEBUG] report_json is null/undefined for order:', id);
+        setFetchError('Report data is empty — report may still be generating.');
+        setLoading(false);
+        return;
+      }
+
+      if (typeof data.report_json === 'string') {
+        console.warn('[DEBUG] report_json is a string, attempting JSON.parse...');
+        try {
+          data.report_json = JSON.parse(data.report_json);
+          console.log('[DEBUG] Successfully parsed report_json string');
+        } catch (parseErr) {
+          console.error('[DEBUG] Failed to parse report_json string:', parseErr);
+          setFetchError('Report data is malformed (invalid JSON string).');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Validate expected structure
+      console.log('[DEBUG] report_json structure:', {
+        hasMetadata: !!data.report_json?.metadata,
+        hasOrder: !!data.report_json?.order,
+        hasSections: !!data.report_json?.sections,
+        metadataKeys: data.report_json?.metadata ? Object.keys(data.report_json.metadata) : [],
+        sectionKeys: data.report_json?.sections ? Object.keys(data.report_json.sections) : [],
+        businessName: data.report_json?.metadata?.business_name,
+        overallScore: data.report_json?.metadata?.overall_score,
+      });
+
+      setReportData(data.report_json);
+      setTier(data.tier);
+      setVerified(true);
+      sessionStorage.setItem(`fcm-verified-${id}`, "true");
     } catch (err) {
-      console.error("Failed to fetch report:", err);
+      console.error('[DEBUG] fetchReport exception:', err);
+      setFetchError(`Unexpected error: ${err.message}`);
     }
     setLoading(false);
   };
 
   const handleVerified = (data) => {
-    setReportData(data.report_json);
-    setTier(data.tier);
-    setVerified(true);
-    sessionStorage.setItem(`fcm-verified-${orderId}`, "true");
+    console.log('[DEBUG] handleVerified called', {
+      tier: data.tier,
+      hasReportJson: !!data.report_json,
+      reportJsonType: typeof data.report_json,
+    });
+
+    try {
+      let reportJson = data.report_json;
+
+      // Handle string report_json from email gate too
+      if (typeof reportJson === 'string') {
+        console.warn('[DEBUG] handleVerified: report_json is string, parsing...');
+        reportJson = JSON.parse(reportJson);
+      }
+
+      if (!reportJson) {
+        console.error('[DEBUG] handleVerified: report_json is null after processing');
+        setFetchError('Report data is empty.');
+        return;
+      }
+
+      console.log('[DEBUG] handleVerified report structure:', {
+        hasMetadata: !!reportJson?.metadata,
+        hasSections: !!reportJson?.sections,
+        sectionKeys: reportJson?.sections ? Object.keys(reportJson.sections) : [],
+      });
+
+      setReportData(reportJson);
+      setTier(data.tier);
+      setVerified(true);
+      sessionStorage.setItem(`fcm-verified-${orderId}`, "true");
+    } catch (err) {
+      console.error('[DEBUG] handleVerified error:', err);
+      setFetchError(`Failed to process report data: ${err.message}`);
+    }
   };
 
   // Guard: wait for router to hydrate (critical for static export)
@@ -585,6 +693,42 @@ export default function ReportPage() {
     );
   }
 
+  // ── DEBUG: Show fetch errors instead of crashing ──
+  if (fetchError) {
+    return (
+      <div style={{
+        minHeight: "100vh", background: T.navy,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 20,
+      }}>
+        <div style={{ textAlign: "center", maxWidth: 500 }}>
+          <div style={{ fontFamily: T.body, fontSize: 14, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "3px", marginBottom: 16 }}>
+            FCM INTELLIGENCE
+          </div>
+          <div style={{ fontFamily: T.body, fontSize: 15, color: "#ff6b6b", marginBottom: 12 }}>
+            ⚠️ Report Error
+          </div>
+          <div style={{ fontFamily: T.body, fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 24 }}>
+            {fetchError}
+          </div>
+          <div style={{ fontFamily: T.body, fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
+            Order ID: {orderId} | Check browser console for debug details
+          </div>
+          <button
+            onClick={() => { setFetchError(null); setLoading(false); setVerified(false); sessionStorage.removeItem(`fcm-verified-${orderId}`); }}
+            style={{
+              marginTop: 20, padding: "10px 24px", borderRadius: 6, border: "none",
+              background: T.gold, color: T.navy, fontFamily: T.body, fontSize: 12, fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!verified) {
     return (
       <>
@@ -594,6 +738,48 @@ export default function ReportPage() {
         </Head>
         <EmailGate orderId={orderId} onVerified={handleVerified} />
       </>
+    );
+  }
+
+  // ── DEBUG: Final safety check before rendering ──
+  if (!reportData || !reportData.metadata || !reportData.sections) {
+    console.error('[DEBUG] reportData missing expected structure at render time:', {
+      hasReportData: !!reportData,
+      hasMetadata: !!reportData?.metadata,
+      hasSections: !!reportData?.sections,
+      reportDataKeys: reportData ? Object.keys(reportData) : [],
+    });
+    return (
+      <div style={{
+        minHeight: "100vh", background: T.navy,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 20,
+      }}>
+        <div style={{ textAlign: "center", maxWidth: 500 }}>
+          <div style={{ fontFamily: T.body, fontSize: 14, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "3px", marginBottom: 16 }}>
+            FCM INTELLIGENCE
+          </div>
+          <div style={{ fontFamily: T.body, fontSize: 15, color: "#ff6b6b", marginBottom: 12 }}>
+            ⚠️ Report Data Incomplete
+          </div>
+          <div style={{ fontFamily: T.body, fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 12 }}>
+            The report data is missing required fields (metadata or sections).
+          </div>
+          <div style={{ fontFamily: T.body, fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 24 }}>
+            Order ID: {orderId} | Tier: {tier || 'unknown'} | Keys: {reportData ? Object.keys(reportData).join(', ') : 'null'}
+          </div>
+          <button
+            onClick={() => { setFetchError(null); setVerified(false); setReportData(null); setLoading(false); sessionStorage.removeItem(`fcm-verified-${orderId}`); }}
+            style={{
+              padding: "10px 24px", borderRadius: 6, border: "none",
+              background: T.gold, color: T.navy, fontFamily: T.body, fontSize: 12, fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
     );
   }
 
