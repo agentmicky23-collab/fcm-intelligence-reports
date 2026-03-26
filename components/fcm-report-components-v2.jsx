@@ -11,7 +11,9 @@ import * as Chart from "chart.js";
 
 Chart.Chart.register(
   Chart.ArcElement, Chart.BarElement, Chart.LineElement, Chart.PointElement,
-  Chart.CategoryScale, Chart.LinearScale, Chart.Tooltip, Chart.Legend
+  Chart.BarController, Chart.DoughnutController, Chart.LineController,
+  Chart.CategoryScale, Chart.LinearScale,
+  Chart.Tooltip, Chart.Legend
 );
 
 // ============================================================
