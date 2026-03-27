@@ -227,10 +227,10 @@ export default function ReportShowcase() {
   return (
     <section style={{ maxWidth: 900, margin: "0 auto" }}>
 
-      {/* HERO SECTION — Full viewport impact */}
+      {/* HERO SECTION */}
       <div style={{
-        minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
-        padding: "80px 20px", textAlign: "center",
+        display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+        padding: "80px 20px 32px", textAlign: "center",
       }}>
         <div style={{ fontFamily: T.body, fontSize: 12, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 4, marginBottom: 24 }}>Intelligence reports</div>
         <h1 className="fcm-hero-heading" style={{ fontFamily: T.heading, fontSize: 44, fontWeight: 700, color: T.white, lineHeight: 1.2, marginBottom: 20, maxWidth: 780 }}>
