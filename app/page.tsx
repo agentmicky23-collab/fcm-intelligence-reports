@@ -9,24 +9,44 @@ import { listings } from "@/lib/listings-data";
 
 // Get 3 featured listings with daily rotation
 function getFeaturedListings() {
-  // Filter to only active listings (or sold within 3 days)
   const availableListings = listings.filter(listing => isSoldListingVisible(listing));
-  
-  // Daily rotation based on date
   const today = new Date();
   const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
-  
-  // Rotate starting index based on day
   const startIndex = dayOfYear % Math.max(1, availableListings.length - 2);
-  
-  // Get 3 listings starting from rotated index
   const featured = [];
   for (let i = 0; i < 3 && i < availableListings.length; i++) {
     const idx = (startIndex + i) % availableListings.length;
     featured.push(availableListings[idx]);
   }
-  
   return featured;
+}
+
+// Score Ring SVG component
+function ScoreRing({ score, label, grade, color }: { score: number; label: string; grade: string; color: string }) {
+  const radius = 32;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative" style={{ width: 76, height: 76 }}>
+        <svg width="76" height="76" viewBox="0 0 76 76">
+          <circle cx="38" cy="38" r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5" />
+          <circle
+            cx="38" cy="38" r={radius} fill="none"
+            stroke={color} strokeWidth="5" strokeLinecap="round"
+            strokeDasharray={circumference} strokeDashoffset={offset}
+            transform="rotate(-90 38 38)"
+            style={{ transition: 'stroke-dashoffset 1s ease' }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-mono text-lg font-bold" style={{ color }}>{score}</span>
+          <span className="text-[10px] font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>{grade}</span>
+        </div>
+      </div>
+      <span className="text-xs text-center font-medium" style={{ color: '#8b949e', maxWidth: 80 }}>{label}</span>
+    </div>
+  );
 }
 
 export default function Home() {
@@ -50,14 +70,14 @@ export default function Home() {
             Data-driven intelligence reports that reveal the true potential of any Post Office acquisition. <strong className="text-white">Stop guessing. Start knowing.</strong>
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/reports" className="btn-primary text-lg px-8 py-3 w-full sm:w-auto">View Pricing</Link>
-            <Link href="/reports" className="btn-secondary text-lg px-8 py-3 w-full sm:w-auto">See Sample Report</Link>
+            <Link href="/reports" className="btn-primary text-lg px-8 py-3 w-full sm:w-auto">View Reports</Link>
+            <Link href="#sample-preview" className="btn-secondary text-lg px-8 py-3 w-full sm:w-auto">See a Sample Report</Link>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════ STATS ROW ═══════════════════════════ */}
-      <section style={{ borderTop: '1px solid #30363d', borderBottom: '1px solid #30363d', background: 'rgba(22, 27, 34, 0.5)' }}>
+      <section style={{ borderTop: '1px solid #30363d', borderBottom: '1px solid #30363d', background: '#0d1117' }}>
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
@@ -81,7 +101,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ TRUST BADGES ═══════════════════════════ */}
-      <section className="py-6" style={{ background: 'rgba(0,0,0,0.5)', borderBottom: '1px solid rgba(201,162,39,0.2)' }}>
+      <section className="py-6" style={{ background: '#0d1117', borderBottom: '1px solid rgba(201,162,39,0.2)' }}>
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap items-center justify-center gap-8 text-sm" style={{ color: '#8b949e' }}>
             <div className="flex items-center gap-2"><span style={{ color: '#c9a227' }}>🔒</span><span>SSL Secured</span></div>
@@ -92,50 +112,116 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ CURATION EXPLAINER ═══════════════════════════ */}
-      <section className="py-16 container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="feature-card-old">
-            <div className="icon">🔍</div>
-            <h3>Daily Scanning</h3>
-            <p>We monitor Daltons, RightBiz, BusinessesForSale, and private sellers across the UK every day.</p>
+      {/* ═══════════════════════════ SECTION 3: TWO-PATH DISCOVERY ═══════════════════════════ */}
+      <section className="py-20" style={{ background: '#0d1117' }}>
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">Two Ways to Win</h2>
+            <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto text-lg">
+              Find the right opportunity. Then know exactly what you&apos;re buying.
+            </p>
           </div>
-          <div className="feature-card-old">
-            <div className="icon">✅</div>
-            <h3>Verified Active</h3>
-            <p>Every listing is checked to confirm it&apos;s still available before we share. No dead links or sold businesses.</p>
-          </div>
-          <div className="feature-card-old">
-            <div className="icon">🎯</div>
-            <h3>Quality Filtered</h3>
-            <p>Only listings that pass our initial viability check make it here. No overpriced duds or obvious money pits.</p>
-          </div>
-          <div className="feature-card-old">
-            <div className="icon">📊</div>
-            <h3>Expert Context</h3>
-            <p>Each listing gets our quick assessment. Want the full picture? That&apos;s what our reports are for.</p>
-          </div>
-        </div>
-      </section>
 
-      {/* ═══════════════════════════ WHY INTELLIGENCE MATTERS ═══════════════════════════ */}
-      <section className="pb-16 container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          <div style={{ background: '#161b22', border: '2px solid rgba(201,162,39,0.3)', borderRadius: '16px', padding: '32px' }}>
-            <div className="text-3xl mb-4">⏱️</div>
-            <h3 className="text-xl font-bold mb-3">Time Is Money</h3>
-            <p style={{ color: '#8b949e', lineHeight: 1.7 }}>Quality businesses attract multiple buyers. Get the intelligence you need to make decisive offers before your competition.</p>
-          </div>
-          <div style={{ background: '#161b22', border: '2px solid rgba(201,162,39,0.3)', borderRadius: '16px', padding: '32px' }}>
-            <div className="text-3xl mb-4">🎯</div>
-            <h3 className="text-xl font-bold mb-3">Know Before You Go</h3>
-            <p style={{ color: '#8b949e', lineHeight: 1.7 }}>Listings only tell half the story. Our reports reveal the full picture — location risks, hidden costs, and real potential.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Left: Listings Card — /reports bordered tier aesthetic */}
+            <div style={{
+              border: '1px solid rgba(201,162,39,0.18)',
+              borderRadius: 20,
+              padding: 0,
+              overflow: 'hidden',
+              background: '#0d1117',
+            }}>
+              {/* Header bar */}
+              <div style={{
+                background: '#0B1D3A',
+                padding: '28px 32px',
+                position: 'relative',
+                overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(201,162,39,0.5)', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>FCM Intelligence</div>
+                    <div className="text-2xl font-bold text-white">Find Opportunities</div>
+                  </div>
+                  <div className="text-4xl">🔍</div>
+                </div>
+                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>
+                  Daily scanning so you never miss a deal
+                </div>
+              </div>
+              {/* Body */}
+              <div style={{ padding: '24px 32px 32px' }}>
+                <ul className="space-y-3 mb-6">
+                  {[
+                    'Daltons, RightBiz, BusinessesForSale — monitored daily',
+                    'Every listing verified as still active',
+                    'Quality filtered — no overpriced duds',
+                    'Expert context on every opportunity',
+                    'Updated daily with new finds',
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm">
+                      <span style={{ color: '#22c55e', marginTop: 1 }}>✓</span>
+                      <span style={{ color: '#e6edf3' }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/opportunities" className="btn-secondary w-full text-base py-3">Browse Listings →</Link>
+              </div>
+            </div>
+
+            {/* Right: Reports Card — /reports bordered tier aesthetic */}
+            <div style={{
+              border: '1px solid rgba(201,162,39,0.18)',
+              borderRadius: 20,
+              padding: 0,
+              overflow: 'hidden',
+              background: '#0d1117',
+            }}>
+              {/* Header bar */}
+              <div style={{
+                background: '#0B1D3A',
+                padding: '28px 32px',
+                position: 'relative',
+                overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, rgba(201,162,39,0.4), transparent)' }} />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#c9a227', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>FCM Intelligence</div>
+                    <div className="text-2xl font-bold text-white">Know What You&apos;re Buying</div>
+                  </div>
+                  <div className="text-4xl">📊</div>
+                </div>
+                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>
+                  Intelligence reports that reveal the full picture
+                </div>
+              </div>
+              {/* Body */}
+              <div style={{ padding: '24px 32px 32px' }}>
+                <ul className="space-y-3 mb-6">
+                  {[
+                    'Insight Report — £199 (10 verified sections)',
+                    'Intelligence Report — £499 (all 15 sections + call)',
+                    'Delivered within 48 hours',
+                    'Location, financial, competition — all covered',
+                    'Upgrade anytime — pay the difference',
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm">
+                      <span style={{ color: '#c9a227', marginTop: 1 }}>✓</span>
+                      <span style={{ color: '#e6edf3' }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="#report-tiers" className="btn-primary w-full text-base py-3">See What&apos;s Inside →</Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════ DISCLAIMER ═══════════════════════════ */}
-      <section className="py-6" style={{ background: 'rgba(22,27,34,0.5)', borderTop: '1px solid #30363d', borderBottom: '1px solid #30363d' }}>
+      <section className="py-6" style={{ background: '#0d1117', borderTop: '1px solid #30363d', borderBottom: '1px solid #30363d' }}>
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm max-w-4xl mx-auto" style={{ color: '#8b949e', lineHeight: 1.7 }}>
             <strong className="text-white">Disclaimer:</strong> Listings are sourced from third-party sites. We do not control original listings and cannot guarantee availability. Links direct to the original source — verify status before proceeding. Listings marked SOLD are removed from this page.
@@ -143,27 +229,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ FEATURED LISTINGS (3 with daily rotation) ═══════════════════════════ */}
-      <section className="py-20 container mx-auto px-4" id="opportunities">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">🔥 Live Opportunities</h2>
-          <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto mb-2">Businesses For Sale Now</p>
-          <p style={{ color: '#57606a', fontSize: '0.9rem' }}>
-            Showing {featuredListings.length} of {listings.length} opportunities • <Link href="/opportunities" className="underline" style={{ color: '#c9a227' }}>View All</Link>
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {featuredListings.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
-        </div>
-        <div className="text-center mt-12">
-          <Link href="/opportunities" className="btn-primary text-lg px-10 py-4">View All {listings.length} Listings</Link>
+      {/* ═══════════════════════════ FEATURED LISTINGS ═══════════════════════════ */}
+      <section className="py-20" id="opportunities" style={{ background: 'linear-gradient(180deg, #0d1117 0%, #111820 100%)' }}>
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">🔥 Live Opportunities</h2>
+            <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto mb-2">Businesses For Sale Now</p>
+            <p style={{ color: '#57606a', fontSize: '0.9rem' }}>
+              Showing {featuredListings.length} of {listings.length} opportunities • <Link href="/opportunities" className="underline" style={{ color: '#c9a227' }}>View All</Link>
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {featuredListings.map((listing) => (
+              <ListingCard key={listing.id} listing={listing} />
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Link href="/opportunities" className="btn-primary text-lg px-10 py-4">View All {listings.length} Listings</Link>
+          </div>
         </div>
       </section>
 
       {/* ═══════════════════════════ ALERTS CTA BANNER ═══════════════════════════ */}
-      <section className="py-8" style={{ background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.08) 0%, rgba(30, 58, 95, 0.15) 100%)', borderTop: '1px solid rgba(201,162,39,0.2)', borderBottom: '1px solid rgba(201,162,39,0.2)' }}>
+      <section className="py-8" style={{ background: '#111820', borderTop: '1px solid rgba(201,162,39,0.15)', borderBottom: '1px solid rgba(201,162,39,0.15)' }}>
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -178,150 +266,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ WHAT'S INCLUDED (3 cards like old site) ═══════════════════════════ */}
-      <section className="py-20" style={{ background: '#161b22', borderTop: '1px solid #30363d', borderBottom: '1px solid #30363d' }}>
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Location Intelligence */}
-            <div className="feature-card-old" style={{ textAlign: 'left', padding: '32px' }}>
-              <div className="icon" style={{ textAlign: 'center' }}>📍</div>
-              <h3 style={{ textAlign: 'center' }}>Location Intelligence</h3>
-              <p style={{ textAlign: 'center', marginBottom: '16px' }}>Comprehensive analysis of the branch&apos;s catchment area, foot traffic patterns, and local competition.</p>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• Demographic breakdown</li>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• Competitor mapping</li>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• Footfall analysis</li>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• Accessibility assessment</li>
-              </ul>
-            </div>
-            {/* Financial Deep Dive */}
-            <div className="feature-card-old" style={{ textAlign: 'left', padding: '32px' }}>
-              <div className="icon" style={{ textAlign: 'center' }}>📊</div>
-              <h3 style={{ textAlign: 'center' }}>Financial Deep Dive</h3>
-              <p style={{ textAlign: 'center', marginBottom: '16px' }}>Detailed examination of revenue streams, profit margins, and hidden costs most buyers miss.</p>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• Revenue breakdown by service</li>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• True cost analysis</li>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• Margin comparison benchmarks</li>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• Cash flow projections</li>
-              </ul>
-            </div>
-            {/* Profit Improvement Plan */}
-            <div className="feature-card-old" style={{ textAlign: 'left', padding: '32px' }}>
-              <div className="icon" style={{ textAlign: 'center' }}>🚀</div>
-              <h3 style={{ textAlign: 'center' }}>Profit Improvement Plan</h3>
-              <p style={{ textAlign: 'center', marginBottom: '16px' }}>Actionable recommendations to increase profitability based on our 40-branch operational experience.</p>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• Quick win opportunities</li>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• Service expansion potential</li>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• Operational efficiencies</li>
-                <li style={{ padding: '6px 0', color: '#8b949e', fontSize: '0.9rem' }}>• 12-month growth roadmap</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════ SEE WHAT YOU GET — TWO-TIER PRICING ═══════════════════════════ */}
-      <section className="py-20" id="pricing" style={{ background: '#0d1117' }}>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">See What You Get</h2>
-            <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto text-lg">
-              Two tiers. One report. All the intelligence you need.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-start">
-            {/* ── Insight Report ── */}
-            <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '16px', padding: '36px', position: 'relative' }}>
-              <h3 className="text-2xl font-bold mb-1">Insight Report — <span style={{ color: '#FFD700' }}>£199</span></h3>
-              <p className="text-sm italic mb-5" style={{ color: '#c9a227' }}>&ldquo;Is this the right business?&rdquo;</p>
-
-              <p className="font-semibold text-sm mb-3 uppercase tracking-wider" style={{ color: '#c9a227' }}>10 sections included:</p>
-              <ul className="space-y-2 mb-6">
-                {[
-                  'Executive Summary & Verdict',
-                  'PO Remuneration Analysis',
-                  'Online Presence & Reviews',
-                  'Location Intelligence',
-                  'Demographics & Community Profile',
-                  'Crime & Safety Analysis',
-                  'Competition Mapping',
-                  'Footfall Analysis',
-                  'Infrastructure & Connectivity',
-                  'Risk Assessment',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm">
-                    <span style={{ color: '#22c55e' }}>✓</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <p className="text-sm mb-6" style={{ color: '#8b949e', lineHeight: 1.7 }}>
-                Delivered as an interactive online report within 48 hours.
-              </p>
-
-              <p className="text-xs mb-5" style={{ color: '#c9a227' }}>
-                💡 Want the full picture? Upgrade to Intelligence for £300.
-              </p>
-
-              <BuyButton tier="insight" label="Buy Insight Report — £199" className="btn-primary w-full text-lg py-3" />
-            </div>
-
-            {/* ── Intelligence Report ⭐ ── */}
-            <div style={{ background: '#161b22', border: '2px solid #FFD700', borderRadius: '16px', padding: '36px', position: 'relative' }}>
-              <div className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: 'rgba(255,215,0,0.2)', color: '#FFD700' }}>
-                ⭐ MOST POPULAR
-              </div>
-
-              <h3 className="text-2xl font-bold mb-1">Intelligence Report — <span style={{ color: '#FFD700' }}>£499</span></h3>
-              <p className="text-sm italic mb-5" style={{ color: '#c9a227' }}>&ldquo;Help me buy it.&rdquo;</p>
-
-              <p className="font-semibold text-sm mb-3 uppercase tracking-wider" style={{ color: '#c9a227' }}>All 15 sections:</p>
-              <p className="text-sm mb-3" style={{ color: '#8b949e' }}>Everything in Insight, plus:</p>
-              <ul className="space-y-2 mb-6">
-                {[
-                  'Financial Analysis',
-                  'Staffing & Hidden Costs',
-                  'Future Outlook',
-                  'Profit Improvement Plan',
-                  'Due Diligence & Negotiation',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm">
-                    <span style={{ color: '#22c55e' }}>✓</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <p className="text-sm mb-6" style={{ color: '#8b949e', lineHeight: 1.7 }}>
-                Delivered as an interactive online report within 48 hours.
-              </p>
-
-              <BuyButton tier="intelligence" label="Buy Intelligence Report — £499" className="btn-primary w-full text-lg py-3" />
-            </div>
-          </div>
-
-          <p className="text-center mt-10 text-sm" style={{ color: '#8b949e' }}>
-            💡 Already bought Insight? Upgrade to Intelligence for £300 — no new research needed.
-          </p>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════ TESTIMONIAL QUOTE (PROMINENT) ═══════════════════════════ */}
+      {/* ═══════════════════════════ TESTIMONIAL (moved BEFORE services for conversion) ═══════════════════════════ */}
       <section 
-        className="py-20 my-0" 
+        className="py-20" 
         style={{ 
-          background: 'linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)',
-          borderTop: '2px solid rgba(255, 215, 0, 0.3)',
-          borderBottom: '2px solid rgba(255, 215, 0, 0.3)',
+          background: 'linear-gradient(180deg, #0a0e14 0%, #111820 50%, #0a0e14 100%)',
+          borderTop: '2px solid rgba(255, 215, 0, 0.2)',
+          borderBottom: '2px solid rgba(255, 215, 0, 0.2)',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Decorative background elements */}
         <div style={{
           position: 'absolute',
           top: '50%',
@@ -329,19 +284,18 @@ export default function Home() {
           transform: 'translate(-50%, -50%)',
           width: '800px',
           height: '800px',
-          background: 'radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(255, 215, 0, 0.04) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-5xl mx-auto text-center">
-            {/* Large decorative quote mark */}
             <div 
               className="mb-6"
               style={{ 
                 fontSize: '6rem', 
                 lineHeight: 1, 
-                color: 'rgba(255, 215, 0, 0.3)',
+                color: 'rgba(255, 215, 0, 0.25)',
                 fontFamily: 'Georgia, serif',
               }}
             >
@@ -381,8 +335,206 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ CONSULTATION SERVICES TEASER ═══════════════════════════ */}
-      <section className="py-16" style={{ background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.08) 0%, rgba(30, 58, 95, 0.15) 100%)', borderTop: '1px solid rgba(201,162,39,0.2)', borderBottom: '1px solid rgba(201,162,39,0.2)' }}>
+      {/* ═══════════════════════════ MINI "HOW IT WORKS" BRIDGE ═══════════════════════════ */}
+      <section className="py-16" style={{ background: '#0d1117' }}>
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">How It Works</h2>
+            <p style={{ color: '#8b949e' }}>From listing to intelligence in 3 steps</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {[
+              { step: '01', icon: '🎯', title: 'Pick a Listing', desc: 'Browse our curated opportunities or bring your own.' },
+              { step: '02', icon: '📊', title: 'Order a Report', desc: 'Choose Insight (£199) or Intelligence (£499). We do the rest.' },
+              { step: '03', icon: '✅', title: 'Decide With Confidence', desc: '48 hours later — every risk, every opportunity, verified.' },
+            ].map((s) => (
+              <div key={s.step} className="text-center" style={{ position: 'relative' }}>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 64, height: 64, borderRadius: '50%',
+                  background: 'rgba(201,162,39,0.08)', border: '1px solid rgba(201,162,39,0.2)',
+                  fontSize: '1.5rem', marginBottom: 16,
+                }}>{s.icon}</div>
+                <div className="font-mono text-xs font-bold mb-2" style={{ color: '#c9a227', letterSpacing: 2 }}>STEP {s.step}</div>
+                <h3 className="text-lg font-bold mb-2 text-white">{s.title}</h3>
+                <p className="text-sm" style={{ color: '#8b949e', lineHeight: 1.6 }}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════ REPORT PREVIEW WITH SCORE RINGS ═══════════════════════════ */}
+      <section className="py-20" id="sample-preview" style={{ background: 'linear-gradient(180deg, #0d1117 0%, #0a0e14 100%)', borderTop: '1px solid #30363d' }}>
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">What&apos;s Inside Every Report</h2>
+            <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto text-lg">
+              Real scores from a real report. Every section verified, every risk quantified.
+            </p>
+          </div>
+
+          {/* Score Ring Previews */}
+          <div className="flex flex-wrap items-start justify-center gap-6 md:gap-10 mb-16 max-w-3xl mx-auto">
+            <ScoreRing score={38} label="Crime & Safety" grade="D" color="#C0392B" />
+            <ScoreRing score={82} label="Competition" grade="A-" color="#2D8A56" />
+            <ScoreRing score={72} label="Demographics" grade="B" color="#c9a227" />
+            <ScoreRing score={76} label="Future Outlook" grade="B+" color="#2D8A56" />
+            <ScoreRing score={35} label="Online Presence" grade="D" color="#D47735" />
+          </div>
+
+          <p className="text-center text-sm mb-16" style={{ color: '#8b949e' }}>
+            Scored across up to 15 categories — see how every aspect of the business stacks up.
+          </p>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════ TWO-TIER PRICING (compact two-column) ═══════════════════════════ */}
+      <section className="py-20" id="report-tiers" style={{ background: '#0a0e14' }}>
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">Choose Your Report</h2>
+            <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto text-lg">
+              Two tiers. One report. All the intelligence you need.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-start">
+            {/* ── Insight Report — /reports tier card aesthetic ── */}
+            <div style={{
+              border: '1px solid rgba(201,162,39,0.18)',
+              borderRadius: 20,
+              overflow: 'hidden',
+              background: '#0d1117',
+            }}>
+              <div style={{
+                background: '#0B1D3A',
+                padding: '28px 32px',
+                position: 'relative',
+                overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(201,162,39,0.5)', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>FCM Intelligence / Report series</div>
+                    <div className="text-2xl font-bold text-white">Insight Report</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div className="font-mono text-3xl font-bold text-white" style={{ lineHeight: 1 }}>£199</div>
+                    <div className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>one-time</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>
+                  &ldquo;Is this the right business?&rdquo;
+                </div>
+              </div>
+
+              <div style={{ padding: '24px 32px 32px' }}>
+                <p className="font-semibold text-xs mb-3 uppercase tracking-wider" style={{ color: '#c9a227' }}>10 sections included</p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-6">
+                  {[
+                    'Executive Verdict',
+                    'PO Remuneration',
+                    'Online Presence',
+                    'Location Intelligence',
+                    'Demographics',
+                    'Crime & Safety',
+                    'Competition Map',
+                    'Footfall Analysis',
+                    'Infrastructure',
+                    'Risk Assessment',
+                  ].map((item) => (
+                    <div key={item} className="flex items-center gap-1.5 text-sm">
+                      <span style={{ color: '#22c55e', fontSize: 12 }}>✓</span>
+                      <span style={{ color: '#e6edf3' }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="text-sm mb-5" style={{ color: '#8b949e' }}>
+                  Delivered as an interactive report within 48 hours.
+                </p>
+
+                <BuyButton tier="insight" label="Buy Insight Report — £199" className="btn-primary w-full text-lg py-3" />
+                <p className="text-xs text-center mt-3" style={{ color: '#c9a227' }}>
+                  💡 Upgrade to Intelligence anytime for £300
+                </p>
+              </div>
+            </div>
+
+            {/* ── Intelligence Report — /reports tier card aesthetic (gold border) ── */}
+            <div style={{
+              border: '2px solid rgba(201,162,39,0.35)',
+              borderRadius: 20,
+              overflow: 'hidden',
+              background: '#0d1117',
+              boxShadow: '0 0 40px rgba(201,162,39,0.06)',
+            }}>
+              <div style={{
+                background: '#0B1D3A',
+                padding: '28px 32px',
+                position: 'relative',
+                overflow: 'hidden',
+                borderBottom: '1.5px solid rgba(201,162,39,0.2)',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, transparent, #c9a227, #d4b84a, #c9a227, transparent)' }} />
+                <div style={{ position: 'absolute', top: 3, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #c9a227, #d4b84a)', color: '#0B1D3A', fontSize: 10, fontWeight: 600, padding: '3px 14px', borderRadius: '0 0 8px 8px', textTransform: 'uppercase', letterSpacing: 1.5 }}>Most popular</div>
+                <div className="flex items-center justify-between" style={{ marginTop: 10 }}>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#c9a227', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>FCM Intelligence / Premium series</div>
+                    <div className="text-2xl font-bold text-white">Intelligence Report</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div className="font-mono text-3xl font-bold" style={{ color: '#c9a227', lineHeight: 1 }}>£499</div>
+                    <div className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>one-time</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>
+                  &ldquo;Help me buy it.&rdquo;
+                </div>
+              </div>
+
+              <div style={{ padding: '24px 32px 32px' }}>
+                <p className="font-semibold text-xs mb-3 uppercase tracking-wider" style={{ color: '#c9a227' }}>All 15 sections</p>
+                <p className="text-sm mb-3" style={{ color: '#8b949e' }}>Everything in Insight, plus:</p>
+                <div className="space-y-2 mb-6">
+                  {[
+                    'Financial Analysis',
+                    'Staffing & Hidden Costs',
+                    'Future Outlook',
+                    'Profit Improvement Plan',
+                    'Due Diligence & Negotiation Strategy',
+                  ].map((item) => (
+                    <div key={item} className="flex items-center gap-1.5 text-sm">
+                      <span style={{ color: '#c9a227', fontSize: 12 }}>✓</span>
+                      <span style={{ color: '#e6edf3' }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-2 mb-5 p-3 rounded-lg" style={{ background: 'rgba(201,162,39,0.06)', border: '1px solid rgba(201,162,39,0.12)' }}>
+                  <span>📞</span>
+                  <span className="text-sm" style={{ color: '#c9a227' }}>Includes 60-minute consultation call</span>
+                </div>
+
+                <BuyButton tier="intelligence" label="Buy Intelligence Report — £499" className="btn-primary w-full text-lg py-3" />
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-10">
+            <p className="text-sm mb-3" style={{ color: '#8b949e' }}>
+              💡 Already bought Insight? Upgrade to Intelligence for £300 — no new research needed.
+            </p>
+            <Link href="/reports" className="text-sm font-semibold underline" style={{ color: '#c9a227' }}>
+              See a sample report →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════ CONSULTATION SERVICES ═══════════════════════════ */}
+      <section className="py-16" style={{ background: '#0d1117', borderTop: '1px solid rgba(201,162,39,0.15)' }}>
         <div className="container mx-auto px-4 text-center">
           <div className="inline-block px-4 py-1 rounded-full mb-6" style={{ background: 'rgba(201,162,39,0.2)', border: '1px solid rgba(201,162,39,0.4)', color: '#c9a227', fontSize: '0.85rem', fontWeight: 600 }}>
             🎓 CONSULTATION SERVICES
@@ -392,18 +544,16 @@ export default function Home() {
             Business plans, interview prep, operator training, and ongoing advisory support — everything you need to succeed as a Post Office operator.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
-              <span>📋</span><span style={{ color: '#8b949e' }}>Business Plans</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
-              <span>🎤</span><span style={{ color: '#8b949e' }}>Interview Prep</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
-              <span>🎓</span><span style={{ color: '#8b949e' }}>Training</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
-              <span>💬</span><span style={{ color: '#8b949e' }}>Advisory</span>
-            </div>
+            {[
+              { icon: '📋', label: 'Business Plans' },
+              { icon: '🎤', label: 'Interview Prep' },
+              { icon: '🎓', label: 'Training' },
+              { icon: '💬', label: 'Advisory' },
+            ].map((s) => (
+              <div key={s.label} className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
+                <span>{s.icon}</span><span style={{ color: '#8b949e' }}>{s.label}</span>
+              </div>
+            ))}
           </div>
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full mb-6" style={{ background: 'rgba(201,162,39,0.15)', border: '1px solid #c9a227' }}>
             <span style={{ color: '#c9a227', fontWeight: 700 }}>⭐ FCM Insiders save 15% on all services</span>
@@ -415,7 +565,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ CONTACT FORM ═══════════════════════════ */}
-      <section className="py-20 container mx-auto px-4" id="contact">
+      <section className="py-20 container mx-auto px-4" id="contact" style={{ background: 'transparent' }}>
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">Ready to Buy Smarter?</h2>
           <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto">Tell us which listing interests you, and we&apos;ll deliver actionable intelligence within 48 hours.</p>
@@ -455,8 +605,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ FCM INSIDER (old site exact) ═══════════════════════════ */}
-      <section className="py-20" id="insider" style={{ background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.1) 0%, rgba(30, 58, 95, 0.2) 100%)', borderTop: '1px solid rgba(201,162,39,0.3)', borderBottom: '1px solid rgba(201,162,39,0.3)' }}>
+      {/* ═══════════════════════════ FCM INSIDER ═══════════════════════════ */}
+      <section className="py-20" id="insider" style={{ background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.08) 0%, rgba(30, 58, 95, 0.12) 100%)', borderTop: '1px solid rgba(201,162,39,0.2)', borderBottom: '1px solid rgba(201,162,39,0.2)' }}>
         <div className="container mx-auto px-4 text-center">
           <div className="inline-block px-4 py-1 rounded-full mb-6" style={{ background: 'rgba(201,162,39,0.2)', border: '1px solid rgba(201,162,39,0.4)', color: '#c9a227', fontSize: '0.85rem', fontWeight: 600 }}>
             ⭐ MEMBERSHIP
