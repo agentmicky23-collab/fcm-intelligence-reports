@@ -225,32 +225,43 @@ export default function ReportShowcase() {
   const a = AUDIENCES[audience];
 
   return (
-    <section style={{ padding: "48px 20px 70px", maxWidth: 900, margin: "0 auto" }}>
+    <section style={{ maxWidth: 900, margin: "0 auto" }}>
 
-      {/* HEADER */}
-      <div style={{ fontFamily: T.body, fontSize: 11, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 3, marginBottom: 10 }}>Intelligence reports</div>
-      <h1 style={{ fontFamily: T.heading, fontSize: 32, fontWeight: 700, color: T.white, lineHeight: 1.25, marginBottom: 10 }}>
-        The listing tells you what the seller <em style={{ color: T.gold, fontStyle: "italic" }}>wants</em> you to hear.<br />
-        We tell you what you <em style={{ color: T.gold, fontStyle: "italic" }}>need</em> to know.
-      </h1>
-      <p style={{ fontFamily: T.body, fontSize: 16, color: T.mutedText, lineHeight: 1.6, marginBottom: 32, maxWidth: 540 }}>
-        Whether you're buying, selling, or brokering — our reports change the conversation.
-      </p>
+      {/* HERO SECTION — Full viewport impact */}
+      <div style={{
+        minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+        padding: "80px 20px", textAlign: "center",
+      }}>
+        <div style={{ fontFamily: T.body, fontSize: 12, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 4, marginBottom: 24 }}>Intelligence reports</div>
+        <h1 className="fcm-hero-heading" style={{ fontFamily: T.heading, fontSize: 44, fontWeight: 700, color: T.white, lineHeight: 1.2, marginBottom: 20, maxWidth: 780 }}>
+          The listing tells you what the seller <em style={{ color: T.gold, fontStyle: "italic" }}>wants</em> you to hear.<br />
+          We tell you what you <em style={{ color: T.gold, fontStyle: "italic" }}>need</em> to know.
+        </h1>
+        <p style={{ fontFamily: T.body, fontSize: 18, color: T.mutedText, lineHeight: 1.7, marginBottom: 0, maxWidth: 560 }}>
+          Whether you're buying, selling, or brokering — our reports change the conversation.
+        </p>
+      </div>
 
-      {/* AUDIENCE TABS */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 32, flexWrap: "wrap" }}>
-        {AUDIENCES.map((au, i) => (
-          <button key={au.id} onClick={() => { setAudience(i); setFadeKey(k => k + 1); }} style={{
-            fontFamily: T.body, fontSize: 15, fontWeight: 500, padding: "10px 24px", borderRadius: 8,
-            cursor: "pointer", transition: "all 0.3s",
-            background: audience === i ? T.gold : "rgba(255,255,255,0.05)", color: audience === i ? "#000" : T.mutedText,
-            border: `1px solid ${audience === i ? T.gold : "rgba(255,255,255,0.1)"}`,
-          }}>{au.tab}</button>
-        ))}
+      {/* AUDIENCE TABS — Centered with own visual section */}
+      <div style={{
+        background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        padding: "28px 20px", marginBottom: 44, display: "flex", justifyContent: "center",
+      }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+          {AUDIENCES.map((au, i) => (
+            <button key={au.id} onClick={() => { setAudience(i); setFadeKey(k => k + 1); }} style={{
+              fontFamily: T.body, fontSize: 15, fontWeight: 600, padding: "12px 28px", borderRadius: 10,
+              cursor: "pointer", transition: "all 0.3s",
+              background: audience === i ? T.gold : "rgba(255,255,255,0.05)", color: audience === i ? "#000" : T.mutedText,
+              border: `1px solid ${audience === i ? T.gold : "rgba(255,255,255,0.1)"}`,
+              boxShadow: audience === i ? `0 4px 16px rgba(201,162,39,0.25)` : "none",
+            }}>{au.tab}</button>
+          ))}
+        </div>
       </div>
 
       {/* AUDIENCE CARDS */}
-      <div key={fadeKey} className="fcm-audience-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 44, animation: "fcmFadeIn 0.4s ease" }}>
+      <div key={fadeKey} className="fcm-audience-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 44, padding: "0 20px", animation: "fcmFadeIn 0.4s ease" }}>
         {a.cards.map((c, i) => (
           <div key={i} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: 16 }}>
             <div style={{ fontFamily: T.heading, fontSize: 15, fontWeight: 600, color: T.white, marginBottom: 6 }}>{c.q}</div>
@@ -260,6 +271,7 @@ export default function ReportShowcase() {
       </div>
 
       {/* ===================== INSIGHT TIER ===================== */}
+      <div style={{ border: `1px solid rgba(201,162,39,0.18)`, borderRadius: 20, padding: 24, margin: "0 20px 52px" }}>
       <div style={{ background: T.navy, borderRadius: 16, padding: "28px 32px", marginBottom: 18, position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)" }} />
         <div className="fcm-tier-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -306,11 +318,11 @@ export default function ReportShowcase() {
       </div>
 
       <MiniCard variant="insight" href="https://buy.stripe.com/4gMcN4gMgez2bNHawL0Ba00" />
-      <div style={{ fontFamily: T.body, fontSize: 12, color: T.lightText, textAlign: "center", marginTop: 10, marginBottom: 52 }}>Upgrade to Intelligence anytime for £300</div>
+      <div style={{ fontFamily: T.body, fontSize: 12, color: T.lightText, textAlign: "center", marginTop: 10, marginBottom: 20 }}>Upgrade to Intelligence anytime for £300</div>
+      </div>{/* Close Insight border wrapper */}
 
       {/* ===================== INTELLIGENCE TIER ===================== */}
-      <div style={{ height: 1, background: "rgba(255,255,255,0.1)", marginBottom: 40 }} />
-
+      <div style={{ border: `2px solid rgba(201,162,39,0.35)`, borderRadius: 20, padding: 24, margin: "44px 20px 52px", boxShadow: "0 0 40px rgba(201,162,39,0.06)" }}>
       <div style={{ background: T.navy, borderRadius: 16, padding: "28px 32px", marginBottom: 18, position: "relative", overflow: "hidden", border: "1.5px solid rgba(201,162,39,0.2)" }}>
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, transparent, ${T.gold}, ${T.goldLight}, ${T.gold}, transparent)` }} />
         <div style={{ position: "absolute", top: 3, left: "50%", transform: "translateX(-50%)", background: `linear-gradient(135deg, ${T.gold}, ${T.goldLight})`, color: T.navy, fontFamily: T.body, fontSize: 10, fontWeight: 600, padding: "3px 14px", borderRadius: "0 0 8px 8px", textTransform: "uppercase", letterSpacing: 1.5 }}>Most popular</div>
@@ -374,12 +386,13 @@ export default function ReportShowcase() {
 
       <MiniCard variant="intelligence" href="https://buy.stripe.com/4gM00i8fK62wbNH48n0Ba01" />
       <div style={{ fontFamily: T.body, fontSize: 12, color: T.lightText, textAlign: "center", marginTop: 10 }}>The complete acquisition weapon</div>
-      <div style={{ fontFamily: T.body, fontSize: 14, color: T.mutedText, textAlign: "center", marginTop: 18, marginBottom: 44 }}>
+      <div style={{ fontFamily: T.body, fontSize: 14, color: T.mutedText, textAlign: "center", marginTop: 18, marginBottom: 20 }}>
         Already bought Insight? Upgrade for <strong style={{ color: T.gold, fontWeight: 600 }}>£300</strong> — no new research needed.
       </div>
+      </div>{/* Close Intelligence border wrapper */}
 
       {/* ---- BROKER ---- */}
-      <div className="fcm-broker" style={{ background: T.navy, borderRadius: 14, padding: "28px 32px", display: "flex", alignItems: "center", gap: 24, marginBottom: 24, border: "1px solid rgba(201,162,39,0.1)" }}>
+      <div className="fcm-broker" style={{ background: T.navy, borderRadius: 14, padding: "28px 32px", display: "flex", alignItems: "center", gap: 24, margin: "0 20px 24px", border: "1px solid rgba(201,162,39,0.1)" }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontFamily: T.body, fontSize: 11, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 6 }}>For brokers & agents</div>
           <div style={{ fontFamily: T.heading, fontSize: 20, fontWeight: 700, color: T.white, marginBottom: 6 }}>Work with us</div>
@@ -392,7 +405,7 @@ export default function ReportShowcase() {
       </div>
 
       {/* ---- TRUST ---- */}
-      <div style={{ display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap", paddingBottom: 70 }}>
         {[{ icon: "🏆", text: "15 years PO ops" }, { icon: "🏢", text: "40 branches" }, { icon: "📊", text: "200+ reports" }, { icon: "🇬🇧", text: "UK based" }].map((t, i) => (
           <span key={i} style={{ fontFamily: T.body, fontSize: 13, color: T.lightText, display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ fontSize: 15 }}>{t.icon}</span> {t.text}
@@ -409,6 +422,7 @@ export default function ReportShowcase() {
           .fcm-section-row { grid-template-columns: 1fr !important; }
           .fcm-tier-header { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
           .fcm-broker { flex-direction: column !important; text-align: center !important; }
+          .fcm-hero-heading { font-size: 30px !important; }
         }
       `}</style>
     </section>
