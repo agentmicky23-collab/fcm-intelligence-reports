@@ -4,23 +4,24 @@ import { useState } from "react";
 // FCM REPORT SHOWCASE — Reports Page (/reports)
 // Separated tiers with real report sections + buyer quotes
 // Mini 3D collectible cards as CTAs
-// Light theme wrapper matching homepage
+// Dark theme matching site aesthetic
 // ============================================================
 
 const T = {
   navy: "#0B1D3A",
-  gold: "#BF9B51",
-  goldLight: "#D4AF6A",
+  gold: "#c9a227",
+  goldLight: "#d4b84a",
   white: "#FFFFFF",
-  offWhite: "#F7F6F3",
-  darkText: "#1A1A1A",
-  mutedText: "#666666",
-  lightText: "#999999",
+  bg: "#000000",
+  cardBg: "rgba(255,255,255,0.05)",
+  darkText: "#FFFFFF",
+  mutedText: "#888888",
+  lightText: "#666666",
   greenText: "#2D8A56",
   redText: "#C0392B",
   amberText: "#D47735",
-  display: "'Playfair Display', Georgia, serif",
-  body: "'DM Sans', -apple-system, sans-serif",
+  heading: "'Inter', -apple-system, sans-serif",
+  body: "'Inter', -apple-system, sans-serif",
 };
 
 const AUDIENCES = [
@@ -53,22 +54,22 @@ const AUDIENCES = [
 // ---- Report Section Card (dark navy) ----
 function ReportSection({ label, score, grade, color, headline, detail, children }) {
   return (
-    <div style={{ background: T.navy, borderRadius: 12, padding: 18, position: "relative", overflow: "hidden" }}>
+    <div style={{ background: T.navy, borderRadius: 12, padding: 20, position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-        <span style={{ fontFamily: T.body, fontSize: 9, fontWeight: 600, color, textTransform: "uppercase", letterSpacing: 1.5 }}>{label}</span>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+        <span style={{ fontFamily: T.body, fontSize: 11, fontWeight: 600, color, textTransform: "uppercase", letterSpacing: 1.5 }}>{label}</span>
         {score != null && (
           <span>
-            <span style={{ fontFamily: T.display, fontSize: 18, fontWeight: 700, color }}>{score}</span>
-            <span style={{ fontFamily: T.body, fontSize: 10, color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>{grade}</span>
+            <span style={{ fontFamily: T.heading, fontSize: 20, fontWeight: 700, color }}>{score}</span>
+            <span style={{ fontFamily: T.body, fontSize: 12, color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>{grade}</span>
           </span>
         )}
       </div>
-      <div style={{ fontFamily: T.display, fontSize: 12, fontWeight: 500, color: T.white, marginBottom: 5, lineHeight: 1.3 }}>{headline}</div>
-      {detail && <div style={{ fontFamily: T.body, fontSize: 10, color: "rgba(255,255,255,0.35)", lineHeight: 1.5 }}>{detail}</div>}
+      <div style={{ fontFamily: T.heading, fontSize: 15, fontWeight: 600, color: T.white, marginBottom: 6, lineHeight: 1.3 }}>{headline}</div>
+      {detail && <div style={{ fontFamily: T.body, fontSize: 13, color: "rgba(255,255,255,0.35)", lineHeight: 1.5 }}>{detail}</div>}
       {children}
       {score != null && (
-        <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, marginTop: 8, overflow: "hidden" }}>
+        <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, marginTop: 10, overflow: "hidden" }}>
           <div style={{ width: `${score}%`, height: "100%", background: color, borderRadius: 2 }} />
         </div>
       )}
@@ -80,10 +81,10 @@ function ReportSection({ label, score, grade, color, headline, detail, children 
 function BuyerQuote({ color, text, attribution, outcome }) {
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
-      <div style={{ borderLeft: `3px solid ${color}`, padding: "10px 14px", background: T.offWhite, borderRadius: "0 10px 10px 0" }}>
-        <div style={{ fontFamily: T.display, fontSize: 11, fontStyle: "italic", color: T.darkText, lineHeight: 1.6, marginBottom: 6 }}>"{text}"</div>
-        <div style={{ fontFamily: T.body, fontSize: 10, fontWeight: 600, color: T.gold }}>{attribution}</div>
-        {outcome && <div style={{ fontFamily: T.body, fontSize: 9, color: T.lightText }}>{outcome}</div>}
+      <div style={{ borderLeft: `3px solid ${color}`, padding: "12px 16px", background: "rgba(255,255,255,0.04)", borderRadius: "0 10px 10px 0" }}>
+        <div style={{ fontFamily: T.heading, fontSize: 13, fontStyle: "italic", color: "rgba(255,255,255,0.8)", lineHeight: 1.6, marginBottom: 8 }}>"{text}"</div>
+        <div style={{ fontFamily: T.body, fontSize: 12, fontWeight: 600, color: T.gold }}>{attribution}</div>
+        {outcome && <div style={{ fontFamily: T.body, fontSize: 11, color: T.lightText }}>{outcome}</div>}
       </div>
     </div>
   );
@@ -114,7 +115,7 @@ function MiniCard({ variant, href }) {
         style={{
           display: "block", textDecoration: "none", position: "relative", borderRadius: 16, overflow: "hidden",
           background: isGold ? `linear-gradient(170deg, #0e2340, ${T.navy} 50%, #0d1f38)` : T.navy,
-          border: isGold ? "1.5px solid rgba(191,155,81,0.2)" : "none",
+          border: isGold ? "1.5px solid rgba(201,162,39,0.2)" : "none",
           transform: isGold ? "rotateY(-3deg) rotateX(1deg)" : "rotateY(3deg) rotateX(1deg)",
           transition: "transform 0.5s cubic-bezier(0.2,0,0,1), box-shadow 0.5s",
           transformStyle: "preserve-3d", cursor: "pointer",
@@ -124,7 +125,7 @@ function MiniCard({ variant, href }) {
             ? "rotateY(2deg) rotateX(-3deg) translateY(-8px) scale(1.03)"
             : "rotateY(-2deg) rotateX(-3deg) translateY(-8px) scale(1.03)";
           e.currentTarget.style.boxShadow = isGold
-            ? "8px 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(191,155,81,0.06)"
+            ? "8px 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(201,162,39,0.06)"
             : "8px 20px 40px rgba(0,0,0,0.4)";
         }}
         onMouseLeave={e => {
@@ -139,7 +140,7 @@ function MiniCard({ variant, href }) {
         <div style={{
           position: "absolute", top: "-80%", left: "-80%", width: "260%", height: "260%",
           background: isGold
-            ? "conic-gradient(from 90deg, transparent 0%, rgba(191,155,81,0.06) 6%, transparent 12%, rgba(191,155,81,0.04) 18%, transparent 24%, rgba(191,155,81,0.06) 30%, transparent 36%)"
+            ? "conic-gradient(from 90deg, transparent 0%, rgba(201,162,39,0.06) 6%, transparent 12%, rgba(201,162,39,0.04) 18%, transparent 24%, rgba(201,162,39,0.06) 30%, transparent 36%)"
             : "conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.04) 8%, transparent 16%, rgba(255,255,255,0.02) 24%, transparent 32%, rgba(255,255,255,0.04) 40%, transparent 48%)",
           animation: `fcmHoloSpin ${isGold ? 6 : 10}s linear infinite`,
           pointerEvents: "none", zIndex: 1, opacity: isGold ? 0.6 : 0.5,
@@ -148,20 +149,20 @@ function MiniCard({ variant, href }) {
         <div style={{
           position: "absolute", inset: 0, borderRadius: 16, pointerEvents: "none", zIndex: 10,
           background: isGold
-            ? "linear-gradient(135deg, rgba(191,155,81,0.12) 0%, transparent 35%, transparent 60%, rgba(191,155,81,0.06) 100%)"
+            ? "linear-gradient(135deg, rgba(201,162,39,0.12) 0%, transparent 35%, transparent 60%, rgba(201,162,39,0.06) 100%)"
             : "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.04) 100%)",
         }} />
         {/* Edge light */}
         <div style={{
           position: "absolute", inset: 0, borderRadius: 16, pointerEvents: "none", zIndex: 11,
-          border: isGold ? "1px solid rgba(191,155,81,0.15)" : "1.5px solid rgba(255,255,255,0.08)",
+          border: isGold ? "1px solid rgba(201,162,39,0.15)" : "1.5px solid rgba(255,255,255,0.08)",
         }} />
         {/* Most popular badge */}
         {isGold && (
           <div style={{
             position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", zIndex: 12,
             background: `linear-gradient(135deg, ${T.gold}, ${T.goldLight})`, color: T.navy,
-            fontFamily: T.body, fontSize: 7, fontWeight: 600, padding: "3px 12px",
+            fontFamily: T.body, fontSize: 9, fontWeight: 600, padding: "3px 12px",
             borderRadius: "0 0 8px 8px", textTransform: "uppercase", letterSpacing: 1,
           }}>Most popular</div>
         )}
@@ -169,31 +170,31 @@ function MiniCard({ variant, href }) {
         <div style={{ position: "relative", zIndex: 8 }}>
           <div style={{ height: 2, background: isGold ? `linear-gradient(90deg, transparent, ${T.gold}, ${T.goldLight}, ${T.gold}, transparent)` : "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)" }} />
           <div style={{ padding: "16px 16px 6px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div style={{ fontFamily: T.body, fontSize: 7, fontWeight: 600, color: isGold ? T.gold : "rgba(191,155,81,0.5)", textTransform: "uppercase", letterSpacing: 1.5 }}>FCM Intelligence</div>
+            <div style={{ fontFamily: T.body, fontSize: 9, fontWeight: 600, color: isGold ? T.gold : "rgba(201,162,39,0.5)", textTransform: "uppercase", letterSpacing: 1.5 }}>FCM Intelligence</div>
             <div style={{
               width: 28, height: 28, borderRadius: "50%",
-              border: isGold ? "1px solid rgba(191,155,81,0.2)" : "1px solid rgba(255,255,255,0.08)",
-              background: isGold ? "rgba(191,155,81,0.04)" : "rgba(255,255,255,0.02)",
+              border: isGold ? "1px solid rgba(201,162,39,0.2)" : "1px solid rgba(255,255,255,0.08)",
+              background: isGold ? "rgba(201,162,39,0.04)" : "rgba(255,255,255,0.02)",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               {isGold
                 ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={T.gold} strokeWidth="1.5" strokeLinecap="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(191,155,81,0.6)" strokeWidth="1.5" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(201,162,39,0.6)" strokeWidth="1.5" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               }
             </div>
           </div>
           <div style={{ padding: "0 16px" }}>
-            <div style={{ fontFamily: T.body, fontSize: 7, color: isGold ? "rgba(191,155,81,0.3)" : "rgba(255,255,255,0.15)", letterSpacing: 1, marginBottom: 6 }}>{isGold ? "PREMIUM SERIES" : "REPORT SERIES"}</div>
-            <div style={{ fontFamily: T.body, fontSize: 8, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>{isGold ? "For negotiating" : "For deciding"}</div>
-            <div style={{ fontFamily: T.display, fontSize: 20, fontWeight: 700, color: T.white, marginBottom: 4 }}>{isGold ? "Intelligence" : "Insight"}</div>
-            <div style={{ fontFamily: T.display, fontSize: 30, fontWeight: 700, color: isGold ? T.gold : T.white, lineHeight: 1, marginBottom: 6 }}>{isGold ? "£499" : "£199"}</div>
-            <div style={{ fontFamily: T.display, fontSize: 11, fontStyle: "italic", color: "rgba(255,255,255,0.35)", lineHeight: 1.4, marginBottom: 10 }}>{isGold ? '"Power to control this deal."' : '"Should I risk my savings?"'}</div>
+            <div style={{ fontFamily: T.body, fontSize: 9, color: isGold ? "rgba(201,162,39,0.3)" : "rgba(255,255,255,0.15)", letterSpacing: 1, marginBottom: 6 }}>{isGold ? "PREMIUM SERIES" : "REPORT SERIES"}</div>
+            <div style={{ fontFamily: T.body, fontSize: 10, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>{isGold ? "For negotiating" : "For deciding"}</div>
+            <div style={{ fontFamily: T.heading, fontSize: 22, fontWeight: 700, color: T.white, marginBottom: 4 }}>{isGold ? "Intelligence" : "Insight"}</div>
+            <div style={{ fontFamily: T.heading, fontSize: 32, fontWeight: 700, color: isGold ? T.gold : T.white, lineHeight: 1, marginBottom: 6 }}>{isGold ? "£499" : "£199"}</div>
+            <div style={{ fontFamily: T.heading, fontSize: 13, fontStyle: "italic", color: "rgba(255,255,255,0.35)", lineHeight: 1.4, marginBottom: 10 }}>{isGold ? '"Power to control this deal."' : '"Should I risk my savings?"'}</div>
             <div style={{ display: "flex", gap: 3, marginBottom: 10, flexWrap: "wrap" }}>
               {(isGold ? ["Serious buyers", "Operators", "Brokers"] : ["Buyers", "Sellers", "Brokers"]).map((p, i) => (
                 <span key={p} style={{
-                  fontFamily: T.body, fontSize: 8, padding: "2px 7px", borderRadius: 12,
-                  background: (isGold || i === 0) ? "rgba(191,155,81,0.08)" : "rgba(255,255,255,0.02)",
-                  border: `1px solid ${(isGold || i === 0) ? "rgba(191,155,81,0.12)" : "rgba(255,255,255,0.05)"}`,
+                  fontFamily: T.body, fontSize: 10, padding: "2px 7px", borderRadius: 12,
+                  background: (isGold || i === 0) ? "rgba(201,162,39,0.08)" : "rgba(255,255,255,0.02)",
+                  border: `1px solid ${(isGold || i === 0) ? "rgba(201,162,39,0.12)" : "rgba(255,255,255,0.05)"}`,
                   color: (isGold || i === 0) ? T.gold : "rgba(255,255,255,0.25)",
                 }}>{p}</span>
               ))}
@@ -201,12 +202,12 @@ function MiniCard({ variant, href }) {
           </div>
           <div style={{ padding: "0 16px 14px" }}>
             <div style={{
-              background: isGold ? "rgba(191,155,81,0.06)" : "rgba(255,255,255,0.03)",
+              background: isGold ? "rgba(201,162,39,0.06)" : "rgba(255,255,255,0.03)",
               borderRadius: 8, padding: "10px 12px", textAlign: "center",
-              border: `1px solid ${isGold ? "rgba(191,155,81,0.12)" : "rgba(255,255,255,0.06)"}`,
+              border: `1px solid ${isGold ? "rgba(201,162,39,0.12)" : "rgba(255,255,255,0.06)"}`,
             }}>
-              <div style={{ fontFamily: T.body, fontSize: 11, fontWeight: 600, color: isGold ? T.gold : "rgba(255,255,255,0.6)" }}>{isGold ? "15 sections + call · 48hrs" : "10 sections · 48hrs"}</div>
-              <div style={{ fontFamily: T.body, fontSize: 9, color: isGold ? "rgba(191,155,81,0.4)" : "rgba(255,255,255,0.3)", marginTop: 2 }}>Get report →</div>
+              <div style={{ fontFamily: T.body, fontSize: 13, fontWeight: 600, color: isGold ? T.gold : "rgba(255,255,255,0.6)" }}>{isGold ? "15 sections + call · 48hrs" : "10 sections · 48hrs"}</div>
+              <div style={{ fontFamily: T.body, fontSize: 11, color: isGold ? "rgba(201,162,39,0.4)" : "rgba(255,255,255,0.3)", marginTop: 2 }}>Get report →</div>
             </div>
           </div>
         </div>
@@ -224,57 +225,57 @@ export default function ReportShowcase() {
   const a = AUDIENCES[audience];
 
   return (
-    <section style={{ padding: "40px 20px 60px", maxWidth: 900, margin: "0 auto" }}>
+    <section style={{ padding: "48px 20px 70px", maxWidth: 900, margin: "0 auto" }}>
 
       {/* HEADER */}
-      <div style={{ fontFamily: T.body, fontSize: 9, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 3, marginBottom: 8 }}>Intelligence reports</div>
-      <h1 style={{ fontFamily: T.display, fontSize: 28, fontWeight: 600, color: T.darkText, lineHeight: 1.25, marginBottom: 8 }}>
+      <div style={{ fontFamily: T.body, fontSize: 11, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 3, marginBottom: 10 }}>Intelligence reports</div>
+      <h1 style={{ fontFamily: T.heading, fontSize: 32, fontWeight: 700, color: T.white, lineHeight: 1.25, marginBottom: 10 }}>
         The listing tells you what the seller <em style={{ color: T.gold, fontStyle: "italic" }}>wants</em> you to hear.<br />
         We tell you what you <em style={{ color: T.gold, fontStyle: "italic" }}>need</em> to know.
       </h1>
-      <p style={{ fontFamily: T.body, fontSize: 14, color: T.mutedText, lineHeight: 1.6, marginBottom: 28, maxWidth: 540 }}>
+      <p style={{ fontFamily: T.body, fontSize: 16, color: T.mutedText, lineHeight: 1.6, marginBottom: 32, maxWidth: 540 }}>
         Whether you're buying, selling, or brokering — our reports change the conversation.
       </p>
 
       {/* AUDIENCE TABS */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 28, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 6, marginBottom: 32, flexWrap: "wrap" }}>
         {AUDIENCES.map((au, i) => (
           <button key={au.id} onClick={() => { setAudience(i); setFadeKey(k => k + 1); }} style={{
-            fontFamily: T.body, fontSize: 13, fontWeight: 500, padding: "8px 22px", borderRadius: 8,
+            fontFamily: T.body, fontSize: 15, fontWeight: 500, padding: "10px 24px", borderRadius: 8,
             cursor: "pointer", transition: "all 0.3s",
-            background: audience === i ? T.navy : T.white, color: audience === i ? T.gold : T.mutedText,
-            border: `1px solid ${audience === i ? T.navy : "#ddd"}`,
+            background: audience === i ? T.gold : "rgba(255,255,255,0.05)", color: audience === i ? "#000" : T.mutedText,
+            border: `1px solid ${audience === i ? T.gold : "rgba(255,255,255,0.1)"}`,
           }}>{au.tab}</button>
         ))}
       </div>
 
       {/* AUDIENCE CARDS */}
-      <div key={fadeKey} className="fcm-audience-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 40, animation: "fcmFadeIn 0.4s ease" }}>
+      <div key={fadeKey} className="fcm-audience-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 44, animation: "fcmFadeIn 0.4s ease" }}>
         {a.cards.map((c, i) => (
-          <div key={i} style={{ background: T.white, border: "1px solid #eee", borderRadius: 10, padding: 14 }}>
-            <div style={{ fontFamily: T.display, fontSize: 13, fontWeight: 500, color: T.darkText, marginBottom: 5 }}>{c.q}</div>
-            <div style={{ fontFamily: T.body, fontSize: 11, color: T.mutedText, lineHeight: 1.5 }}>{c.a}</div>
+          <div key={i} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: 16 }}>
+            <div style={{ fontFamily: T.heading, fontSize: 15, fontWeight: 600, color: T.white, marginBottom: 6 }}>{c.q}</div>
+            <div style={{ fontFamily: T.body, fontSize: 13, color: T.mutedText, lineHeight: 1.5 }}>{c.a}</div>
           </div>
         ))}
       </div>
 
       {/* ===================== INSIGHT TIER ===================== */}
-      <div style={{ background: T.navy, borderRadius: 16, padding: "24px 28px", marginBottom: 16, position: "relative", overflow: "hidden" }}>
+      <div style={{ background: T.navy, borderRadius: 16, padding: "28px 32px", marginBottom: 18, position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)" }} />
         <div className="fcm-tier-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <div style={{ fontFamily: T.body, fontSize: 8, fontWeight: 600, color: "rgba(191,155,81,0.5)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 2 }}>FCM Intelligence / Report series</div>
-            <div style={{ fontFamily: T.display, fontSize: 24, fontWeight: 700, color: T.white }}>Insight Report</div>
+            <div style={{ fontFamily: T.body, fontSize: 10, fontWeight: 600, color: "rgba(201,162,39,0.5)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>FCM Intelligence / Report series</div>
+            <div style={{ fontFamily: T.heading, fontSize: 26, fontWeight: 700, color: T.white }}>Insight Report</div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontFamily: T.display, fontSize: 30, fontWeight: 700, color: T.white, lineHeight: 1 }}>£199</div>
-            <div style={{ fontFamily: T.body, fontSize: 10, color: "rgba(255,255,255,0.35)" }}>one-time</div>
+            <div style={{ fontFamily: T.heading, fontSize: 32, fontWeight: 700, color: T.white, lineHeight: 1 }}>£199</div>
+            <div style={{ fontFamily: T.body, fontSize: 12, color: "rgba(255,255,255,0.35)" }}>one-time</div>
           </div>
         </div>
-        <div style={{ fontFamily: T.display, fontSize: 13, fontStyle: "italic", color: "rgba(255,255,255,0.4)", marginTop: 8 }}>"Should I risk my savings on this?" — get the answer before you visit.</div>
+        <div style={{ fontFamily: T.heading, fontSize: 15, fontStyle: "italic", color: "rgba(255,255,255,0.4)", marginTop: 10 }}>"Should I risk my savings on this?" — get the answer before you visit.</div>
       </div>
 
-      <div style={{ fontFamily: T.body, fontSize: 10, fontWeight: 600, color: T.mutedText, textTransform: "uppercase", letterSpacing: 1.5, margin: "16px 0 14px" }}>10 sections — here's what they reveal</div>
+      <div style={{ fontFamily: T.body, fontSize: 12, fontWeight: 600, color: T.mutedText, textTransform: "uppercase", letterSpacing: 1.5, margin: "18px 0 16px" }}>10 sections — here's what they reveal</div>
 
       <SectionRow sectionFirst={true}
         sectionProps={{ label: "Crime & safety", score: 38, grade: "D", color: T.redText, headline: "3,087 incidents. 62% violent crime + ASB.", detail: "Budget £3,500-£5,000 for security on day one." }}
@@ -293,11 +294,11 @@ export default function ReportShowcase() {
         quoteProps={{ color: T.amberText, text: "3.1 stars and zero response from the seller? That told me everything. If they don't care about reputation, what else are they ignoring? Gave me the ammunition to negotiate hard.", attribution: "— FCM buyer, negotiated 15% off" }}
       />
 
-      <div style={{ background: T.offWhite, borderRadius: 10, padding: "14px 18px", marginBottom: 24 }}>
-        <div style={{ fontFamily: T.body, fontSize: 9, fontWeight: 600, color: T.mutedText, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Also included in every Insight report</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 10, padding: "16px 20px", marginBottom: 28, border: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ fontFamily: T.body, fontSize: 11, fontWeight: 600, color: T.mutedText, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Also included in every Insight report</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           {["Executive verdict", "PO remuneration", "Footfall analysis", "Location intelligence", "Infrastructure", "Risk assessment"].map(s => (
-            <span key={s} style={{ fontFamily: T.body, fontSize: 11, color: T.mutedText, display: "flex", alignItems: "center", gap: 4 }}>
+            <span key={s} style={{ fontFamily: T.body, fontSize: 13, color: T.mutedText, display: "flex", alignItems: "center", gap: 5 }}>
               <span style={{ width: 5, height: 5, borderRadius: 3, background: T.greenText }} /> {s}
             </span>
           ))}
@@ -305,36 +306,36 @@ export default function ReportShowcase() {
       </div>
 
       <MiniCard variant="insight" href="https://buy.stripe.com/4gMcN4gMgez2bNHawL0Ba00" />
-      <div style={{ fontFamily: T.body, fontSize: 10, color: T.lightText, textAlign: "center", marginTop: 8, marginBottom: 48 }}>Upgrade to Intelligence anytime for £300</div>
+      <div style={{ fontFamily: T.body, fontSize: 12, color: T.lightText, textAlign: "center", marginTop: 10, marginBottom: 52 }}>Upgrade to Intelligence anytime for £300</div>
 
       {/* ===================== INTELLIGENCE TIER ===================== */}
-      <div style={{ height: 1, background: "#eee", marginBottom: 36 }} />
+      <div style={{ height: 1, background: "rgba(255,255,255,0.1)", marginBottom: 40 }} />
 
-      <div style={{ background: T.navy, borderRadius: 16, padding: "24px 28px", marginBottom: 16, position: "relative", overflow: "hidden", border: "1.5px solid rgba(191,155,81,0.2)" }}>
+      <div style={{ background: T.navy, borderRadius: 16, padding: "28px 32px", marginBottom: 18, position: "relative", overflow: "hidden", border: "1.5px solid rgba(201,162,39,0.2)" }}>
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, transparent, ${T.gold}, ${T.goldLight}, ${T.gold}, transparent)` }} />
-        <div style={{ position: "absolute", top: 3, left: "50%", transform: "translateX(-50%)", background: `linear-gradient(135deg, ${T.gold}, ${T.goldLight})`, color: T.navy, fontFamily: T.body, fontSize: 8, fontWeight: 600, padding: "3px 14px", borderRadius: "0 0 8px 8px", textTransform: "uppercase", letterSpacing: 1.5 }}>Most popular</div>
-        <div className="fcm-tier-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+        <div style={{ position: "absolute", top: 3, left: "50%", transform: "translateX(-50%)", background: `linear-gradient(135deg, ${T.gold}, ${T.goldLight})`, color: T.navy, fontFamily: T.body, fontSize: 10, fontWeight: 600, padding: "3px 14px", borderRadius: "0 0 8px 8px", textTransform: "uppercase", letterSpacing: 1.5 }}>Most popular</div>
+        <div className="fcm-tier-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 10 }}>
           <div>
-            <div style={{ fontFamily: T.body, fontSize: 8, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 2 }}>FCM Intelligence / Premium series</div>
-            <div style={{ fontFamily: T.display, fontSize: 24, fontWeight: 700, color: T.white }}>Intelligence Report</div>
+            <div style={{ fontFamily: T.body, fontSize: 10, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>FCM Intelligence / Premium series</div>
+            <div style={{ fontFamily: T.heading, fontSize: 26, fontWeight: 700, color: T.white }}>Intelligence Report</div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontFamily: T.display, fontSize: 30, fontWeight: 700, color: T.gold, lineHeight: 1 }}>£499</div>
-            <div style={{ fontFamily: T.body, fontSize: 10, color: "rgba(255,255,255,0.35)" }}>one-time</div>
+            <div style={{ fontFamily: T.heading, fontSize: 32, fontWeight: 700, color: T.gold, lineHeight: 1 }}>£499</div>
+            <div style={{ fontFamily: T.body, fontSize: 12, color: "rgba(255,255,255,0.35)" }}>one-time</div>
           </div>
         </div>
-        <div style={{ fontFamily: T.display, fontSize: 13, fontStyle: "italic", color: "rgba(255,255,255,0.4)", marginTop: 8 }}>"Give me the power to control this deal." — everything in Insight, plus the negotiation weapons.</div>
+        <div style={{ fontFamily: T.heading, fontSize: 15, fontStyle: "italic", color: "rgba(255,255,255,0.4)", marginTop: 10 }}>"Give me the power to control this deal." — everything in Insight, plus the negotiation weapons.</div>
       </div>
 
-      <div style={{ fontFamily: T.body, fontSize: 10, fontWeight: 600, color: T.mutedText, textTransform: "uppercase", letterSpacing: 1.5, margin: "16px 0 14px" }}>Intelligence-exclusive sections</div>
+      <div style={{ fontFamily: T.body, fontSize: 12, fontWeight: 600, color: T.mutedText, textTransform: "uppercase", letterSpacing: 1.5, margin: "18px 0 16px" }}>Intelligence-exclusive sections</div>
 
       <SectionRow sectionFirst={true}
         sectionProps={{
           label: "Due diligence pack", score: null, grade: null, color: T.gold, headline: "Every question. Every document.",
           children: (
-            <div style={{ marginTop: 8 }}>
-              <div style={{ fontFamily: T.body, fontSize: 9, color: "rgba(255,255,255,0.3)", marginBottom: 4 }}>Seller questions include:</div>
-              <div style={{ fontFamily: T.body, fontSize: 9, color: "rgba(255,255,255,0.45)", lineHeight: 1.5 }}>
+            <div style={{ marginTop: 10 }}>
+              <div style={{ fontFamily: T.body, fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 5 }}>Seller questions include:</div>
+              <div style={{ fontFamily: T.body, fontSize: 11, color: "rgba(255,255,255,0.45)", lineHeight: 1.5 }}>
                 "Full repairing lease or internal only?"<br/>"Last 24 months of income statements"<br/>"Total annual wage bill?"<br/>"Any compliance visits in 2 years?"
               </div>
             </div>
@@ -350,9 +351,9 @@ export default function ReportShowcase() {
         sectionProps={{
           label: "Profit improvement", score: null, grade: null, color: T.gold, headline: "Evidence-based actions with projected ROI.",
           children: (
-            <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 8 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 10 }}>
               {["Banking expansion: £8k-£12k/yr", "Parcel optimisation: £3k-£5k/yr", "Extended hours: £4k-£8k/yr"].map(r => (
-                <div key={r} style={{ fontFamily: T.body, fontSize: 9, color: T.gold, background: "rgba(191,155,81,0.06)", borderRadius: 4, padding: "4px 7px" }}>{r}</div>
+                <div key={r} style={{ fontFamily: T.body, fontSize: 11, color: T.gold, background: "rgba(201,162,39,0.06)", borderRadius: 4, padding: "5px 8px" }}>{r}</div>
               ))}
             </div>
           ),
@@ -360,11 +361,11 @@ export default function ReportShowcase() {
         quoteProps={{ color: T.gold, text: "6 actions worth £18,000 to £30,000 a year. We implemented 3 in the first month. Within 90 days revenue was up 22%. The report paid for itself ten times over.", attribution: "— FCM Intelligence buyer", outcome: "22% revenue increase in 90 days" }}
       />
 
-      <div style={{ background: T.offWhite, borderRadius: 10, padding: "14px 18px", marginBottom: 24 }}>
-        <div style={{ fontFamily: T.body, fontSize: 9, fontWeight: 600, color: T.mutedText, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Also included in Intelligence</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 10, padding: "16px 20px", marginBottom: 28, border: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ fontFamily: T.body, fontSize: 11, fontWeight: 600, color: T.mutedText, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Also included in Intelligence</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           {["All 10 Insight sections", "Financial analysis", "Staffing costs", "Negotiation strategy", "60-min consultation"].map(s => (
-            <span key={s} style={{ fontFamily: T.body, fontSize: 11, color: T.mutedText, display: "flex", alignItems: "center", gap: 4 }}>
+            <span key={s} style={{ fontFamily: T.body, fontSize: 13, color: T.mutedText, display: "flex", alignItems: "center", gap: 5 }}>
               <span style={{ width: 5, height: 5, borderRadius: 3, background: T.gold }} /> {s}
             </span>
           ))}
@@ -372,29 +373,29 @@ export default function ReportShowcase() {
       </div>
 
       <MiniCard variant="intelligence" href="https://buy.stripe.com/4gM00i8fK62wbNH48n0Ba01" />
-      <div style={{ fontFamily: T.body, fontSize: 10, color: T.lightText, textAlign: "center", marginTop: 8 }}>The complete acquisition weapon</div>
-      <div style={{ fontFamily: T.body, fontSize: 12, color: T.mutedText, textAlign: "center", marginTop: 16, marginBottom: 40 }}>
+      <div style={{ fontFamily: T.body, fontSize: 12, color: T.lightText, textAlign: "center", marginTop: 10 }}>The complete acquisition weapon</div>
+      <div style={{ fontFamily: T.body, fontSize: 14, color: T.mutedText, textAlign: "center", marginTop: 18, marginBottom: 44 }}>
         Already bought Insight? Upgrade for <strong style={{ color: T.gold, fontWeight: 600 }}>£300</strong> — no new research needed.
       </div>
 
       {/* ---- BROKER ---- */}
-      <div className="fcm-broker" style={{ background: T.navy, borderRadius: 14, padding: "24px 28px", display: "flex", alignItems: "center", gap: 24, marginBottom: 20, border: "1px solid rgba(191,155,81,0.1)" }}>
+      <div className="fcm-broker" style={{ background: T.navy, borderRadius: 14, padding: "28px 32px", display: "flex", alignItems: "center", gap: 24, marginBottom: 24, border: "1px solid rgba(201,162,39,0.1)" }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontFamily: T.body, fontSize: 9, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>For brokers & agents</div>
-          <div style={{ fontFamily: T.display, fontSize: 18, fontWeight: 600, color: T.white, marginBottom: 4 }}>Work with us</div>
-          <div style={{ fontFamily: T.body, fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>More reports. More knowledge. Volume pricing, priority turnaround, white-label ready.</div>
+          <div style={{ fontFamily: T.body, fontSize: 11, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 6 }}>For brokers & agents</div>
+          <div style={{ fontFamily: T.heading, fontSize: 20, fontWeight: 700, color: T.white, marginBottom: 6 }}>Work with us</div>
+          <div style={{ fontFamily: T.body, fontSize: 14, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>More reports. More knowledge. Volume pricing, priority turnaround, white-label ready.</div>
         </div>
         <a href="mailto:brokers@fcmreport.com?subject=Broker%20Account%20Enquiry" style={{
-          fontFamily: T.body, fontSize: 12, fontWeight: 600, color: T.gold, textDecoration: "none",
-          border: "1px solid rgba(191,155,81,0.25)", padding: "12px 20px", borderRadius: 8, whiteSpace: "nowrap",
+          fontFamily: T.body, fontSize: 14, fontWeight: 600, color: T.gold, textDecoration: "none",
+          border: "1px solid rgba(201,162,39,0.25)", padding: "14px 22px", borderRadius: 8, whiteSpace: "nowrap",
         }}>Broker account →</a>
       </div>
 
       {/* ---- TRUST ---- */}
-      <div style={{ display: "flex", justifyContent: "center", gap: 20, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap" }}>
         {[{ icon: "🏆", text: "15 years PO ops" }, { icon: "🏢", text: "40 branches" }, { icon: "📊", text: "200+ reports" }, { icon: "🇬🇧", text: "UK based" }].map((t, i) => (
-          <span key={i} style={{ fontFamily: T.body, fontSize: 11, color: T.lightText, display: "flex", alignItems: "center", gap: 5 }}>
-            <span style={{ fontSize: 13 }}>{t.icon}</span> {t.text}
+          <span key={i} style={{ fontFamily: T.body, fontSize: 13, color: T.lightText, display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 15 }}>{t.icon}</span> {t.text}
           </span>
         ))}
       </div>
