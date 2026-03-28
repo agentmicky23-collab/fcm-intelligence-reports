@@ -317,7 +317,7 @@ export default function ReportShowcase() {
         </div>
       </div>
 
-      <MiniCard variant="insight" href="https://buy.stripe.com/4gMcN4gMgez2bNHawL0Ba00" />
+      <MiniCard variant="insight" href="/order?tier=insight" />
       <div style={{ fontFamily: T.body, fontSize: 12, color: T.lightText, textAlign: "center", marginTop: 10, marginBottom: 20 }}>Upgrade to Intelligence anytime for £300</div>
       </div>{/* Close Insight border wrapper */}
 
@@ -384,7 +384,7 @@ export default function ReportShowcase() {
         </div>
       </div>
 
-      <MiniCard variant="intelligence" href="https://buy.stripe.com/4gM00i8fK62wbNH48n0Ba01" />
+      <MiniCard variant="intelligence" href="/order?tier=intelligence" />
       <div style={{ fontFamily: T.body, fontSize: 12, color: T.lightText, textAlign: "center", marginTop: 10 }}>The complete acquisition weapon</div>
       <div style={{ fontFamily: T.body, fontSize: 14, color: T.mutedText, textAlign: "center", marginTop: 18, marginBottom: 20 }}>
         Already bought Insight? Upgrade for <strong style={{ color: T.gold, fontWeight: 600 }}>£300</strong> — no new research needed.

@@ -164,7 +164,7 @@ function ScoreRing({ score, label, grade, color }: { score: number; label: strin
 }
 
 /* ── Count-up animation component ── */
-function CountUp({ target, suffix = "", duration = 2000 }: { target: number; suffix?: string; duration?: number }) {
+function CountUp({ target, suffix = "", duration = 2800, delay = 1200 }: { target: number; suffix?: string; duration?: number; delay?: number }) {
   const [count, setCount] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
@@ -177,26 +177,28 @@ function CountUp({ target, suffix = "", duration = 2000 }: { target: number; suf
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated) {
           setHasAnimated(true);
-          const start = performance.now();
-          const animate = (now: number) => {
-            const elapsed = now - start;
-            const progress = Math.min(elapsed / duration, 1);
-            // ease-in-out cubic
-            const eased = progress < 0.5
-              ? 4 * progress * progress * progress
-              : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-            setCount(Math.round(eased * target));
-            if (progress < 1) requestAnimationFrame(animate);
-          };
-          requestAnimationFrame(animate);
+          // Delay the count-up so the rotating headline finishes first
+          const timer = setTimeout(() => {
+            const start = performance.now();
+            const animate = (now: number) => {
+              const elapsed = now - start;
+              const progress = Math.min(elapsed / duration, 1);
+              // ease-out quint — slow dramatic ramp then crisp snap to final value
+              const eased = 1 - Math.pow(1 - progress, 5);
+              setCount(Math.round(eased * target));
+              if (progress < 1) requestAnimationFrame(animate);
+            };
+            requestAnimationFrame(animate);
+          }, delay);
+          return () => clearTimeout(timer);
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.5 }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasAnimated, target, duration]);
+  }, [hasAnimated, target, duration, delay]);
 
   return <span ref={ref}>{count}{suffix}</span>;
 }
@@ -632,7 +634,7 @@ export default function Home() {
 
               {/* CTA — 3D Collectible Card */}
               <div style={{ maxWidth: 260, margin: '0 auto' }}>
-                <MiniCard variant="insight" href="https://buy.stripe.com/4gMcN4gMgez2bNHawL0Ba00" />
+                <MiniCard variant="insight" href="/order?tier=insight" />
               </div>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#c9a227', textAlign: 'center', marginTop: 12 }}>
                 💡 Upgrade to Intelligence anytime for £300
@@ -728,7 +730,7 @@ export default function Home() {
 
               {/* CTA — 3D Collectible Card */}
               <div style={{ maxWidth: 260, margin: '0 auto' }}>
-                <MiniCard variant="intelligence" href="https://buy.stripe.com/4gM00i8fK62wbNH48n0Ba01" />
+                <MiniCard variant="intelligence" href="/order?tier=intelligence" />
               </div>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: '#888888', textAlign: 'center', marginTop: 14 }}>
                 Already bought Insight? Upgrade for <strong style={{ color: '#c9a227', fontWeight: 600 }}>£300</strong> — no new research needed.

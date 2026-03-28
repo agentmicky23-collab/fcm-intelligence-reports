@@ -27,8 +27,7 @@ export function MiniCard({ variant, href }: MiniCardProps) {
       `}</style>
       <a
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        
         style={{
           display: "block",
           textDecoration: "none",
