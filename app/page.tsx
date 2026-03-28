@@ -389,7 +389,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ TWO-TIER PRICING (compact two-column) ═══════════════════════════ */}
+      {/* ═══════════════════════════ TWO-TIER PRICING — /reports tier card design ═══════════════════════════ */}
       <section className="py-20" id="report-tiers" style={{ background: '#0a0e14' }}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-14">
@@ -399,135 +399,194 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-start">
-            {/* ── Insight Report — /reports tier card aesthetic ── */}
+          <div className="max-w-3xl mx-auto flex flex-col gap-10">
+
+            {/* ── INSIGHT REPORT — /reports tier card aesthetic (1px gold border) ── */}
             <div style={{
               border: '1px solid rgba(201,162,39,0.18)',
               borderRadius: 20,
-              overflow: 'hidden',
+              padding: 24,
               background: '#0d1117',
             }}>
+              {/* Header block — navy */}
               <div style={{
                 background: '#0B1D3A',
+                borderRadius: 16,
                 padding: '28px 32px',
+                marginBottom: 18,
                 position: 'relative',
                 overflow: 'hidden',
               }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-3">
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(201,162,39,0.5)', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>FCM Intelligence / Report series</div>
-                    <div className="text-2xl font-bold text-white">Insight Report</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600, color: 'rgba(201,162,39,0.5)', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>FCM Intelligence / Report series</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 26, fontWeight: 700, color: '#FFFFFF' }}>Insight Report</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div className="font-mono text-3xl font-bold text-white" style={{ lineHeight: 1 }}>£199</div>
-                    <div className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>one-time</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 32, fontWeight: 700, color: '#FFFFFF', lineHeight: 1 }}>£199</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>one-time</div>
                   </div>
                 </div>
-                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 10 }}>
                   &ldquo;Is this the right business?&rdquo;
                 </div>
               </div>
 
-              <div style={{ padding: '24px 32px 32px' }}>
-                <p className="font-semibold text-xs mb-3 uppercase tracking-wider" style={{ color: '#c9a227' }}>10 sections included</p>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-6">
-                  {[
-                    'Executive Verdict',
-                    'PO Remuneration',
-                    'Online Presence',
-                    'Location Intelligence',
-                    'Demographics',
-                    'Crime & Safety',
-                    'Competition Map',
-                    'Footfall Analysis',
-                    'Infrastructure',
-                    'Risk Assessment',
-                  ].map((item) => (
-                    <div key={item} className="flex items-center gap-1.5 text-sm">
-                      <span style={{ color: '#22c55e', fontSize: 12 }}>✓</span>
-                      <span style={{ color: '#e6edf3' }}>{item}</span>
+              {/* Key sections */}
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600, color: '#888888', textTransform: 'uppercase', letterSpacing: 1.5, margin: '18px 0 16px' }}>Key sections</div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                {[
+                  { label: 'Crime & Safety', score: 38, grade: 'D', color: '#C0392B', headline: '3,087 incidents. 62% violent crime + ASB.' },
+                  { label: 'Competition Mapping', score: 82, grade: 'A-', color: '#2D8A56', headline: 'No competition within 1.5km. Crown branch.' },
+                  { label: 'Demographics', score: 72, grade: 'B', color: '#c9a227', headline: '50% aged 50+. 70% deprived households.' },
+                  { label: 'Online Presence', score: 35, grade: 'D', color: '#D47735', headline: '3.1 stars, 73 reviews. 0% response rate.' },
+                ].map((s) => (
+                  <div key={s.label} style={{ background: '#0B1D3A', borderRadius: 12, padding: 16, position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${s.color}, transparent)` }} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, color: s.color, textTransform: 'uppercase', letterSpacing: 1.5 }}>{s.label}</span>
+                      <span>
+                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 18, fontWeight: 700, color: s.color }}>{s.score}</span>
+                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'rgba(255,255,255,0.4)', marginLeft: 4 }}>{s.grade}</span>
+                      </span>
                     </div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.3 }}>{s.headline}</div>
+                    <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2, marginTop: 10, overflow: 'hidden' }}>
+                      <div style={{ width: `${s.score}%`, height: '100%', background: s.color, borderRadius: 2 }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Also included */}
+              <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '14px 18px', marginBottom: 20, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, color: '#888888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Also included — 10 sections total</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                  {['Executive Verdict', 'PO Remuneration', 'Footfall Analysis', 'Location Intelligence', 'Infrastructure', 'Risk Assessment'].map((s) => (
+                    <span key={s} style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#888888', display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ width: 5, height: 5, borderRadius: 3, background: '#2D8A56' }} /> {s}
+                    </span>
                   ))}
                 </div>
-
-                <p className="text-sm mb-5" style={{ color: '#8b949e' }}>
-                  Delivered as an interactive report within 48 hours.
-                </p>
-
-                <BuyButton tier="insight" label="Buy Insight Report — £199" className="btn-primary w-full text-lg py-3" />
-                <p className="text-xs text-center mt-3" style={{ color: '#c9a227' }}>
-                  💡 Upgrade to Intelligence anytime for £300
-                </p>
               </div>
+
+              {/* Client quote */}
+              <div style={{ borderLeft: '3px solid #2D8A56', padding: '14px 18px', background: 'rgba(255,255,255,0.04)', borderRadius: '0 10px 10px 0', marginBottom: 24 }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, marginBottom: 8 }}>
+                  &ldquo;Competition mapping showed the nearest PO was 1.5km with restricted hours. When Halifax closing was flagged, we knew banking footfall was ours. Offered 10% below asking and got it.&rdquo;
+                </div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600, color: '#c9a227' }}>— FCM buyer, purchased</div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: '#666666' }}>Saved £12,000</div>
+              </div>
+
+              {/* CTA */}
+              <BuyButton tier="insight" label="Buy Insight Report — £199" className="btn-primary w-full text-lg py-3" />
+              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#c9a227', textAlign: 'center', marginTop: 12 }}>
+                💡 Upgrade to Intelligence anytime for £300
+              </p>
             </div>
 
-            {/* ── Intelligence Report — /reports tier card aesthetic (gold border) ── */}
+            {/* ──────────── Divider ──────────── */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '0 20px' }}>
+              <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,162,39,0.2), transparent)' }} />
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, color: 'rgba(201,162,39,0.35)', textTransform: 'uppercase', letterSpacing: 2 }}>or go deeper</span>
+              <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,162,39,0.2), transparent)' }} />
+            </div>
+
+            {/* ── INTELLIGENCE REPORT — /reports tier card aesthetic (2px gold border + glow) ── */}
             <div style={{
               border: '2px solid rgba(201,162,39,0.35)',
               borderRadius: 20,
-              overflow: 'hidden',
+              padding: 24,
               background: '#0d1117',
               boxShadow: '0 0 40px rgba(201,162,39,0.06)',
             }}>
+              {/* Header block — navy with gold accents */}
               <div style={{
                 background: '#0B1D3A',
+                borderRadius: 16,
                 padding: '28px 32px',
+                marginBottom: 18,
                 position: 'relative',
                 overflow: 'hidden',
-                borderBottom: '1.5px solid rgba(201,162,39,0.2)',
+                border: '1.5px solid rgba(201,162,39,0.2)',
               }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, transparent, #c9a227, #d4b84a, #c9a227, transparent)' }} />
-                <div style={{ position: 'absolute', top: 3, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #c9a227, #d4b84a)', color: '#0B1D3A', fontSize: 10, fontWeight: 600, padding: '3px 14px', borderRadius: '0 0 8px 8px', textTransform: 'uppercase', letterSpacing: 1.5 }}>Most popular</div>
-                <div className="flex items-center justify-between" style={{ marginTop: 10 }}>
+                <div style={{ position: 'absolute', top: 3, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #c9a227, #d4b84a)', color: '#0B1D3A', fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600, padding: '3px 14px', borderRadius: '0 0 8px 8px', textTransform: 'uppercase', letterSpacing: 1.5 }}>Most popular</div>
+                <div className="flex items-center justify-between flex-wrap gap-3" style={{ marginTop: 10 }}>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: '#c9a227', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>FCM Intelligence / Premium series</div>
-                    <div className="text-2xl font-bold text-white">Intelligence Report</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600, color: '#c9a227', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>FCM Intelligence / Premium series</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 26, fontWeight: 700, color: '#FFFFFF' }}>Intelligence Report</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div className="font-mono text-3xl font-bold" style={{ color: '#c9a227', lineHeight: 1 }}>£499</div>
-                    <div className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>one-time</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 32, fontWeight: 700, color: '#c9a227', lineHeight: 1 }}>£499</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>one-time</div>
                   </div>
                 </div>
-                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 10 }}>
                   &ldquo;Help me buy it.&rdquo;
                 </div>
               </div>
 
-              <div style={{ padding: '24px 32px 32px' }}>
-                <p className="font-semibold text-xs mb-3 uppercase tracking-wider" style={{ color: '#c9a227' }}>All 15 sections</p>
-                <p className="text-sm mb-3" style={{ color: '#8b949e' }}>Everything in Insight, plus:</p>
-                <div className="space-y-2 mb-6">
-                  {[
-                    'Financial Analysis',
-                    'Staffing & Hidden Costs',
-                    'Future Outlook',
-                    'Profit Improvement Plan',
-                    'Due Diligence & Negotiation Strategy',
-                  ].map((item) => (
-                    <div key={item} className="flex items-center gap-1.5 text-sm">
-                      <span style={{ color: '#c9a227', fontSize: 12 }}>✓</span>
-                      <span style={{ color: '#e6edf3' }}>{item}</span>
-                    </div>
+              {/* Intelligence-exclusive sections */}
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600, color: '#888888', textTransform: 'uppercase', letterSpacing: 1.5, margin: '18px 0 16px' }}>Intelligence-exclusive sections</div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                {[
+                  { label: 'Due Diligence Pack', color: '#c9a227', headline: 'Every question. Every document. Walk in prepared.' },
+                  { label: 'Profit Improvement', color: '#c9a227', headline: 'Evidence-based actions with projected ROI.' },
+                  { label: 'Future Outlook', color: '#2D8A56', headline: '5-year outlook: planning, developments, trajectory.' },
+                  { label: 'Negotiation Strategy', color: '#c9a227', headline: 'Offer range + every question to ask the seller.' },
+                ].map((s) => (
+                  <div key={s.label} style={{ background: '#0B1D3A', borderRadius: 12, padding: 16, position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${s.color}, transparent)` }} />
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, color: s.color, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8 }}>{s.label}</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.3 }}>{s.headline}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Also included */}
+              <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '14px 18px', marginBottom: 14, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, color: '#888888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Also included in Intelligence</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                  {['All 10 Insight sections', 'Financial Analysis', 'Staffing Costs', '60-min Consultation'].map((s) => (
+                    <span key={s} style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#888888', display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ width: 5, height: 5, borderRadius: 3, background: '#c9a227' }} /> {s}
+                    </span>
                   ))}
                 </div>
-
-                <div className="flex items-center gap-2 mb-5 p-3 rounded-lg" style={{ background: 'rgba(201,162,39,0.06)', border: '1px solid rgba(201,162,39,0.12)' }}>
-                  <span>📞</span>
-                  <span className="text-sm" style={{ color: '#c9a227' }}>Includes 60-minute consultation call</span>
-                </div>
-
-                <BuyButton tier="intelligence" label="Buy Intelligence Report — £499" className="btn-primary w-full text-lg py-3" />
               </div>
+
+              {/* Consultation call highlight */}
+              <div className="flex items-center gap-2 mb-5 p-3 rounded-lg" style={{ background: 'rgba(201,162,39,0.06)', border: '1px solid rgba(201,162,39,0.12)' }}>
+                <span>📞</span>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: '#c9a227' }}>Includes 60-minute consultation call</span>
+              </div>
+
+              {/* Client quote */}
+              <div style={{ borderLeft: '3px solid #c9a227', padding: '14px 18px', background: 'rgba(255,255,255,0.04)', borderRadius: '0 10px 10px 0', marginBottom: 24 }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, marginBottom: 8 }}>
+                  &ldquo;I walked in holding 23 documents to request and 15 questions he wasn&apos;t expecting. His face said it all. We agreed £18,000 below asking that afternoon.&rdquo;
+                </div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600, color: '#c9a227' }}>— FCM Intelligence buyer</div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: '#666666' }}>Saved £18,000</div>
+              </div>
+
+              {/* CTA */}
+              <BuyButton tier="intelligence" label="Buy Intelligence Report — £499" className="btn-primary w-full text-lg py-3" />
+              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: '#888888', textAlign: 'center', marginTop: 14 }}>
+                Already bought Insight? Upgrade for <strong style={{ color: '#c9a227', fontWeight: 600 }}>£300</strong> — no new research needed.
+              </p>
             </div>
+
           </div>
 
           <div className="text-center mt-10">
-            <p className="text-sm mb-3" style={{ color: '#8b949e' }}>
-              💡 Already bought Insight? Upgrade to Intelligence for £300 — no new research needed.
-            </p>
             <Link href="/reports" className="text-sm font-semibold underline" style={{ color: '#c9a227' }}>
-              See a sample report →
+              See full report details →
             </Link>
           </div>
         </div>
