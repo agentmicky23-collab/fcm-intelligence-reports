@@ -10,41 +10,96 @@ import { MiniCard } from "@/components/mini-card";
 import { listings } from "@/lib/listings-data";
 
 // Rotating headline words for hero
+// Desktop and mobile variants — mobile uses shorter text to prevent layout shift
 const ROTATING_WORDS = ["Post Offices", "Forecourts", "Convenience Stores", "Businesses"];
+const ROTATING_WORDS_MOBILE = ["Post Offices", "Forecourts", "Stores", "Businesses"];
 
 function RotatingHeadline() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+  const [phase, setPhase] = useState<"enter" | "visible" | "exit">("enter");
+
+  useEffect(() => {
+    // Kick off the enter animation immediately
+    const enterTimer = setTimeout(() => setPhase("visible"), 50);
+    return () => clearTimeout(enterTimer);
+  }, [currentIndex]);
 
   useEffect(() => {
     if (currentIndex >= ROTATING_WORDS.length - 1) return; // Stop on "Businesses"
 
-    const timer = setTimeout(() => {
-      // Fade out
-      setIsVisible(false);
+    const displayTimer = setTimeout(() => {
+      setPhase("exit");
 
-      // After fade-out, switch word and fade in
+      // After exit animation completes, advance to next word
       setTimeout(() => {
         setCurrentIndex((prev) => prev + 1);
-        setIsVisible(true);
-      }, 300); // 300ms for fade-out transition
-    }, 1000); // 1 second display time
+        setPhase("enter");
+      }, 400);
+    }, 1000);
 
-    return () => clearTimeout(timer);
-  }, [currentIndex]);
+    return () => clearTimeout(displayTimer);
+  }, [currentIndex, phase === "visible"]);
+
+  const getTransformStyle = (): React.CSSProperties => {
+    switch (phase) {
+      case "enter":
+        return {
+          opacity: 0,
+          transform: "translateY(100%) scale(0.9)",
+          filter: "blur(8px)",
+        };
+      case "visible":
+        return {
+          opacity: 1,
+          transform: "translateY(0%) scale(1)",
+          filter: "blur(0px)",
+        };
+      case "exit":
+        return {
+          opacity: 0,
+          transform: "translateY(-100%) scale(0.9)",
+          filter: "blur(8px)",
+        };
+    }
+  };
 
   return (
     <h1 className="font-playfair text-5xl md:text-7xl font-bold tracking-tight mb-6" style={{ lineHeight: 1.2 }}>
       Buy{" "}
+      {/* Fixed-size container prevents layout shift — sized to fit the widest word */}
       <span
-        className="inline-block"
+        className="inline-block align-bottom overflow-hidden"
         style={{
-          transition: "opacity 0.3s ease, transform 0.3s ease",
-          opacity: isVisible ? 1 : 0,
-          transform: isVisible ? "translateY(0)" : "translateY(-8px)",
+          height: "1.2em",
+          verticalAlign: "baseline",
+          position: "relative",
+          /* Fixed width per breakpoint — "Convenience Stores" on desktop, "Post Offices" on mobile */
         }}
       >
-        {ROTATING_WORDS[currentIndex]}
+        {/* Desktop words */}
+        <span
+          className="hidden md:inline-block"
+          style={{
+            transition: "opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            willChange: "transform, opacity, filter",
+            display: "inline-block",
+            ...getTransformStyle(),
+          }}
+        >
+          {ROTATING_WORDS[currentIndex]}
+        </span>
+        {/* Mobile words — shorter variants */}
+        <span
+          className="inline-block md:hidden"
+          style={{
+            transition: "opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            willChange: "transform, opacity, filter",
+            display: "inline-block",
+            ...getTransformStyle(),
+          }}
+        >
+          {ROTATING_WORDS_MOBILE[currentIndex]}
+        </span>
       </span>
       <br />
       <span style={{ color: '#c9a227' }}>Smarter, Not Harder</span>
