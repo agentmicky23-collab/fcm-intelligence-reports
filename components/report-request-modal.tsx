@@ -22,9 +22,9 @@ interface ReportRequestModalProps {
   listing?: ListingInfo;
 }
 
-const TIER_INFO: Record<ReportTier, { name: string; price: number; description: string; recommended?: boolean }> = {
-  insight: { name: "Insight Report", price: 199, description: "Is this the right business?" },
-  intelligence: { name: "Intelligence Report", price: 499, description: "Help me buy it.", recommended: true },
+const TIER_INFO: Record<ReportTier, { name: string; price: number; description: string; sections: string; recommended?: boolean }> = {
+  insight: { name: "Insight Report", price: 199, sections: "10 sections", description: "Is this the right business?" },
+  intelligence: { name: "Intelligence Report", price: 499, sections: "15 sections + strategy call", description: "Help me buy it.", recommended: true },
 };
 
 const LISTING_SOURCES = ["Daltons", "RightBiz", "Christie & Co", "Other"];
@@ -67,7 +67,7 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
 
-  // Step 4: Information checkboxes (Pro & Premium only)
+  // Step 2: Information checkboxes
   const [hasFinancials, setHasFinancials] = useState(false);
   const [hasAskingPrice, setHasAskingPrice] = useState(false);
   const [hasLeaseTerms, setHasLeaseTerms] = useState(false);
@@ -194,8 +194,6 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
       default: return '📎';
     }
   };
-
-  const showStep4 = selectedTier === "intelligence";
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -558,14 +556,87 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
                 </div>
               </label>
             </div>
+          </div>
 
-            {/* ═══════════════════════════════════════════════════════════ */}
-            {/* FILE UPLOAD SECTION */}
-            {/* ═══════════════════════════════════════════════════════════ */}
-            <div className="mt-8 pt-6" style={{ borderTop: "1px dashed #333" }}>
+          {/* ═══════════════════════════════════════════════════════════ */}
+          {/* STEP 2: WHAT INFORMATION DO YOU HAVE? + FILE UPLOAD       */}
+          {/* ═══════════════════════════════════════════════════════════ */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold" style={{ background: "#FFD700", color: "#000" }}>
+                2
+              </span>
+              <h3 className="text-lg font-semibold text-white">WHAT INFORMATION DO YOU HAVE?</h3>
+            </div>
+            <div className="h-px w-full mb-5" style={{ background: "#333" }} />
+
+            <p className="text-gray-400 text-sm mb-4">
+              The more you share, the more detailed your report. Tick anything you can provide:
+            </p>
+
+            <div className="space-y-3">
+              {[
+                { label: "I have company financials/accounts", checked: hasFinancials, onChange: (v: boolean) => handleOtherCheckbox(setHasFinancials, v) },
+                { label: "I have confirmed asking price", checked: hasAskingPrice, onChange: (v: boolean) => handleOtherCheckbox(setHasAskingPrice, v) },
+                { label: "I have lease terms/rent details", checked: hasLeaseTerms, onChange: (v: boolean) => handleOtherCheckbox(setHasLeaseTerms, v) },
+                { label: "I have staff/payroll information", checked: hasStaffInfo, onChange: (v: boolean) => handleOtherCheckbox(setHasStaffInfo, v) },
+                { label: "I have current turnover figures", checked: hasTurnover, onChange: (v: boolean) => handleOtherCheckbox(setHasTurnover, v) },
+                { label: "I have PO remuneration details", checked: hasPoRemuneration, onChange: (v: boolean) => handleOtherCheckbox(setHasPoRemuneration, v) },
+              ].map((item, idx) => (
+                <label key={idx} className="flex items-center gap-3 cursor-pointer group">
+                  <div
+                    className="w-5 h-5 rounded border-2 flex items-center justify-center transition-all"
+                    style={{
+                      borderColor: item.checked ? "#FFD700" : "#555",
+                      background: item.checked ? "#FFD700" : "transparent",
+                    }}
+                  >
+                    {item.checked && (
+                      <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={item.checked}
+                    onChange={(e) => item.onChange(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <span className="text-white">{item.label}</span>
+                </label>
+              ))}
+
+              {/* None option */}
+              <label className="flex items-center gap-3 cursor-pointer group mt-2 pt-2 border-t border-gray-800">
+                <div
+                  className="w-5 h-5 rounded border-2 flex items-center justify-center transition-all"
+                  style={{
+                    borderColor: hasNone ? "#FFD700" : "#555",
+                    background: hasNone ? "#FFD700" : "transparent",
+                  }}
+                >
+                  {hasNone && (
+                    <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <input
+                  type="checkbox"
+                  checked={hasNone}
+                  onChange={(e) => handleNoneChange(e.target.checked)}
+                  className="sr-only"
+                />
+                <span className="text-gray-400">None — I just have the listing</span>
+              </label>
+            </div>
+
+            {/* FILE UPLOAD — combined into Step 2 */}
+            <div className="mt-6 pt-5" style={{ borderTop: "1px dashed #333" }}>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">📎</span>
-                <h4 className="text-base font-medium text-white">SUPPORTING DOCUMENTS</h4>
+                <h4 className="text-base font-medium text-white">UPLOAD SUPPORTING DOCUMENTS</h4>
                 <span className="text-sm text-gray-500">(Optional)</span>
               </div>
               
@@ -641,68 +712,6 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
           </div>
 
           {/* ═══════════════════════════════════════════════════════════ */}
-          {/* STEP 2: SELECT REPORT TYPE */}
-          {/* ═══════════════════════════════════════════════════════════ */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold" style={{ background: "#FFD700", color: "#000" }}>
-                2
-              </span>
-              <h3 className="text-lg font-semibold text-white">SELECT REPORT TYPE</h3>
-            </div>
-            <div className="h-px w-full mb-5" style={{ background: "#333" }} />
-
-            <div className="space-y-3">
-              {(Object.keys(TIER_INFO) as ReportTier[]).map((t) => {
-                const info = TIER_INFO[t];
-                const isSelected = selectedTier === t;
-                return (
-                  <label
-                    key={t}
-                    className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
-                    style={{
-                      background: isSelected ? "rgba(255, 215, 0, 0.1)" : "#1a1a1a",
-                      border: isSelected ? "2px solid #FFD700" : "1px solid #333",
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name="tier"
-                      value={t}
-                      checked={isSelected}
-                      onChange={() => setSelectedTier(t)}
-                      className="sr-only"
-                    />
-                    <div
-                      className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
-                      style={{
-                        borderColor: isSelected ? "#FFD700" : "#555",
-                        background: isSelected ? "#FFD700" : "transparent",
-                      }}
-                    >
-                      {isSelected && <div className="w-2 h-2 rounded-full bg-black" />}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-white">{info.name}</span>
-                        {info.recommended && (
-                          <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "#FFD700", color: "#000" }}>
-                            ⭐ RECOMMENDED
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-400 mt-0.5">{info.description}</div>
-                    </div>
-                    <div className="font-mono font-bold text-lg" style={{ color: "#FFD700" }}>
-                      £{info.price}
-                    </div>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* ═══════════════════════════════════════════════════════════ */}
           {/* STEP 3: YOUR DETAILS */}
           {/* ═══════════════════════════════════════════════════════════ */}
           <div className="mb-8">
@@ -757,79 +766,68 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
           </div>
 
           {/* ═══════════════════════════════════════════════════════════ */}
-          {/* STEP 4: INFORMATION YOU HAVE (Pro & Premium only) */}
+          {/* STEP 4: SELECT REPORT TYPE (conversion decision point)    */}
           {/* ═══════════════════════════════════════════════════════════ */}
-          {showStep4 && (
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold" style={{ background: "#FFD700", color: "#000" }}>
-                  4
-                </span>
-                <h3 className="text-lg font-semibold text-white">INFORMATION YOU HAVE</h3>
-              </div>
-              <div className="h-px w-full mb-5" style={{ background: "#333" }} />
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold" style={{ background: "#FFD700", color: "#000" }}>
+                4
+              </span>
+              <h3 className="text-lg font-semibold text-white">SELECT REPORT TYPE</h3>
+            </div>
+            <div className="h-px w-full mb-5" style={{ background: "#333" }} />
 
-              <p className="text-gray-400 text-sm mb-4">Help us prepare a better report:</p>
-
-              <div className="space-y-3">
-                {[
-                  { label: "I have company financials/accounts", checked: hasFinancials, onChange: (v: boolean) => handleOtherCheckbox(setHasFinancials, v) },
-                  { label: "I have confirmed asking price", checked: hasAskingPrice, onChange: (v: boolean) => handleOtherCheckbox(setHasAskingPrice, v) },
-                  { label: "I have lease terms/rent details", checked: hasLeaseTerms, onChange: (v: boolean) => handleOtherCheckbox(setHasLeaseTerms, v) },
-                  { label: "I have staff/payroll information", checked: hasStaffInfo, onChange: (v: boolean) => handleOtherCheckbox(setHasStaffInfo, v) },
-                  { label: "I have current turnover figures", checked: hasTurnover, onChange: (v: boolean) => handleOtherCheckbox(setHasTurnover, v) },
-                  { label: "I have PO remuneration details", checked: hasPoRemuneration, onChange: (v: boolean) => handleOtherCheckbox(setHasPoRemuneration, v) },
-                ].map((item, idx) => (
-                  <label key={idx} className="flex items-center gap-3 cursor-pointer group">
-                    <div
-                      className="w-5 h-5 rounded border-2 flex items-center justify-center transition-all"
-                      style={{
-                        borderColor: item.checked ? "#FFD700" : "#555",
-                        background: item.checked ? "#FFD700" : "transparent",
-                      }}
-                    >
-                      {item.checked && (
-                        <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={item.checked}
-                      onChange={(e) => item.onChange(e.target.checked)}
-                      className="sr-only"
-                    />
-                    <span className="text-white">{item.label}</span>
-                  </label>
-                ))}
-
-                {/* None option */}
-                <label className="flex items-center gap-3 cursor-pointer group mt-2 pt-2 border-t border-gray-800">
-                  <div
-                    className="w-5 h-5 rounded border-2 flex items-center justify-center transition-all"
+            <div className="space-y-3">
+              {(Object.keys(TIER_INFO) as ReportTier[]).map((t) => {
+                const info = TIER_INFO[t];
+                const isSelected = selectedTier === t;
+                return (
+                  <label
+                    key={t}
+                    className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
                     style={{
-                      borderColor: hasNone ? "#FFD700" : "#555",
-                      background: hasNone ? "#FFD700" : "transparent",
+                      background: isSelected ? "rgba(255, 215, 0, 0.1)" : "#1a1a1a",
+                      border: isSelected ? "2px solid #FFD700" : "1px solid #333",
                     }}
                   >
-                    {hasNone && (
-                      <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={hasNone}
-                    onChange={(e) => handleNoneChange(e.target.checked)}
-                    className="sr-only"
-                  />
-                  <span className="text-gray-400">None — I just have the listing</span>
-                </label>
-              </div>
+                    <input
+                      type="radio"
+                      name="tier"
+                      value={t}
+                      checked={isSelected}
+                      onChange={() => setSelectedTier(t)}
+                      className="sr-only"
+                    />
+                    <div
+                      className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
+                      style={{
+                        borderColor: isSelected ? "#FFD700" : "#555",
+                        background: isSelected ? "#FFD700" : "transparent",
+                      }}
+                    >
+                      {isSelected && <div className="w-2 h-2 rounded-full bg-black" />}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-white">{info.name}</span>
+                        {info.recommended && (
+                          <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "#FFD700", color: "#000" }}>
+                            ⭐ RECOMMENDED
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-400 mt-0.5">
+                        {info.sections} — {info.description}
+                      </div>
+                    </div>
+                    <div className="font-mono font-bold text-lg" style={{ color: "#FFD700" }}>
+                      £{info.price}
+                    </div>
+                  </label>
+                );
+              })}
             </div>
-          )}
+          </div>
 
           {/* ═══════════════════════════════════════════════════════════ */}
           {/* SUBMIT BUTTON */}
