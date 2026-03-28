@@ -55,10 +55,10 @@ export default function Home() {
   return (
     <AppLayout>
       {/* ═══════════════════════════ HERO ═══════════════════════════ */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden" style={{ background: 'linear-gradient(180deg, #1e3a5f 0%, #0d1117 100%)' }}>
+      <section className="relative pt-24 pb-14 md:pt-36 md:pb-20 overflow-hidden" style={{ background: 'linear-gradient(180deg, #1e3a5f 0%, #0d1117 100%)' }}>
         <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(201, 162, 39, 0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm mb-8" style={{ background: 'rgba(201, 162, 39, 0.15)', border: '1px solid #c9a227', color: '#c9a227' }}>
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm mb-6" style={{ background: 'rgba(201, 162, 39, 0.15)', border: '1px solid #c9a227', color: '#c9a227' }}>
             <span className="flex h-2 w-2 rounded-full bg-[#c9a227] animate-pulse"></span>
             Trusted by 200+ Buyers Since 2009
           </div>
@@ -66,7 +66,7 @@ export default function Home() {
             Buy Post Offices<br />
             <span style={{ color: '#c9a227' }}>Smarter, Not Harder</span>
           </h1>
-          <p className="text-xl mb-10 max-w-2xl mx-auto" style={{ color: '#8b949e' }}>
+          <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: '#8b949e' }}>
             Data-driven intelligence reports that reveal the true potential of any Post Office acquisition. <strong className="text-white">Stop guessing. Start knowing.</strong>
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -113,9 +113,9 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ SECTION 3: TWO-PATH DISCOVERY ═══════════════════════════ */}
-      <section className="py-20" style={{ background: '#0d1117' }}>
+      <section className="py-12" style={{ background: '#0d1117' }}>
         <div className="container mx-auto px-4">
-          <div className="text-center mb-14">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">Two Ways to Win</h2>
             <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto text-lg">
               Find the right opportunity. Then know exactly what you&apos;re buying.
@@ -134,7 +134,7 @@ export default function Home() {
               {/* Header bar */}
               <div style={{
                 background: '#0B1D3A',
-                padding: '28px 32px',
+                padding: '20px 24px',
                 position: 'relative',
                 overflow: 'hidden',
               }}>
@@ -146,12 +146,12 @@ export default function Home() {
                   </div>
                   <div className="text-4xl">🔍</div>
                 </div>
-                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>
+                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 6 }}>
                   Daily scanning so you never miss a deal
                 </div>
               </div>
               {/* Body */}
-              <div style={{ padding: '24px 32px 32px' }}>
+              <div style={{ padding: '18px 24px 24px' }}>
                 <ul className="space-y-3 mb-6">
                   {[
                     'Daltons, RightBiz, BusinessesForSale — monitored daily',
@@ -181,7 +181,7 @@ export default function Home() {
               {/* Header bar */}
               <div style={{
                 background: '#0B1D3A',
-                padding: '28px 32px',
+                padding: '20px 24px',
                 position: 'relative',
                 overflow: 'hidden',
               }}>
@@ -193,12 +193,12 @@ export default function Home() {
                   </div>
                   <div className="text-4xl">📊</div>
                 </div>
-                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>
+                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: 6 }}>
                   Intelligence reports that reveal the full picture
                 </div>
               </div>
               {/* Body */}
-              <div style={{ padding: '24px 32px 32px' }}>
+              <div style={{ padding: '18px 24px 24px' }}>
                 <ul className="space-y-3 mb-6">
                   {[
                     'Insight Report — £199 (10 verified sections)',
@@ -230,9 +230,9 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ FEATURED LISTINGS ═══════════════════════════ */}
-      <section className="py-20" id="opportunities" style={{ background: 'linear-gradient(180deg, #0d1117 0%, #111820 100%)' }}>
+      <section className="py-12" id="opportunities" style={{ background: 'linear-gradient(180deg, #0d1117 0%, #111820 100%)' }}>
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">🔥 Live Opportunities</h2>
             <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto mb-2">Businesses For Sale Now</p>
             <p style={{ color: '#57606a', fontSize: '0.9rem' }}>
@@ -244,7 +244,7 @@ export default function Home() {
               <ListingCard key={listing.id} listing={listing} />
             ))}
           </div>
-          <div className="text-center mt-12">
+          <div className="text-center mt-8">
             <Link href="/opportunities" className="btn-primary text-lg px-10 py-4">View All {listings.length} Listings</Link>
           </div>
         </div>
@@ -268,7 +268,7 @@ export default function Home() {
 
       {/* ═══════════════════════════ TESTIMONIAL (moved BEFORE services for conversion) ═══════════════════════════ */}
       <section 
-        className="py-20" 
+        className="py-12" 
         style={{ 
           background: 'linear-gradient(180deg, #0a0e14 0%, #111820 50%, #0a0e14 100%)',
           borderTop: '2px solid rgba(255, 215, 0, 0.2)',
@@ -291,9 +291,9 @@ export default function Home() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-5xl mx-auto text-center">
             <div 
-              className="mb-6"
+              className="mb-3"
               style={{ 
-                fontSize: '6rem', 
+                fontSize: '4rem', 
                 lineHeight: 1, 
                 color: 'rgba(255, 215, 0, 0.25)',
                 fontFamily: 'Georgia, serif',
@@ -303,7 +303,7 @@ export default function Home() {
             </div>
             
             <blockquote 
-              className="text-xl md:text-3xl lg:text-4xl font-light leading-relaxed mb-8"
+              className="text-xl md:text-3xl lg:text-4xl font-light leading-relaxed mb-5"
               style={{ 
                 color: '#fff',
                 textShadow: '0 2px 20px rgba(0,0,0,0.3)',
@@ -317,7 +317,7 @@ export default function Home() {
                 width: '100px', 
                 height: '3px', 
                 background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
-                margin: '0 auto 24px',
+                margin: '0 auto 16px',
               }}
             />
             
@@ -336,9 +336,9 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ MINI "HOW IT WORKS" BRIDGE ═══════════════════════════ */}
-      <section className="py-16" style={{ background: '#0d1117' }}>
+      <section className="py-10" style={{ background: '#0d1117' }}>
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold mb-3">How It Works</h2>
             <p style={{ color: '#8b949e' }}>From listing to intelligence in 3 steps</p>
           </div>
@@ -365,9 +365,9 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ REPORT PREVIEW WITH SCORE RINGS ═══════════════════════════ */}
-      <section className="py-20" id="sample-preview" style={{ background: 'linear-gradient(180deg, #0d1117 0%, #0a0e14 100%)', borderTop: '1px solid #30363d' }}>
+      <section className="py-12" id="sample-preview" style={{ background: 'linear-gradient(180deg, #0d1117 0%, #0a0e14 100%)', borderTop: '1px solid #30363d' }}>
         <div className="container mx-auto px-4">
-          <div className="text-center mb-14">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">What&apos;s Inside Every Report</h2>
             <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto text-lg">
               Real scores from a real report. Every section verified, every risk quantified.
@@ -375,7 +375,7 @@ export default function Home() {
           </div>
 
           {/* Score Ring Previews */}
-          <div className="flex flex-wrap items-start justify-center gap-6 md:gap-10 mb-16 max-w-3xl mx-auto">
+          <div className="flex flex-wrap items-start justify-center gap-6 md:gap-10 mb-10 max-w-3xl mx-auto">
             <ScoreRing score={38} label="Crime & Safety" grade="D" color="#C0392B" />
             <ScoreRing score={82} label="Competition" grade="A-" color="#2D8A56" />
             <ScoreRing score={72} label="Demographics" grade="B" color="#c9a227" />
@@ -383,23 +383,23 @@ export default function Home() {
             <ScoreRing score={35} label="Online Presence" grade="D" color="#D47735" />
           </div>
 
-          <p className="text-center text-sm mb-16" style={{ color: '#8b949e' }}>
+          <p className="text-center text-sm mb-10" style={{ color: '#8b949e' }}>
             Scored across up to 15 categories — see how every aspect of the business stacks up.
           </p>
         </div>
       </section>
 
       {/* ═══════════════════════════ TWO-TIER PRICING — /reports tier card design ═══════════════════════════ */}
-      <section className="py-20" id="report-tiers" style={{ background: '#0a0e14' }}>
+      <section className="py-12" id="report-tiers" style={{ background: '#0a0e14' }}>
         <div className="container mx-auto px-4">
-          <div className="text-center mb-14">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">Choose Your Report</h2>
             <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto text-lg">
               Two tiers. One report. All the intelligence you need.
             </p>
           </div>
 
-          <div className="max-w-3xl mx-auto flex flex-col gap-10">
+          <div className="max-w-3xl mx-auto flex flex-col gap-6">
 
             {/* ── INSIGHT REPORT — /reports tier card aesthetic (1px gold border) ── */}
             <div style={{
@@ -412,8 +412,8 @@ export default function Home() {
               <div style={{
                 background: '#0B1D3A',
                 borderRadius: 16,
-                padding: '28px 32px',
-                marginBottom: 18,
+                padding: '22px 28px',
+                marginBottom: 14,
                 position: 'relative',
                 overflow: 'hidden',
               }}>
@@ -434,7 +434,7 @@ export default function Home() {
               </div>
 
               {/* Key sections */}
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600, color: '#888888', textTransform: 'uppercase', letterSpacing: 1.5, margin: '18px 0 16px' }}>Key sections</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600, color: '#888888', textTransform: 'uppercase', letterSpacing: 1.5, margin: '14px 0 12px' }}>Key sections</div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                 {[
@@ -507,8 +507,8 @@ export default function Home() {
               <div style={{
                 background: '#0B1D3A',
                 borderRadius: 16,
-                padding: '28px 32px',
-                marginBottom: 18,
+                padding: '22px 28px',
+                marginBottom: 14,
                 position: 'relative',
                 overflow: 'hidden',
                 border: '1.5px solid rgba(201,162,39,0.2)',
@@ -531,7 +531,7 @@ export default function Home() {
               </div>
 
               {/* Intelligence-exclusive sections */}
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600, color: '#888888', textTransform: 'uppercase', letterSpacing: 1.5, margin: '18px 0 16px' }}>Intelligence-exclusive sections</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600, color: '#888888', textTransform: 'uppercase', letterSpacing: 1.5, margin: '14px 0 12px' }}>Intelligence-exclusive sections</div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                 {[
@@ -593,7 +593,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ CONSULTATION SERVICES ═══════════════════════════ */}
-      <section className="py-16" style={{ background: '#0d1117', borderTop: '1px solid rgba(201,162,39,0.15)' }}>
+      <section className="py-10" style={{ background: '#0d1117', borderTop: '1px solid rgba(201,162,39,0.15)' }}>
         <div className="container mx-auto px-4 text-center">
           <div className="inline-block px-4 py-1 rounded-full mb-6" style={{ background: 'rgba(201,162,39,0.2)', border: '1px solid rgba(201,162,39,0.4)', color: '#c9a227', fontSize: '0.85rem', fontWeight: 600 }}>
             🎓 CONSULTATION SERVICES
@@ -624,8 +624,8 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ CONTACT FORM ═══════════════════════════ */}
-      <section className="py-20 container mx-auto px-4" id="contact" style={{ background: 'transparent' }}>
-        <div className="text-center mb-12">
+      <section className="py-12 container mx-auto px-4" id="contact" style={{ background: 'transparent' }}>
+        <div className="text-center mb-8">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">Ready to Buy Smarter?</h2>
           <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto">Tell us which listing interests you, and we&apos;ll deliver actionable intelligence within 48 hours.</p>
         </div>
@@ -665,20 +665,20 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ FCM INSIDER ═══════════════════════════ */}
-      <section className="py-20" id="insider" style={{ background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.08) 0%, rgba(30, 58, 95, 0.12) 100%)', borderTop: '1px solid rgba(201,162,39,0.2)', borderBottom: '1px solid rgba(201,162,39,0.2)' }}>
+      <section className="py-12" id="insider" style={{ background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.08) 0%, rgba(30, 58, 95, 0.12) 100%)', borderTop: '1px solid rgba(201,162,39,0.2)', borderBottom: '1px solid rgba(201,162,39,0.2)' }}>
         <div className="container mx-auto px-4 text-center">
           <div className="inline-block px-4 py-1 rounded-full mb-6" style={{ background: 'rgba(201,162,39,0.2)', border: '1px solid rgba(201,162,39,0.4)', color: '#c9a227', fontSize: '0.85rem', fontWeight: 600 }}>
             ⭐ MEMBERSHIP
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">FCM Insider</h2>
-          <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto mb-4 text-lg">Get the edge over other buyers with exclusive access to our hand-picked recommendations.</p>
-          <div className="mb-8">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">FCM Insider</h2>
+          <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto mb-3 text-lg">Get the edge over other buyers with exclusive access to our hand-picked recommendations.</p>
+          <div className="mb-6">
             <div className="inline-block px-4 py-1 rounded-full mb-2" style={{ background: 'rgba(201,162,39,0.15)', fontSize: '0.8rem', color: '#c9a227', fontWeight: 600 }}>BEST VALUE</div>
             <div className="font-mono text-5xl font-bold mb-2" style={{ color: '#c9a227' }}>£15</div>
             <p style={{ color: '#8b949e' }}>/month</p>
             <p className="text-sm" style={{ color: '#57606a' }}>Cancel anytime. No long-term commitment.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto mb-10 text-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8 text-left">
             <div className="flex items-start gap-3 p-4 rounded-lg" style={{ background: 'rgba(22,27,34,0.8)', border: '1px solid #30363d' }}>
               <span>⭐</span>
               <div>
