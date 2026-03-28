@@ -165,7 +165,7 @@ function ScoreRing({ score, label, grade, color }: { score: number; label: strin
 }
 
 /* ── Count-up animation component ── */
-function CountUp({ target, suffix = "", duration = 2800, delay = 1200 }: { target: number; suffix?: string; duration?: number; delay?: number }) {
+function CountUp({ target, suffix = "", duration = 6000, delay = 6000 }: { target: number; suffix?: string; duration?: number; delay?: number }) {
   const [count, setCount] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
