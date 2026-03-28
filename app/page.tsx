@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ListingCard, isSoldListingVisible } from "@/components/listing-card";
@@ -7,6 +8,49 @@ import { BuyButton } from "@/components/buy-button";
 import { MiniCard } from "@/components/mini-card";
 
 import { listings } from "@/lib/listings-data";
+
+// Rotating headline words for hero
+const ROTATING_WORDS = ["Post Offices", "Forecourts", "Convenience Stores", "Businesses"];
+
+function RotatingHeadline() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    if (currentIndex >= ROTATING_WORDS.length - 1) return; // Stop on "Businesses"
+
+    const timer = setTimeout(() => {
+      // Fade out
+      setIsVisible(false);
+
+      // After fade-out, switch word and fade in
+      setTimeout(() => {
+        setCurrentIndex((prev) => prev + 1);
+        setIsVisible(true);
+      }, 300); // 300ms for fade-out transition
+    }, 1000); // 1 second display time
+
+    return () => clearTimeout(timer);
+  }, [currentIndex]);
+
+  return (
+    <h1 className="font-playfair text-5xl md:text-7xl font-bold tracking-tight mb-6" style={{ lineHeight: 1.2 }}>
+      Buy{" "}
+      <span
+        className="inline-block"
+        style={{
+          transition: "opacity 0.3s ease, transform 0.3s ease",
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? "translateY(0)" : "translateY(-8px)",
+        }}
+      >
+        {ROTATING_WORDS[currentIndex]}
+      </span>
+      <br />
+      <span style={{ color: '#c9a227' }}>Smarter, Not Harder</span>
+    </h1>
+  );
+}
 
 // Get 3 featured listings with daily rotation
 function getFeaturedListings() {
@@ -63,10 +107,7 @@ export default function Home() {
             <span className="flex h-2 w-2 rounded-full bg-[#c9a227] animate-pulse"></span>
             Trusted by 200+ Buyers Since 2009
           </div>
-          <h1 className="font-playfair text-5xl md:text-7xl font-bold tracking-tight mb-6" style={{ lineHeight: 1.2 }}>
-            Buy Post Offices<br />
-            <span style={{ color: '#c9a227' }}>Smarter, Not Harder</span>
-          </h1>
+          <RotatingHeadline />
           <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: '#8b949e' }}>
             Data-driven intelligence reports that reveal the true potential of any Post Office acquisition. <strong className="text-white">Stop guessing. Start knowing.</strong>
           </p>
