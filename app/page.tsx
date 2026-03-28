@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ListingCard, isSoldListingVisible } from "@/components/listing-card";
@@ -163,6 +163,44 @@ function ScoreRing({ score, label, grade, color }: { score: number; label: strin
   );
 }
 
+/* ── Count-up animation component ── */
+function CountUp({ target, suffix = "", duration = 2000 }: { target: number; suffix?: string; duration?: number }) {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          const start = performance.now();
+          const animate = (now: number) => {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            // ease-in-out cubic
+            const eased = progress < 0.5
+              ? 4 * progress * progress * progress
+              : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            setCount(Math.round(eased * target));
+            if (progress < 1) requestAnimationFrame(animate);
+          };
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasAnimated, target, duration]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
+}
+
 export default function Home() {
   const featuredListings = getFeaturedListings();
 
@@ -192,19 +230,19 @@ export default function Home() {
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}>15+</div>
+              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}><CountUp target={15} suffix="+" /></div>
               <div className="text-sm font-medium uppercase tracking-wider" style={{ color: '#8b949e' }}>Years Industry Experience</div>
             </div>
             <div>
-              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}>40</div>
+              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}><CountUp target={40} /></div>
               <div className="text-sm font-medium uppercase tracking-wider" style={{ color: '#8b949e' }}>Branches Operated</div>
             </div>
             <div>
-              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}>200+</div>
+              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}><CountUp target={200} suffix="+" /></div>
               <div className="text-sm font-medium uppercase tracking-wider" style={{ color: '#8b949e' }}>Reports Delivered</div>
             </div>
             <div>
-              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}>98%</div>
+              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}><CountUp target={98} suffix="%" /></div>
               <div className="text-sm font-medium uppercase tracking-wider" style={{ color: '#8b949e' }}>Client Satisfaction</div>
             </div>
           </div>
