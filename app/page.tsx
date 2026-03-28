@@ -65,42 +65,58 @@ function RotatingHeadline() {
 
   return (
     <h1 className="font-playfair text-5xl md:text-7xl font-bold tracking-tight mb-6" style={{ lineHeight: 1.2 }}>
-      Buy{" "}
-      {/* Fixed-size container prevents layout shift — sized to fit the widest word */}
-      <span
-        className="inline-block align-bottom overflow-hidden"
-        style={{
-          height: "1.2em",
-          verticalAlign: "baseline",
-          position: "relative",
-          /* Fixed width per breakpoint — "Convenience Stores" on desktop, "Post Offices" on mobile */
-        }}
-      >
-        {/* Desktop words */}
+      <span className="block text-center">
+        Buy{" "}
+        {/* Fixed-size container prevents layout shift — sized to fit the widest word */}
         <span
-          className="hidden md:inline-block"
+          className="inline-block overflow-hidden"
           style={{
-            transition: "opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-            willChange: "transform, opacity, filter",
-            ...getTransformStyle(),
+            height: "1.2em",
+            verticalAlign: "bottom",
+            position: "relative",
           }}
         >
-          {ROTATING_WORDS[currentIndex]}
-        </span>
-        {/* Mobile words — shorter variants */}
-        <span
-          className="inline-block md:hidden"
-          style={{
-            transition: "opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-            willChange: "transform, opacity, filter",
-            ...getTransformStyle(),
-          }}
-        >
-          {ROTATING_WORDS_MOBILE[currentIndex]}
+          {/* Desktop words — absolutely positioned to prevent layout shift */}
+          <span
+            className="hidden md:block"
+            style={{
+              position: "absolute",
+              left: 0,
+              bottom: 0,
+              whiteSpace: "nowrap",
+              transition: "opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              willChange: "transform, opacity, filter",
+              ...getTransformStyle(),
+            }}
+          >
+            {ROTATING_WORDS[currentIndex]}
+          </span>
+          {/* Invisible sizer — keeps container width stable at widest desktop word */}
+          <span className="hidden md:inline-block" style={{ visibility: "hidden", whiteSpace: "nowrap" }}>
+            Convenience Stores
+          </span>
+          {/* Mobile words — absolutely positioned */}
+          <span
+            className="block md:hidden"
+            style={{
+              position: "absolute",
+              left: 0,
+              bottom: 0,
+              whiteSpace: "nowrap",
+              transition: "opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              willChange: "transform, opacity, filter",
+              ...getTransformStyle(),
+            }}
+          >
+            {ROTATING_WORDS_MOBILE[currentIndex]}
+          </span>
+          {/* Invisible sizer — keeps container width stable at widest mobile word */}
+          <span className="inline-block md:hidden" style={{ visibility: "hidden", whiteSpace: "nowrap" }}>
+            Post Offices
+          </span>
         </span>
       </span>
-      <br />
-      <span style={{ color: '#c9a227' }}>Smarter, Not Harder</span>
+      <span className="block text-center" style={{ color: '#c9a227' }}>Smarter, Not Harder</span>
     </h1>
   );
 }
