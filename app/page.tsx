@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { ListingCard, isSoldListingVisible } from "@/components/listing-card";
 import { BuyButton } from "@/components/buy-button";
 import { MiniCard } from "@/components/mini-card";
+import { ReportRequestModal } from "@/components/report-request-modal";
 
 import { listings } from "@/lib/listings-data";
 
@@ -205,6 +206,13 @@ function CountUp({ target, suffix = "", duration = 2800, delay = 1200 }: { targe
 
 export default function Home() {
   const featuredListings = getFeaturedListings();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTier, setModalTier] = useState<"insight" | "intelligence">("intelligence");
+
+  const openOrderModal = (tier: "insight" | "intelligence") => {
+    setModalTier(tier);
+    setModalOpen(true);
+  };
 
   return (
     <AppLayout>
@@ -634,7 +642,7 @@ export default function Home() {
 
               {/* CTA — 3D Collectible Card */}
               <div style={{ maxWidth: 260, margin: '0 auto' }}>
-                <MiniCard variant="insight" href="/order?tier=insight" />
+                <MiniCard variant="insight" onClick={() => openOrderModal("insight")} />
               </div>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#c9a227', textAlign: 'center', marginTop: 12 }}>
                 💡 Upgrade to Intelligence anytime for £300
@@ -730,7 +738,7 @@ export default function Home() {
 
               {/* CTA — 3D Collectible Card */}
               <div style={{ maxWidth: 260, margin: '0 auto' }}>
-                <MiniCard variant="intelligence" href="/order?tier=intelligence" />
+                <MiniCard variant="intelligence" onClick={() => openOrderModal("intelligence")} />
               </div>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: '#888888', textAlign: 'center', marginTop: 14 }}>
                 Already bought Insight? Upgrade for <strong style={{ color: '#c9a227', fontWeight: 600 }}>£300</strong> — no new research needed.
@@ -876,6 +884,11 @@ export default function Home() {
           </p>
         </div>
       </section>
+      <ReportRequestModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        tier={modalTier}
+      />
     </AppLayout>
   );
 }

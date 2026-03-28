@@ -7,10 +7,11 @@ const font = "'Inter', -apple-system, sans-serif";
 
 interface MiniCardProps {
   variant: "insight" | "intelligence";
-  href: string;
+  href?: string;
+  onClick?: () => void;
 }
 
-export function MiniCard({ variant, href }: MiniCardProps) {
+export function MiniCard({ variant, href, onClick }: MiniCardProps) {
   const isGold = variant === "intelligence";
   const tiltStart = isGold ? "rotateY(-3deg) rotateX(1deg)" : "rotateY(3deg) rotateX(1deg)";
   const tiltHover = isGold
@@ -25,9 +26,24 @@ export function MiniCard({ variant, href }: MiniCardProps) {
       <style>{`
         @keyframes fcmHoloSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
-      <a
-        href={href}
-        
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={(e) => {
+          if (onClick) {
+            e.preventDefault();
+            onClick();
+          } else if (href) {
+            window.location.href = href;
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (onClick) onClick();
+            else if (href) window.location.href = href;
+          }
+        }}
         style={{
           display: "block",
           textDecoration: "none",
@@ -363,7 +379,7 @@ export function MiniCard({ variant, href }: MiniCardProps) {
             </div>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   );
 }

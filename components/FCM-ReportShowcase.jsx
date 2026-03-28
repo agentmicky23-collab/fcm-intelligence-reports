@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ReportRequestModal } from "./report-request-modal";
 
 // ============================================================
 // FCM REPORT SHOWCASE — Reports Page (/reports)
@@ -102,15 +103,16 @@ function SectionRow({ sectionFirst, sectionProps, quoteProps }) {
 }
 
 // ---- Mini Collectible Card CTA ----
-function MiniCard({ variant, href }) {
+function MiniCard({ variant, onClick }) {
   const isGold = variant === "intelligence";
 
   return (
     <div style={{ maxWidth: 220, margin: "0 auto", perspective: 600 }}>
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
         className={`fcm-mini-card ${isGold ? "fcm-mini-gold" : "fcm-mini-silver"}`}
         style={{
           display: "block", textDecoration: "none", position: "relative", borderRadius: 16, overflow: "hidden",
@@ -211,7 +213,7 @@ function MiniCard({ variant, href }) {
             </div>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   );
 }
@@ -222,7 +224,14 @@ function MiniCard({ variant, href }) {
 export default function ReportShowcase() {
   const [audience, setAudience] = useState(0);
   const [fadeKey, setFadeKey] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTier, setModalTier] = useState("intelligence");
   const a = AUDIENCES[audience];
+
+  const openOrderModal = (tier) => {
+    setModalTier(tier);
+    setModalOpen(true);
+  };
 
   return (
     <section style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -317,7 +326,7 @@ export default function ReportShowcase() {
         </div>
       </div>
 
-      <MiniCard variant="insight" href="/order?tier=insight" />
+      <MiniCard variant="insight" onClick={() => openOrderModal("insight")} />
       <div style={{ fontFamily: T.body, fontSize: 12, color: T.lightText, textAlign: "center", marginTop: 10, marginBottom: 20 }}>Upgrade to Intelligence anytime for £300</div>
       </div>{/* Close Insight border wrapper */}
 
@@ -384,7 +393,7 @@ export default function ReportShowcase() {
         </div>
       </div>
 
-      <MiniCard variant="intelligence" href="/order?tier=intelligence" />
+      <MiniCard variant="intelligence" onClick={() => openOrderModal("intelligence")} />
       <div style={{ fontFamily: T.body, fontSize: 12, color: T.lightText, textAlign: "center", marginTop: 10 }}>The complete acquisition weapon</div>
       <div style={{ fontFamily: T.body, fontSize: 14, color: T.mutedText, textAlign: "center", marginTop: 18, marginBottom: 20 }}>
         Already bought Insight? Upgrade for <strong style={{ color: T.gold, fontWeight: 600 }}>£300</strong> — no new research needed.
@@ -425,6 +434,12 @@ export default function ReportShowcase() {
           .fcm-hero-heading { font-size: 30px !important; }
         }
       `}</style>
+
+      <ReportRequestModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        tier={modalTier}
+      />
     </section>
   );
 }
