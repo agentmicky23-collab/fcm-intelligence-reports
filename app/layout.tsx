@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import FeedbackButton from "@/components/feedback/FeedbackButton";
+import { CookieConsent } from "@/components/cookie-consent";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <SessionProvider>{children}</SessionProvider>
         <FeedbackButton />
+        <CookieConsent />
       </body>
     </html>
   );

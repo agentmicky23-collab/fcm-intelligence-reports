@@ -42,8 +42,18 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-gray-900 text-center">
-          <p className="text-xs text-muted-foreground">
+        {/* Legal Links */}
+        <div className="mt-8 pt-8 border-t border-gray-900">
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
+            <Link href="/terms" className="text-xs text-muted-foreground hover:text-primary transition-colors">Terms of Service</Link>
+            <span className="text-gray-700">|</span>
+            <Link href="/privacy" className="text-xs text-muted-foreground hover:text-primary transition-colors">Privacy Policy</Link>
+            <span className="text-gray-700">|</span>
+            <Link href="/cookies" className="text-xs text-muted-foreground hover:text-primary transition-colors">Cookie Policy</Link>
+            <span className="text-gray-700">|</span>
+            <Link href="/refunds" className="text-xs text-muted-foreground hover:text-primary transition-colors">Refund Policy</Link>
+          </div>
+          <p className="text-xs text-muted-foreground text-center">
             © {new Date().getFullYear()} FCM Intelligence. All rights reserved.
           </p>
         </div>

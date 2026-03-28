@@ -63,6 +63,9 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Disclaimer
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+
   // Step 3: Customer details
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -708,6 +711,27 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
               <p className="text-xs text-zinc-500 mt-3">
                 Examples: Email correspondence, company accounts, broker info packs, lease agreements, PO remuneration statements
               </p>
+
+              {/* Financial Data Notice — shown for both tiers (both accept uploads) */}
+              {(selectedTier === "insight" || selectedTier === "intelligence") && (
+                <div className="mt-4 p-4 rounded-lg" style={{ background: "#111", border: "1px solid #2a2a2a" }}>
+                  <div className="flex items-start gap-2 mb-2">
+                    <span className="text-base">📋</span>
+                    <span className="text-sm font-medium text-white">How we handle your financial documents</span>
+                  </div>
+                  <p className="text-sm text-gray-400 leading-relaxed ml-6">
+                    Any documents you upload are used solely to prepare your report. 
+                    We do not share your documents with any third party. All uploaded files 
+                    are permanently deleted within 30 days of report delivery.
+                  </p>
+                  <p className="text-sm text-gray-400 mt-2 ml-6">
+                    For full details, see our{' '}
+                    <a href="/privacy" target="_blank" className="underline hover:text-white transition-colors" style={{ color: "#FFD700" }}>
+                      Privacy Policy
+                    </a>.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -830,12 +854,48 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
           </div>
 
           {/* ═══════════════════════════════════════════════════════════ */}
+          {/* DISCLAIMER CHECKBOX */}
+          {/* ═══════════════════════════════════════════════════════════ */}
+          <div className="mb-6">
+            <label className="flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all" style={{ border: disclaimerAccepted ? "1px solid #FFD700" : "1px solid #333", background: disclaimerAccepted ? "rgba(255, 215, 0, 0.05)" : "transparent" }}>
+              <div className="mt-0.5 flex-shrink-0">
+                <div
+                  className="w-5 h-5 rounded border-2 flex items-center justify-center transition-all"
+                  style={{
+                    borderColor: disclaimerAccepted ? "#FFD700" : "#555",
+                    background: disclaimerAccepted ? "#FFD700" : "transparent",
+                  }}
+                >
+                  {disclaimerAccepted && (
+                    <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <input
+                  type="checkbox"
+                  checked={disclaimerAccepted}
+                  onChange={(e) => setDisclaimerAccepted(e.target.checked)}
+                  className="sr-only"
+                />
+              </div>
+              <span className="text-sm text-gray-300 leading-relaxed">
+                I confirm that I have read and agree to the{' '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-white transition-colors" style={{ color: "#FFD700" }} onClick={(e) => e.stopPropagation()}>
+                  Terms of Service
+                </a>{' '}
+                and understand that this report is for informational purposes only. It does not constitute financial, legal, or investment advice, and I am solely responsible for my own due diligence and acquisition decisions.
+              </span>
+            </label>
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════════ */}
           {/* SUBMIT BUTTON */}
           {/* ═══════════════════════════════════════════════════════════ */}
           <div className="pt-4 border-t" style={{ borderColor: "#333" }}>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !disclaimerAccepted}
               className="w-full py-4 rounded-xl text-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
               style={{ background: "#FFD700", color: "#000" }}
             >
