@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ListingCard, isSoldListingVisible } from "@/components/listing-card";
 import { BuyButton } from "@/components/buy-button";
+import { MiniCard } from "@/components/mini-card";
 
 import { listings } from "@/lib/listings-data";
 
@@ -481,8 +482,10 @@ export default function Home() {
                 <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: '#666666' }}>Saved £12,000</div>
               </div>
 
-              {/* CTA */}
-              <BuyButton tier="insight" label="Buy Insight Report — £199" className="btn-primary w-full text-lg py-3" />
+              {/* CTA — 3D Collectible Card */}
+              <div style={{ maxWidth: 260, margin: '0 auto' }}>
+                <MiniCard variant="insight" href="https://buy.stripe.com/4gMcN4gMgez2bNHawL0Ba00" />
+              </div>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#c9a227', textAlign: 'center', marginTop: 12 }}>
                 💡 Upgrade to Intelligence anytime for £300
               </p>
@@ -575,8 +578,10 @@ export default function Home() {
                 <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: '#666666' }}>Saved £18,000</div>
               </div>
 
-              {/* CTA */}
-              <BuyButton tier="intelligence" label="Buy Intelligence Report — £499" className="btn-primary w-full text-lg py-3" />
+              {/* CTA — 3D Collectible Card */}
+              <div style={{ maxWidth: 260, margin: '0 auto' }}>
+                <MiniCard variant="intelligence" href="https://buy.stripe.com/4gM00i8fK62wbNH48n0Ba01" />
+              </div>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: '#888888', textAlign: 'center', marginTop: 14 }}>
                 Already bought Insight? Upgrade for <strong style={{ color: '#c9a227', fontWeight: 600 }}>£300</strong> — no new research needed.
               </p>
