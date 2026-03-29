@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 // ─── Brand ───
@@ -32,7 +32,7 @@ const TABS = [
   { id: 'profile', label: 'Profile', icon: '👤', desc: 'Preferences & account' },
 ];
 
-export default function ProDashboardClient() {
+function ProDashboardContent() {
   const searchParams = useSearchParams();
   const [state, setState] = useState('loading'); // 'loading' | 'gate' | 'dashboard' | 'upgrade'
   const [subscriber, setSubscriber] = useState(null);
@@ -415,4 +415,12 @@ function getGreeting() {
   if (hour < 12) return 'Good morning';
   if (hour < 17) return 'Good afternoon';
   return 'Good evening';
+}
+
+export default function ProDashboardClient() {
+  return (
+    <Suspense fallback={<div style={{ background: '#010409', minHeight: '100vh' }} />}>
+      <ProDashboardContent />
+    </Suspense>
+  );
 }
