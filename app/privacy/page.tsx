@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { LegalPageLayout } from "@/components/legal-page-layout";
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'Privacy policy for FCM Intelligence. How we collect, use, and protect your data.',
+  alternates: { canonical: 'https://fcmreport.com/privacy' },
+  robots: { index: false, follow: true },
+};
 
 export default function PrivacyPage() {
   return (

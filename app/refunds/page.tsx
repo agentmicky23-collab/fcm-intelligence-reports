@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { LegalPageLayout } from "@/components/legal-page-layout";
+
+export const metadata: Metadata = {
+  title: 'Refund Policy',
+  description: 'Refund policy for FCM Intelligence reports and services.',
+  alternates: { canonical: 'https://fcmreport.com/refunds' },
+  robots: { index: false, follow: true },
+};
 
 export default function RefundsPage() {
   return (

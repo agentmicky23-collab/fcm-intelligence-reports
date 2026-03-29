@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { LegalPageLayout } from "@/components/legal-page-layout";
+
+export const metadata: Metadata = {
+  title: 'Cookie Policy',
+  description: 'Cookie policy for FCM Intelligence.',
+  alternates: { canonical: 'https://fcmreport.com/cookies' },
+  robots: { index: false, follow: true },
+};
 
 export default function CookiesPage() {
   return (

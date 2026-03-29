@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { LegalPageLayout } from "@/components/legal-page-layout";
+
+export const metadata: Metadata = {
+  title: 'Terms of Service',
+  description: 'Terms of service for FCM Intelligence reports and listings platform.',
+  alternates: { canonical: 'https://fcmreport.com/terms' },
+  robots: { index: false, follow: true },
+};
 
 export default function TermsPage() {
   return (

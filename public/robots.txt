@@ -1,0 +1,12 @@
+# FCM Intelligence — fcmreport.com
+# https://fcmreport.com
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /report/
+
+# Report viewer pages are email-gated — no point indexing
+# API routes should never be crawled
+
+Sitemap: https://fcmreport.com/sitemap.xml
