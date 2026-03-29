@@ -26,6 +26,9 @@ import {
   GradingScale, BackPage,
 } from "../../components/fcm-report-components-v2";
 
+import LockedSectionTeaser from "../../components/LockedSectionTeaser";
+import UpgradeBannerComponent from "../../components/UpgradeBanner";
+
 // ============================================================
 // SUPABASE CLIENT
 // ============================================================
@@ -35,39 +38,57 @@ const supabase = createClient(
 );
 
 // ============================================================
-// 2-TIER STRUCTURE (March 19 update — scout & analysis removed)
+// SECTION ORDER — canonical display order for all 15 sections
 // ============================================================
-const TIER_SECTIONS = {
-  insight: ["s1", "s3", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "s13"],
-  intelligence: ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "s12", "s13", "s14", "s15"],
-};
-
-// All 15 sections in display order with metadata
-const ALL_SECTIONS = [
-  { id: "s1", key: "s1_executive_summary", title: "Executive Summary & Verdict", Component: Section1 },
-  { id: "s2", key: "s2_financial_analysis", title: "Financial Analysis", Component: Section2 },
-  { id: "s3", key: "s3_po_remuneration", title: "PO Remuneration Analysis", Component: Section3 },
-  { id: "s4", key: "s4_staffing", title: "Staffing, Employment & Hidden Costs", Component: Section4 },
-  { id: "s5", key: "s5_online_presence", title: "Online Presence & Customer Reviews", Component: Section5 },
-  { id: "s6", key: "s6_location_intelligence", title: "Location Intelligence", Component: Section6 },
-  { id: "s7", key: "s7_demographics", title: "Demographics & Community Profile", Component: Section7 },
-  { id: "s8", key: "s8_crime_safety", title: "Crime & Safety Analysis", Component: Section8 },
-  { id: "s9", key: "s9_competition_mapping", title: "Competition Mapping", Component: Section9 },
-  { id: "s10", key: "s10_footfall_analysis", title: "Footfall Analysis", Component: Section10 },
-  { id: "s11", key: "s11_infrastructure", title: "Infrastructure & Connectivity", Component: Section11 },
-  { id: "s12", key: "s12_future_outlook", title: "Future Outlook", Component: Section12 },
-  { id: "s13", key: "s13_risk_assessment", title: "Risk Assessment", Component: Section13 },
-  { id: "s14", key: "s14_profit_improvement", title: "Profit Improvement Plan", Component: Section14 },
-  { id: "s15", key: "s15_due_diligence", title: "Due Diligence, Questions & Negotiation", Component: Section15 },
+const SECTION_ORDER = [
+  's1_executive_summary',
+  's2_financial_analysis',
+  's3_po_remuneration',
+  's4_staffing',
+  's5_online_presence',
+  's6_location_intelligence',
+  's7_demographics',
+  's8_crime_safety',
+  's9_competition_mapping',
+  's10_footfall_analysis',
+  's11_infrastructure',
+  's12_future_outlook',
+  's13_risk_assessment',
+  's14_profit_improvement',
+  's15_due_diligence',
 ];
 
-// Teaser descriptions for locked sections (used in upgrade overlay)
-const SECTION_TEASERS = {
-  s2: "Detailed financial breakdown including asking price analysis, revenue estimates, P&L projections, and FCM benchmark comparisons.",
-  s4: "True cost of employment calculations, hidden staffing costs, TUPE obligations, and recommended staffing models.",
-  s12: "Local development pipeline, planning applications, PO network assessment, and 5-year growth trajectory.",
-  s14: "Actionable profit improvement opportunities with costs, expected returns, and evidence from this report. Includes quick wins for the first 90 days.",
-  s15: "Complete due diligence checklist, questions to ask the seller and landlord, suggested offer range, and negotiation strategy with leverage analysis.",
+// ============================================================
+// 2-TIER STRUCTURE (March 19 update — scout & analysis removed)
+// Fallback visibility if tier_visibility not in JSON
+// ============================================================
+const TIER_SECTIONS_FALLBACK = {
+  insight: [
+    "s1_executive_summary", "s3_po_remuneration", "s5_online_presence",
+    "s6_location_intelligence", "s7_demographics", "s8_crime_safety",
+    "s9_competition_mapping", "s10_footfall_analysis", "s11_infrastructure",
+    "s13_risk_assessment",
+  ],
+  intelligence: SECTION_ORDER,
+};
+
+// Section key → Component mapping
+const SECTION_COMPONENTS = {
+  s1_executive_summary: { title: "Executive Summary & Verdict", Component: Section1 },
+  s2_financial_analysis: { title: "Financial Analysis", Component: Section2 },
+  s3_po_remuneration: { title: "PO Remuneration Analysis", Component: Section3 },
+  s4_staffing: { title: "Staffing, Employment & Hidden Costs", Component: Section4 },
+  s5_online_presence: { title: "Online Presence & Customer Reviews", Component: Section5 },
+  s6_location_intelligence: { title: "Location Intelligence", Component: Section6 },
+  s7_demographics: { title: "Demographics & Community Profile", Component: Section7 },
+  s8_crime_safety: { title: "Crime & Safety Analysis", Component: Section8 },
+  s9_competition_mapping: { title: "Competition Mapping", Component: Section9 },
+  s10_footfall_analysis: { title: "Footfall Analysis", Component: Section10 },
+  s11_infrastructure: { title: "Infrastructure & Connectivity", Component: Section11 },
+  s12_future_outlook: { title: "Future Outlook", Component: Section12 },
+  s13_risk_assessment: { title: "Risk Assessment", Component: Section13 },
+  s14_profit_improvement: { title: "Profit Improvement Plan", Component: Section14 },
+  s15_due_diligence: { title: "Due Diligence, Questions & Negotiation", Component: Section15 },
 };
 
 // ============================================================
@@ -201,169 +222,31 @@ function EmailGate({ orderId, onVerified }) {
   );
 }
 
-// ============================================================
-// LOCKED SECTION PREVIEW (for upsell)
-// ============================================================
-function LockedSection({ section, orderId }) {
-  const [upgrading, setUpgrading] = useState(false);
-  const sectionNumber = parseInt(section.id.replace("s", ""));
-  const teaser = SECTION_TEASERS[section.id] || `Unlock the full ${section.title} with Intelligence tier.`;
-
-  const handleUpgrade = async () => {
-    setUpgrading(true);
-    try {
-      const res = await fetch("/api/upgrade/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId }),
-      });
-      const { url } = await res.json();
-      if (url) {
-        window.location.href = url;
-      } else {
-        setUpgrading(false);
-        alert("Unable to start upgrade. Please contact reports@fcmreport.com");
-      }
-    } catch (err) {
-      setUpgrading(false);
-      alert("Unable to start upgrade. Please contact reports@fcmreport.com");
-    }
-  };
-
-  return (
-    <div style={{
-      position: "relative", borderRadius: 12, overflow: "hidden",
-      marginBottom: 40, border: `1px solid ${T.offWhite}`,
-    }}>
-      {/* Faded preview header */}
-      <div style={{ padding: "28px 32px 0", opacity: 0.4, filter: "blur(0.5px)" }}>
-        <SectionHeader number={sectionNumber} title={section.title} />
-      </div>
-
-      {/* Blurred teaser content */}
-      <div style={{
-        padding: "0 32px 20px", opacity: 0.15, filter: "blur(3px)",
-        userSelect: "none", pointerEvents: "none",
-      }}>
-        <div style={{ background: T.offWhite, borderRadius: 8, padding: "16px 20px", marginBottom: 16, height: 60 }} />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10 }}>
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} style={{ background: T.offWhite, borderRadius: 8, height: 70 }} />
-          ))}
-        </div>
-        <div style={{ background: T.offWhite, borderRadius: 8, height: 120, marginTop: 16 }} />
-      </div>
-
-      {/* Upgrade overlay */}
-      <div style={{
-        position: "absolute", inset: 0,
-        background: "linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.95) 40%, rgba(255,255,255,0.98) 100%)",
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        padding: "40px 32px",
-      }}>
-        <div style={{
-          width: 48, height: 48, borderRadius: 24, background: T.navy,
-          display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
-        }}>
-          <span style={{ fontSize: 20 }}>🔒</span>
-        </div>
-
-        <div style={{ fontFamily: T.display, fontSize: 18, fontWeight: 600, color: T.navy, marginBottom: 8, textAlign: "center" }}>
-          Section {sectionNumber}: {section.title}
-        </div>
-
-        <div style={{ fontFamily: T.body, fontSize: 12, color: T.mutedText, lineHeight: 1.7, textAlign: "center", maxWidth: 480, marginBottom: 20 }}>
-          {teaser}
-        </div>
-
-        <button
-          onClick={handleUpgrade}
-          disabled={upgrading}
-          style={{
-            padding: "12px 32px", borderRadius: 8, border: "none",
-            background: T.gold, color: T.navy, fontFamily: T.body, fontSize: 13, fontWeight: 700,
-            cursor: upgrading ? "not-allowed" : "pointer",
-            transition: "transform 0.15s, box-shadow 0.15s",
-            boxShadow: "0 4px 12px rgba(191,155,81,0.3)",
-          }}
-          onMouseEnter={(e) => { e.target.style.transform = "translateY(-1px)"; e.target.style.boxShadow = "0 6px 20px rgba(191,155,81,0.4)"; }}
-          onMouseLeave={(e) => { e.target.style.transform = "translateY(0)"; e.target.style.boxShadow = "0 4px 12px rgba(191,155,81,0.3)"; }}
-        >
-          {upgrading ? "Redirecting to payment..." : "Upgrade to Intelligence — £300"}
-        </button>
-
-        <div style={{ fontFamily: T.body, fontSize: 10, color: T.lightText, marginTop: 10 }}>
-          Instant unlock — no new research needed
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
-// STICKY UPGRADE BANNER (for Insight tier — shows at bottom)
-// ============================================================
-function UpgradeBanner({ orderId, lockedCount }) {
-  const [upgrading, setUpgrading] = useState(false);
-
-  const handleUpgrade = async () => {
-    setUpgrading(true);
-    try {
-      const res = await fetch("/api/upgrade/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId }),
-      });
-      const { url } = await res.json();
-      if (url) window.location.href = url;
-    } catch (err) {
-      setUpgrading(false);
-    }
-  };
-
-  return (
-    <div style={{
-      position: "fixed", bottom: 0, left: 0, right: 0,
-      background: T.navy, borderTop: `2px solid ${T.gold}`,
-      padding: "14px 24px",
-      display: "flex", alignItems: "center", justifyContent: "center", gap: 20,
-      zIndex: 1000, boxShadow: "0 -4px 20px rgba(0,0,0,0.15)",
-    }}>
-      <div style={{ fontFamily: T.body, fontSize: 13, color: T.white }}>
-        <span style={{ fontWeight: 600 }}>{lockedCount} sections</span>
-        <span style={{ color: "rgba(255,255,255,0.7)" }}> locked — unlock Financial Analysis, Profit Plan & more</span>
-      </div>
-      <button
-        onClick={handleUpgrade}
-        disabled={upgrading}
-        style={{
-          padding: "10px 24px", borderRadius: 6, border: "none",
-          background: T.gold, color: T.navy, fontFamily: T.body, fontSize: 12, fontWeight: 700,
-          cursor: upgrading ? "not-allowed" : "pointer", whiteSpace: "nowrap",
-        }}
-      >
-        {upgrading ? "Redirecting..." : "Upgrade to Intelligence — £300"}
-      </button>
-    </div>
-  );
-}
+// Inline LockedSection and UpgradeBanner removed — now imported from components/
 
 // ============================================================
 // REPORT VIEWER (main renderer)
 // ============================================================
 function ReportViewer({ reportData, tier, orderId }) {
   const report = reportData;
-  const visibleSections = TIER_SECTIONS[tier] || TIER_SECTIONS.intelligence;
-  const allSectionIds = TIER_SECTIONS.intelligence;
-  const lockedSections = allSectionIds.filter(id => !visibleSections.includes(id));
-  const isInsight = tier === "insight";
+
+  // Source of truth for tier: DB column (passed as prop), NOT JSON
+  const customerTier = tier || 'intelligence';
+
+  // Get visibility from JSON tier_visibility map, fallback to hardcoded
+  const visibleSections = report.tier_visibility?.[customerTier]
+    || TIER_SECTIONS_FALLBACK[customerTier]
+    || SECTION_ORDER;
+
+  const lockedSections = SECTION_ORDER.filter(id => !visibleSections.includes(id));
+  const isInsight = customerTier === "insight";
 
   // Build cover page data
   const coverData = {
     score: report.metadata?.overall_score,
     grade: report.metadata?.overall_grade,
-    tier_name: tier === "intelligence" ? "Intelligence Report" : "Insight Report",
-    tier_price: tier === "intelligence" ? "499" : "199",
+    tier_name: customerTier === "intelligence" ? "Intelligence Report" : "Insight Report",
+    tier_price: customerTier === "intelligence" ? "499" : "199",
     business_name: report.metadata?.business_name,
     address: report.metadata?.full_address,
     order_ref: report.order?.order_ref,
@@ -377,7 +260,7 @@ function ReportViewer({ reportData, tier, orderId }) {
     customer_email: report.order?.customer_email,
     order_ref: report.order?.order_ref,
     report_date: report.metadata?.report_date,
-    tier_name: tier === "intelligence" ? "Intelligence Report" : "Insight Report",
+    tier_name: customerTier === "intelligence" ? "Intelligence Report" : "Insight Report",
   };
 
   return (
@@ -411,27 +294,33 @@ function ReportViewer({ reportData, tier, orderId }) {
             <LicencePage data={licenceData} />
           </div>
 
-          {/* Sections */}
-          {ALL_SECTIONS.map((section) => {
-            const isVisible = visibleSections.includes(section.id);
-            const isLocked = lockedSections.includes(section.id);
-            const sectionData = report.sections?.[section.key];
+          {/* Sections — rendered in SECTION_ORDER, not Object.keys */}
+          {SECTION_ORDER.map((sectionId) => {
+            const sectionMeta = SECTION_COMPONENTS[sectionId];
+            if (!sectionMeta) return null;
 
-            if (!sectionData && !isLocked) return null;
+            const sectionData = report.sections?.[sectionId];
+            const isVisible = visibleSections.includes(sectionId);
 
-            if (isLocked) {
+            if (!isVisible) {
+              // Render locked teaser with score/grade from JSON (display-only gating)
               return (
-                <LockedSection
-                  key={section.id}
-                  section={section}
+                <LockedSectionTeaser
+                  key={sectionId}
+                  sectionId={sectionId}
+                  sectionTitle={sectionData?.title || sectionMeta.title}
+                  sectionScore={sectionData?.score}
+                  sectionGrade={sectionData?.grade}
                   orderId={orderId}
                 />
               );
             }
 
-            const { Component } = section;
+            if (!sectionData) return null;
+
+            const { Component } = sectionMeta;
             return (
-              <div key={section.id} style={{
+              <div key={sectionId} style={{
                 background: T.white, borderRadius: 12, padding: "28px 32px",
                 marginBottom: 32, boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
               }}>
@@ -459,10 +348,10 @@ function ReportViewer({ reportData, tier, orderId }) {
         </Watermark>
       </div>
 
-      {/* Sticky upgrade banner for Insight tier */}
+      {/* Sticky upgrade banner for Insight tier only */}
       {isInsight && (
         <div className="no-print">
-          <UpgradeBanner orderId={orderId} lockedCount={lockedSections.length} />
+          <UpgradeBannerComponent orderId={orderId} lockedCount={lockedSections.length} />
         </div>
       )}
     </div>
