@@ -8,7 +8,7 @@
  * Deploy to: app/api/insider-feedback/route.ts (App Router, like insider-click)
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -18,7 +18,7 @@ const supabase = createClient(
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://fcmreport.com';
 
-export async function GET(request) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const subscriberId = searchParams.get('sid');
