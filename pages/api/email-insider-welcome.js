@@ -122,17 +122,40 @@ export default async function handler(req, res) {
             </td>
           </tr>
           
-          <!-- CTA -->
+          <!-- Set Up Personalised Alerts CTA -->
+          <tr>
+            <td style="background-color:#161b22;padding:0 32px 24px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg, rgba(201,162,39,0.1), rgba(201,162,39,0.05));border:2px solid rgba(201,162,39,0.25);border-radius:12px;">
+                <tr>
+                  <td style="padding:24px 20px;text-align:center;">
+                    <div style="font-size:28px;margin-bottom:10px;">🎯</div>
+                    <div style="font-size:18px;font-weight:700;color:#c9a227;margin-bottom:8px;">Set Up Your Personalised Alerts</div>
+                    <div style="font-size:14px;color:#8b949e;margin-bottom:18px;line-height:1.5;">Tell us your budget, preferred regions, and what you're looking for. We'll match you with the right opportunities automatically — every subscriber gets different listings.</div>
+                    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                      <tr>
+                        <td style="background:linear-gradient(135deg, #c9a227, #d4b84a);border-radius:8px;padding:16px 36px;">
+                          <a href="https://fcmreport.com/insider#signup-form" style="font-size:16px;font-weight:700;color:#0B1D3A;text-decoration:none;">Set Up My Alerts →</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <p style="font-size:11px;color:#484f58;margin:12px 0 0;">Takes 2 minutes. The more you tell us, the better your matches.</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Browse CTA -->
           <tr>
             <td style="background-color:#161b22;padding:0 32px 40px;text-align:center;">
               <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
                 <tr>
-                  <td style="background:linear-gradient(135deg, #c9a227, #d4b84a);border-radius:8px;padding:14px 32px;">
-                    <a href="https://fcmreport.com/opportunities" style="font-size:15px;font-weight:700;color:#0B1D3A;text-decoration:none;">Browse Opportunities →</a>
+                  <td style="border:1px solid rgba(201,162,39,0.3);border-radius:8px;padding:14px 32px;">
+                    <a href="https://fcmreport.com/opportunities" style="font-size:15px;font-weight:600;color:#c9a227;text-decoration:none;">Or Browse All Opportunities →</a>
                   </td>
                 </tr>
               </table>
-              <p style="font-size:12px;color:#484f58;margin:16px 0 0;">Your first weekly digest arrives next Monday.</p>
+              <p style="font-size:12px;color:#484f58;margin:16px 0 0;">Your first personalised digest arrives next Monday.</p>
             </td>
           </tr>
           

@@ -28,9 +28,21 @@ export default function InsiderClient() {
     regions: [] as string[],
     budget: "",
     situation: "",
+    tenurePreference: "",
+    minProfit: "",
+    timeline: "",
+    wantsConsultation: "",
+    notes: "",
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [matchCount, setMatchCount] = useState(0);
+  const [error, setError] = useState("");
+
+  // Manage alerts state
+  const [manageEmail, setManageEmail] = useState("");
+  const [showManageForm, setShowManageForm] = useState(false);
 
   const toggleBusinessType = (type: string) => {
     setFormData((prev) => ({
@@ -52,19 +64,25 @@ export default function InsiderClient() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
+    setError("");
 
     const payload = {
       name: formData.name,
       email: formData.email,
-      form_type: "insider_newsletter",
-      business_types: formData.businessTypes.join(", "),
-      regions: formData.regions.join(", "),
+      business_types: formData.businessTypes,
+      preferred_regions: formData.regions,
       budget: formData.budget,
-      situation: formData.situation,
+      experience_level: formData.situation,
+      tenure_preference: formData.tenurePreference,
+      min_profit: formData.minProfit,
+      timeline: formData.timeline,
+      wants_consultation: formData.wantsConsultation === "Yes",
+      notes: formData.notes,
     };
 
     try {
-      const response = await fetch("https://formspree.io/f/xblgnqzj", {
+      const response = await fetch("/api/insider-preferences", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,11 +90,19 @@ export default function InsiderClient() {
         body: JSON.stringify(payload),
       });
 
+      const result = await response.json();
+
       if (response.ok) {
         setSubmitted(true);
+        setMatchCount(result.matchCount || 0);
+      } else {
+        setError(result.error || "Something went wrong. Please try again.");
       }
-    } catch (error) {
-      console.error("Form submission error:", error);
+    } catch (err) {
+      console.error("Form submission error:", err);
+      setError("Connection error. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -150,11 +176,10 @@ export default function InsiderClient() {
               className="text-xl font-semibold mb-3"
               style={{ color: "#FFD700" }}
             >
-              Personalized Matches
+              Personalised Weekly Alerts
             </h3>
             <p style={{ color: "#8b949e" }}>
-              Tell us what you're looking for once. We'll scan 100+ sources
-              weekly and send only the opportunities that fit.
+              Matched to YOUR budget, region, and criteria. Every subscriber gets different listings — tailored to exactly what you&apos;re looking for.
             </p>
           </div>
           <div className="text-center">
@@ -357,8 +382,6 @@ export default function InsiderClient() {
         <div className="max-w-2xl mx-auto">
           {!submitted ? (
             <form 
-              method="POST" 
-              action="https://formspree.io/f/xblgnqzj"
               onSubmit={handleSubmit} 
               className="space-y-6"
             >
@@ -579,32 +602,228 @@ export default function InsiderClient() {
                 </div>
               </div>
 
+              {/* ─── Tenure Preference ─── */}
+              <div>
+                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
+                  Tenure preference
+                </label>
+                <div className="space-y-2">
+                  {[
+                    "Freehold only",
+                    "Leasehold only",
+                    "Either — I'm flexible",
+                  ].map((option) => (
+                    <label
+                      key={option}
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all"
+                      style={{
+                        background: formData.tenurePreference === option
+                          ? "rgba(255, 215, 0, 0.15)"
+                          : "#1A1A1A",
+                        border: formData.tenurePreference === option
+                          ? "1px solid #FFD700"
+                          : "1px solid #333333",
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="tenure"
+                        value={option}
+                        checked={formData.tenurePreference === option}
+                        onChange={(e) =>
+                          setFormData({ ...formData, tenurePreference: e.target.value })
+                        }
+                        className="w-4 h-4"
+                        style={{ accentColor: "#FFD700" }}
+                      />
+                      <span style={{ color: "#FFFFFF" }}>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* ─── Minimum Net Profit ─── */}
+              <div>
+                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
+                  Minimum net profit
+                </label>
+                <div className="space-y-2">
+                  {["Any", "£25k+", "£40k+", "£60k+", "£80k+"].map((option) => (
+                    <label
+                      key={option}
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all"
+                      style={{
+                        background: formData.minProfit === option
+                          ? "rgba(255, 215, 0, 0.15)"
+                          : "#1A1A1A",
+                        border: formData.minProfit === option
+                          ? "1px solid #FFD700"
+                          : "1px solid #333333",
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="minProfit"
+                        value={option}
+                        checked={formData.minProfit === option}
+                        onChange={(e) =>
+                          setFormData({ ...formData, minProfit: e.target.value })
+                        }
+                        className="w-4 h-4"
+                        style={{ accentColor: "#FFD700" }}
+                      />
+                      <span style={{ color: "#FFFFFF" }}>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* ─── Timeline ─── */}
+              <div>
+                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
+                  Buying timeline
+                </label>
+                <div className="space-y-2">
+                  {[
+                    "Just browsing",
+                    "Within 3 months",
+                    "Within 6 months",
+                    "Ready now",
+                  ].map((option) => (
+                    <label
+                      key={option}
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all"
+                      style={{
+                        background: formData.timeline === option
+                          ? "rgba(255, 215, 0, 0.15)"
+                          : "#1A1A1A",
+                        border: formData.timeline === option
+                          ? "1px solid #FFD700"
+                          : "1px solid #333333",
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="timeline"
+                        value={option}
+                        checked={formData.timeline === option}
+                        onChange={(e) =>
+                          setFormData({ ...formData, timeline: e.target.value })
+                        }
+                        className="w-4 h-4"
+                        style={{ accentColor: "#FFD700" }}
+                      />
+                      <span style={{ color: "#FFFFFF" }}>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* ─── Consultation ─── */}
+              <div>
+                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
+                  Would you like a consultation call to discuss your search?
+                </label>
+                <div className="space-y-2">
+                  {["Yes", "Not right now"].map((option) => (
+                    <label
+                      key={option}
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all"
+                      style={{
+                        background: formData.wantsConsultation === option
+                          ? "rgba(255, 215, 0, 0.15)"
+                          : "#1A1A1A",
+                        border: formData.wantsConsultation === option
+                          ? "1px solid #FFD700"
+                          : "1px solid #333333",
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="consultation"
+                        value={option}
+                        checked={formData.wantsConsultation === option}
+                        onChange={(e) =>
+                          setFormData({ ...formData, wantsConsultation: e.target.value })
+                        }
+                        className="w-4 h-4"
+                        style={{ accentColor: "#FFD700" }}
+                      />
+                      <span style={{ color: "#FFFFFF" }}>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* ─── Notes ─── */}
+              <div>
+                <label
+                  htmlFor="notes"
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "#FFFFFF" }}
+                >
+                  Anything specific you&apos;re looking for?
+                </label>
+                <textarea
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-lg text-white"
+                  style={{
+                    background: "#1A1A1A",
+                    border: "1px solid #333333",
+                  }}
+                  placeholder="E.g. looking for something with a flat above, or near good schools..."
+                />
+              </div>
+
+              {/* Error message */}
+              {error && (
+                <div
+                  className="p-4 rounded-lg text-sm"
+                  style={{ background: "rgba(255,0,0,0.1)", border: "1px solid rgba(255,0,0,0.3)", color: "#ff6b6b" }}
+                >
+                  {error}
+                </div>
+              )}
+
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 rounded-lg text-lg font-semibold transition-all hover:opacity-90"
+                disabled={submitting}
+                className="w-full py-4 rounded-lg text-lg font-semibold transition-all hover:opacity-90 disabled:opacity-50"
                 style={{
                   background: "#FFD700",
                   color: "#000000",
                 }}
               >
-                Get My First Report →
+                {submitting ? "Saving..." : "Set Up My Personalised Alerts →"}
               </button>
             </form>
           ) : (
             <div className="text-center py-12">
-              <div className="text-6xl mb-6">✅</div>
+              <div className="text-6xl mb-6">🎯</div>
               <h3
                 className="text-3xl font-bold mb-4"
                 style={{ color: "#FFD700" }}
               >
-                You're In!
+                Preferences Saved!
               </h3>
-              <p className="text-lg mb-6" style={{ color: "#8b949e" }}>
-                Check your inbox for your first weekly report on Monday
-                morning.
-              </p>
-              <Link href="/" className="btn-secondary">
+              {matchCount > 0 ? (
+                <p className="text-lg mb-6" style={{ color: "#8b949e" }}>
+                  We already found <span style={{ color: "#FFD700", fontWeight: 700 }}>{matchCount} matching {matchCount === 1 ? 'opportunity' : 'opportunities'}</span> for you.
+                  Your personalised digest arrives every Monday morning.
+                </p>
+              ) : (
+                <p className="text-lg mb-6" style={{ color: "#8b949e" }}>
+                  Your personalised alerts are set up. We&apos;ll match new listings
+                  to your criteria and deliver them every Monday morning.
+                </p>
+              )}
+              <Link href="/opportunities" className="btn-primary text-lg px-8 py-3">
                 Browse Current Listings
               </Link>
             </div>
@@ -1088,6 +1307,67 @@ export default function InsiderClient() {
               sellers across the UK.
             </p>
           </div>
+        </div>
+      </section>
+      {/* ═══════════════════════════ MANAGE YOUR ALERTS ═══════════════════════════ */}
+      <section className="py-16 container mx-auto px-4">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2
+            className="text-2xl md:text-3xl font-bold mb-4"
+            style={{ color: "#FFFFFF" }}
+          >
+            Already an Insider?
+          </h2>
+          <p className="mb-6" style={{ color: "#8b949e" }}>
+            Update your preferences anytime to refine your personalised matches.
+          </p>
+          {!showManageForm ? (
+            <button
+              onClick={() => setShowManageForm(true)}
+              className="px-6 py-3 rounded-lg font-semibold transition-all hover:opacity-90"
+              style={{
+                background: "transparent",
+                border: "1px solid #FFD700",
+                color: "#FFD700",
+              }}
+            >
+              Manage My Alerts
+            </button>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm" style={{ color: "#8b949e" }}>
+                Enter the email you subscribed with to update your preferences:
+              </p>
+              <input
+                type="email"
+                value={manageEmail}
+                onChange={(e) => setManageEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="w-full px-4 py-3 rounded-lg text-white"
+                style={{
+                  background: "#1A1A1A",
+                  border: "1px solid #333333",
+                }}
+              />
+              <button
+                onClick={() => {
+                  if (manageEmail) {
+                    setFormData((prev) => ({ ...prev, email: manageEmail }));
+                    setSubmitted(false);
+                    const form = document.getElementById("signup-form");
+                    form?.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className="px-6 py-3 rounded-lg font-semibold transition-all hover:opacity-90"
+                style={{
+                  background: "#FFD700",
+                  color: "#000000",
+                }}
+              >
+                Update Preferences →
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </AppLayout>
