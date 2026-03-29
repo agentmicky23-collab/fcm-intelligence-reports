@@ -54,6 +54,10 @@ export default async function handler(req, res) {
       // Handle upgrade payments (Insight → Intelligence)
       await handleUpgrade(event.data.object);
       break;
+    // NOTE: Add 'customer.subscription.created' to Stripe webhook events in the dashboard
+    case 'customer.subscription.created':
+      await handleInsiderSubscription(event.data.object);
+      break;
     default:
       console.log(`Unhandled event type: ${event.type}`);
   }
@@ -125,6 +129,19 @@ async function handleCheckoutCompleted(session) {
   }
 
   console.log('Order created:', orderId);
+
+  // Send order confirmation email
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://fcmreport.com'}/api/email-order-confirmed`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId }),
+    });
+    console.log('Order confirmation email sent for:', orderId);
+  } catch (emailErr) {
+    console.error('Order confirmation email failed:', emailErr);
+    // Don't fail the webhook — email is non-critical
+  }
 
   // Create order.json file for pipeline
   const orderJson = {
@@ -203,7 +220,17 @@ async function handleUpgrade(paymentIntent) {
   }
 
   // Send upgrade confirmation email
-  await sendUpgradeEmail(orderId);
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://fcmreport.com'}/api/email-upgrade-confirmed`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId }),
+    });
+    console.log('Upgrade confirmation email sent for:', orderId);
+  } catch (emailErr) {
+    console.error('Upgrade confirmation email failed:', emailErr);
+    // Don't fail the webhook — email is non-critical
+  }
 
   // Discord notification
   await sendDiscordAlert(
@@ -219,7 +246,46 @@ async function sendDiscordAlert(message) {
   console.log('Discord alert:', message);
 }
 
-async function sendUpgradeEmail(orderId) {
-  // TODO: Implement via pages/api/send-report.js (Resend API)
-  console.log('Upgrade email triggered for:', orderId);
+async function handleInsiderSubscription(subscription) {
+  // Handle customer.subscription.created for Insider membership
+  const customerId = subscription.customer;
+
+  try {
+    // Retrieve customer details from Stripe
+    const customer = await stripe.customers.retrieve(customerId);
+    const email = customer.email;
+    const name = customer.name || '';
+
+    if (!email) {
+      console.error('No email found for Insider subscription customer:', customerId);
+      return;
+    }
+
+    console.log(`Insider subscription created for: ${email}`);
+
+    // Send Insider welcome email
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://fcmreport.com'}/api/email-insider-welcome`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name }),
+      });
+      console.log('Insider welcome email sent to:', email);
+    } catch (emailErr) {
+      console.error('Insider welcome email failed:', emailErr);
+      // Don't fail the webhook — email is non-critical
+    }
+
+    // Discord notification
+    await sendDiscordAlert(
+      `⭐ NEW INSIDER: ${email}\n` +
+        `Name: ${name || 'Not provided'}\n` +
+        `Subscription: ${subscription.id}`
+    );
+  } catch (err) {
+    console.error('Failed to handle Insider subscription:', err);
+    await sendDiscordAlert(
+      `❌ Insider subscription handling failed\nCustomer: ${customerId}\nError: ${err.message}`
+    );
+  }
 }
