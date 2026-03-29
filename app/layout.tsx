@@ -9,20 +9,20 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://fcmreport.com'),
   title: {
     template: '%s | FCM Intelligence',
-    default: 'Post Office Due Diligence Reports & Listings | FCM Intelligence',
+    default: 'Retail Business Due Diligence Reports & Listings | FCM Intelligence',
   },
   description:
-    'Data-driven intelligence reports for Post Office business acquisitions. 35+ live opportunities with verified due diligence. From £199.',
+    'Data-driven intelligence reports for retail business acquisitions. 35+ live opportunities with verified due diligence. From £199.',
   keywords: [
+    'retail business for sale',
+    'buy a retail business',
+    'retail business due diligence',
     'post office for sale',
-    'buy a post office',
-    'post office due diligence',
     'post office business report',
-    'post office acquisition',
-    'post office listings UK',
-    'buy post office branch',
-    'post office business intelligence',
+    'business acquisition report',
+    'retail business intelligence',
     'FCM Intelligence',
+    'business investment UK',
     'post office investment',
   ],
   authors: [{ name: 'FCM Intelligence', url: 'https://fcmreport.com' }],
@@ -38,23 +38,23 @@ export const metadata: Metadata = {
     locale: 'en_GB',
     url: 'https://fcmreport.com',
     siteName: 'FCM Intelligence',
-    title: 'Post Office Due Diligence Reports & Listings | FCM Intelligence',
+    title: 'Retail Business Due Diligence Reports & Listings | FCM Intelligence',
     description:
-      'Data-driven intelligence reports for Post Office business acquisitions. 35+ live opportunities. 15 years industry experience.',
+      'Data-driven intelligence reports for retail business acquisitions. 35+ live opportunities. 15 years industry experience.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'FCM Intelligence — Post Office Due Diligence Reports',
+        alt: 'FCM Intelligence — Retail Business Due Diligence Reports',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Post Office Due Diligence Reports & Listings | FCM Intelligence',
+    title: 'Retail Business Due Diligence Reports & Listings | FCM Intelligence',
     description:
-      'Data-driven intelligence reports for Post Office acquisitions. 35+ live opportunities with verified due diligence.',
+      'Data-driven intelligence reports for retail business acquisitions. 35+ live opportunities with verified due diligence.',
     images: ['/og-image.png'],
   },
   robots: {

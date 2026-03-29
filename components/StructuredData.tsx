@@ -11,7 +11,7 @@ export function OrganizationSchema() {
     url: 'https://fcmreport.com',
     logo: 'https://fcmreport.com/images/logo-transparent.png',
     description:
-      'Data-driven intelligence reports for Post Office business acquisitions. 15 years industry experience, 40 branches operated.',
+      'Data-driven intelligence reports for retail business acquisitions. Post offices, convenience stores, and more. 15 years industry experience, 40 branches operated.',
     foundingDate: '2009',
     contactPoint: {
       '@type': 'ContactPoint',
@@ -41,7 +41,7 @@ export function ProductSchemaInsight() {
     '@type': 'Product',
     name: 'FCM Insight Report',
     description:
-      'Due diligence report for Post Office business acquisitions. 10 verified sections covering crime, competition, demographics, footfall, infrastructure, and more. Delivered within 48 hours.',
+      'Due diligence report for retail business acquisitions. 10 verified sections covering crime, competition, demographics, footfall, infrastructure, and more. Delivered within 48 hours.',
     brand: {
       '@type': 'Brand',
       name: 'FCM Intelligence',
@@ -71,7 +71,7 @@ export function ProductSchemaIntelligence() {
     '@type': 'Product',
     name: 'FCM Intelligence Report',
     description:
-      'Comprehensive due diligence report for Post Office business acquisitions. 15 sections including financial analysis, due diligence pack, profit improvement, future outlook, and negotiation strategy. Includes 60-minute consultation call. Delivered within 48 hours.',
+      'Comprehensive due diligence report for retail business acquisitions. 15 sections including financial analysis, due diligence pack, profit improvement, future outlook, and negotiation strategy. Includes 60-minute consultation call. Delivered within 48 hours.',
     brand: {
       '@type': 'Brand',
       name: 'FCM Intelligence',
@@ -101,7 +101,7 @@ export function WebsiteSchema() {
     '@type': 'WebSite',
     name: 'FCM Intelligence',
     url: 'https://fcmreport.com',
-    description: 'Post Office due diligence reports and business listings.',
+    description: 'Retail business due diligence reports and business listings.',
     publisher: {
       '@type': 'Organization',
       name: 'FCM Intelligence',

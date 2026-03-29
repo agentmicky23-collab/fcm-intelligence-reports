@@ -201,7 +201,12 @@ function CountUp({ target, suffix = "", duration = 6000, delay = 6000 }: { targe
     return () => observer.disconnect();
   }, [hasAnimated, target, duration, delay]);
 
-  return <span ref={ref}>{count}{suffix}</span>;
+  return (
+    <span ref={ref}>
+      <span className="sr-only">{target}{suffix}</span>
+      <span aria-hidden="true">{count}{suffix}</span>
+    </span>
+  );
 }
 
 export default function HomeClient() {
