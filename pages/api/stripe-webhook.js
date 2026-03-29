@@ -1,6 +1,6 @@
 // pages/api/stripe-webhook.js
-// Handles Stripe checkout.session.completed events
-// Creates orders in Supabase and triggers report pipeline
+// Handles Stripe webhook events for orders, upgrades, and Insider subscriptions
+// Creates orders in Supabase and triggers report pipeline + lifecycle emails
 
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
@@ -54,9 +54,14 @@ export default async function handler(req, res) {
       // Handle upgrade payments (Insight → Intelligence)
       await handleUpgrade(event.data.object);
       break;
-    // NOTE: Add 'customer.subscription.created' to Stripe webhook events in the dashboard
     case 'customer.subscription.created':
       await handleInsiderSubscription(event.data.object);
+      break;
+    case 'invoice.payment_succeeded':
+      await handleInvoicePaymentSucceeded(event.data.object);
+      break;
+    case 'customer.subscription.deleted':
+      await handleSubscriptionDeleted(event.data.object);
       break;
     default:
       console.log(`Unhandled event type: ${event.type}`);
@@ -249,6 +254,7 @@ async function sendDiscordAlert(message) {
 async function handleInsiderSubscription(subscription) {
   // Handle customer.subscription.created for Insider membership
   const customerId = subscription.customer;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fcmreport.com';
 
   try {
     // Retrieve customer details from Stripe
@@ -263,9 +269,26 @@ async function handleInsiderSubscription(subscription) {
 
     console.log(`Insider subscription created for: ${email}`);
 
+    // Upsert into insider_subscribers table
+    const { error: upsertError } = await supabase
+      .from('insider_subscribers')
+      .upsert({
+        email,
+        name,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: subscription.id,
+        status: 'active',
+        current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+        subscribed_at: new Date().toISOString(),
+      }, { onConflict: 'email' });
+
+    if (upsertError) {
+      console.error('Failed to upsert insider subscriber:', upsertError);
+    }
+
     // Send Insider welcome email
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://fcmreport.com'}/api/email-insider-welcome`, {
+      await fetch(`${siteUrl}/api/email-insider-welcome`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, name }),
@@ -286,6 +309,96 @@ async function handleInsiderSubscription(subscription) {
     console.error('Failed to handle Insider subscription:', err);
     await sendDiscordAlert(
       `❌ Insider subscription handling failed\nCustomer: ${customerId}\nError: ${err.message}`
+    );
+  }
+}
+
+async function handleInvoicePaymentSucceeded(invoice) {
+  // Only handle subscription renewals (not the first payment — that's handled by welcome email)
+  if (invoice.billing_reason !== 'subscription_cycle') {
+    return;
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fcmreport.com';
+  const customerEmail = invoice.customer_email;
+  const periodEnd = new Date(invoice.lines?.data?.[0]?.period?.end * 1000);
+  const formattedDate = periodEnd.toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  });
+
+  console.log(`Insider renewal payment for: ${customerEmail}`);
+
+  // Update subscriber period end
+  const { error: updateError } = await supabase
+    .from('insider_subscribers')
+    .update({
+      current_period_end: periodEnd.toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('email', customerEmail);
+
+  if (updateError) {
+    console.error('Failed to update subscriber period end:', updateError);
+  }
+
+  // Send renewal confirmation email
+  try {
+    await fetch(`${siteUrl}/api/email-insider-renewal`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: customerEmail,
+        type: 'renewal_success',
+        renewalDate: formattedDate,
+      }),
+    });
+    console.log('Renewal email sent to:', customerEmail);
+  } catch (emailErr) {
+    console.error('Renewal email failed:', emailErr);
+  }
+
+  await sendDiscordAlert(
+    `🔄 INSIDER RENEWED: ${customerEmail}\nNext renewal: ${formattedDate}`
+  );
+}
+
+async function handleSubscriptionDeleted(subscription) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fcmreport.com';
+  const customerId = subscription.customer;
+
+  try {
+    const customer = await stripe.customers.retrieve(customerId);
+    const customerEmail = customer.email || '';
+    const periodEnd = new Date(subscription.current_period_end * 1000);
+    const formattedDate = periodEnd.toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    });
+
+    console.log(`Insider subscription cancelled for: ${customerEmail}`);
+
+    // Send cancellation email (also updates DB status to 'cancelled')
+    try {
+      await fetch(`${siteUrl}/api/email-insider-cancelled`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: customerEmail,
+          accessUntil: formattedDate,
+          subscriptionId: subscription.id,
+        }),
+      });
+      console.log('Cancellation email sent to:', customerEmail);
+    } catch (emailErr) {
+      console.error('Cancellation email failed:', emailErr);
+    }
+
+    await sendDiscordAlert(
+      `❌ INSIDER CANCELLED: ${customerEmail}\nAccess until: ${formattedDate}\nSubscription: ${subscription.id}`
+    );
+  } catch (err) {
+    console.error('Failed to handle subscription deletion:', err);
+    await sendDiscordAlert(
+      `❌ Subscription deletion handling failed\nCustomer: ${customerId}\nError: ${err.message}`
     );
   }
 }

@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/insider-digest",
+      "schedule": "0 8 * * 1"
+    }
+  ]
+}
