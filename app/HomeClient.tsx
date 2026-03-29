@@ -8,6 +8,7 @@ import { BuyButton } from "@/components/buy-button";
 import { MiniCard } from "@/components/mini-card";
 import { ReportRequestModal } from "@/components/report-request-modal";
 import { FinalHookCarousel } from "@/components/final-hook-carousel";
+import { MobileCarousel } from "@/components/mobile-carousel";
 
 import { listings } from "@/lib/listings-data";
 
@@ -404,10 +405,21 @@ export default function HomeClient() {
               Showing {featuredListings.length} of {listings.length} opportunities • <Link href="/opportunities" className="underline" style={{ color: '#c9a227' }}>View All</Link>
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {/* Desktop: 3-column grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {featuredListings.map((listing) => (
               <ListingCard key={listing.id} listing={listing} />
             ))}
+          </div>
+          {/* Mobile: carousel, 1 card at a time */}
+          <div className="max-w-6xl mx-auto">
+            <MobileCarousel autoScrollMs={7000}>
+              {featuredListings.map((listing) => (
+                <div key={listing.id} className="px-1">
+                  <ListingCard listing={listing} />
+                </div>
+              ))}
+            </MobileCarousel>
           </div>
           <div className="text-center mt-8">
             <Link href="/opportunities" className="btn-primary text-lg px-10 py-4">View All {listings.length} Listings</Link>
@@ -601,12 +613,13 @@ export default function HomeClient() {
               {/* Key sections */}
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600, color: '#888888', textTransform: 'uppercase', letterSpacing: 1.5, margin: '14px 0 12px' }}>Key sections</div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+              {/* Desktop: 2-column grid */}
+              <div className="hidden sm:grid sm:grid-cols-2 gap-3 mb-6">
                 {[
-                  { label: 'Crime & Safety', score: 38, grade: 'D', color: '#C0392B', headline: '3,087 incidents. 62% violent crime + ASB.' },
-                  { label: 'Competition Mapping', score: 82, grade: 'A-', color: '#2D8A56', headline: 'No competition within 1.5km. Crown branch.' },
-                  { label: 'Demographics', score: 72, grade: 'B', color: '#c9a227', headline: '50% aged 50+. 70% deprived households.' },
-                  { label: 'Online Presence', score: 35, grade: 'D', color: '#D47735', headline: '3.1 stars, 73 reviews. 0% response rate.' },
+                  { label: 'Crime & Safety', score: 38, grade: 'D', color: '#C0392B', headline: '3,087 incidents. 62% violent crime + ASB.', quote: 'Crime data alone saved us from a nightmare location.', quoter: '— Insight buyer' },
+                  { label: 'Competition Mapping', score: 82, grade: 'A-', color: '#2D8A56', headline: 'No competition within 1.5km. Crown branch.', quote: 'Showed us the nearest PO was 1.5km away with restricted hours.', quoter: '— FCM buyer' },
+                  { label: 'Demographics', score: 72, grade: 'B', color: '#c9a227', headline: '50% aged 50+. 70% deprived households.', quote: 'The demographic breakdown revealed the real customer base.', quoter: '— Insight buyer' },
+                  { label: 'Online Presence', score: 35, grade: 'D', color: '#D47735', headline: '3.1 stars, 73 reviews. 0% response rate.', quote: 'We knew exactly what to fix on day one.', quoter: '— FCM buyer' },
                 ].map((s) => (
                   <div key={s.label} style={{ background: '#0B1D3A', borderRadius: 12, padding: 16, position: 'relative', overflow: 'hidden' }}>
                     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${s.color}, transparent)` }} />
@@ -623,6 +636,39 @@ export default function HomeClient() {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Mobile: carousel of section example cards */}
+              <div className="mb-6">
+                <MobileCarousel autoScrollMs={5000}>
+                  {[
+                    { label: 'Crime & Safety', score: 38, grade: 'D', color: '#C0392B', headline: '3,087 incidents. 62% violent crime + ASB.', quote: 'Crime data alone saved us from a nightmare location.', quoter: '— Insight buyer' },
+                    { label: 'Competition Mapping', score: 82, grade: 'A-', color: '#2D8A56', headline: 'No competition within 1.5km. Crown branch.', quote: 'Showed us the nearest PO was 1.5km away with restricted hours.', quoter: '— FCM buyer' },
+                    { label: 'Demographics', score: 72, grade: 'B', color: '#c9a227', headline: '50% aged 50+. 70% deprived households.', quote: 'The demographic breakdown revealed the real customer base.', quoter: '— Insight buyer' },
+                    { label: 'Online Presence', score: 35, grade: 'D', color: '#D47735', headline: '3.1 stars, 73 reviews. 0% response rate.', quote: 'We knew exactly what to fix on day one.', quoter: '— FCM buyer' },
+                  ].map((s) => (
+                    <div key={s.label}>
+                      <div style={{ background: '#0B1D3A', borderRadius: 12, padding: 16, position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${s.color}, transparent)` }} />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, color: s.color, textTransform: 'uppercase', letterSpacing: 1.5 }}>{s.label}</span>
+                          <span>
+                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 18, fontWeight: 700, color: s.color }}>{s.score}</span>
+                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'rgba(255,255,255,0.4)', marginLeft: 4 }}>{s.grade}</span>
+                          </span>
+                        </div>
+                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.3 }}>{s.headline}</div>
+                        <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2, marginTop: 10, overflow: 'hidden' }}>
+                          <div style={{ width: `${s.score}%`, height: '100%', background: s.color, borderRadius: 2 }} />
+                        </div>
+                      </div>
+                      <div style={{ marginTop: 10, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, borderLeft: `2px solid ${s.color}` }}>
+                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontStyle: 'italic', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>&ldquo;{s.quote}&rdquo;</div>
+                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: '#c9a227', marginTop: 4 }}>{s.quoter}</div>
+                      </div>
+                    </div>
+                  ))}
+                </MobileCarousel>
               </div>
 
               {/* Also included */}
@@ -700,7 +746,8 @@ export default function HomeClient() {
               {/* Intelligence-exclusive sections */}
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600, color: '#888888', textTransform: 'uppercase', letterSpacing: 1.5, margin: '14px 0 12px' }}>Intelligence-exclusive sections</div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+              {/* Desktop: 2-column grid */}
+              <div className="hidden sm:grid sm:grid-cols-2 gap-3 mb-6">
                 {[
                   { label: 'Due Diligence Pack', color: '#c9a227', headline: 'Every question. Every document. Walk in prepared.' },
                   { label: 'Profit Improvement', color: '#c9a227', headline: 'Evidence-based actions with projected ROI.' },
@@ -713,6 +760,30 @@ export default function HomeClient() {
                     <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.3 }}>{s.headline}</div>
                   </div>
                 ))}
+              </div>
+
+              {/* Mobile: carousel of section example cards */}
+              <div className="mb-6">
+                <MobileCarousel autoScrollMs={5000}>
+                  {[
+                    { label: 'Due Diligence Pack', color: '#c9a227', headline: 'Every question. Every document. Walk in prepared.', quote: 'I walked in holding 23 documents to request. His face said it all.', quoter: '— Intelligence buyer' },
+                    { label: 'Profit Improvement', color: '#c9a227', headline: 'Evidence-based actions with projected ROI.', quote: 'Identified £8k/year in quick wins we implemented in month one.', quoter: '— FCM buyer' },
+                    { label: 'Future Outlook', color: '#2D8A56', headline: '5-year outlook: planning, developments, trajectory.', quote: 'The 5-year outlook flagged a new Tesco Express — we renegotiated.', quoter: '— Intelligence buyer' },
+                    { label: 'Negotiation Strategy', color: '#c9a227', headline: 'Offer range + every question to ask the seller.', quote: 'We agreed £18,000 below asking that afternoon.', quoter: '— FCM Intelligence buyer' },
+                  ].map((s) => (
+                    <div key={s.label}>
+                      <div style={{ background: '#0B1D3A', borderRadius: 12, padding: 16, position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${s.color}, transparent)` }} />
+                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, color: s.color, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8 }}>{s.label}</div>
+                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.3 }}>{s.headline}</div>
+                      </div>
+                      <div style={{ marginTop: 10, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, borderLeft: `2px solid ${s.color}` }}>
+                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontStyle: 'italic', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>&ldquo;{s.quote}&rdquo;</div>
+                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: '#c9a227', marginTop: 4 }}>{s.quoter}</div>
+                      </div>
+                    </div>
+                  ))}
+                </MobileCarousel>
               </div>
 
               {/* Also included */}
