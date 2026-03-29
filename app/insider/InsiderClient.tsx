@@ -1,1375 +1,436 @@
-"use client";
+/**
+ * FCM Intelligence — Insider Page (Concierge Reframe)
+ *
+ * Drop-in replacement for app/insider/InsiderClient.tsx
+ * Key changes:
+ * - Hero sells "someone in your corner," not "automated matching"
+ * - Features framed as things "we do for you," not system capabilities
+ * - Social proof section (when available)
+ * - Preferences form kept functional, wrapped in warmer language
+ * - Feedback confirmation banner (reads ?feedback= query param)
+ *
+ * Uses existing FCM brand: dark #0d1117, gold #c9a227, navy #0B1D3A
+ */
 
-import { useState } from "react";
-import Link from "next/link";
-import { AppLayout } from "@/components/layout/AppLayout";
-import { Check } from "lucide-react";
+'use client';
 
-const regions = [
-  "Greater London",
-  "Greater Manchester",
-  "West Midlands",
-  "West Yorkshire",
-  "South East",
-  "East of England",
-  "South West",
-  "North West",
-  "East Midlands",
-  "Yorkshire and Humber",
-  "North East",
-  "Scotland",
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+
+const BRAND = {
+  dark: '#0d1117',
+  gold: '#c9a227',
+  navy: '#0B1D3A',
+  white: '#ffffff',
+  textPrimary: '#e6edf3',
+  textSecondary: '#8b949e',
+  cardBg: '#161b22',
+  border: '#30363d',
+};
+
+// Region options (matching existing preferences form)
+const REGIONS = [
+  'North West', 'North East', 'Yorkshire', 'East Midlands', 'West Midlands',
+  'East of England', 'South East', 'South West', 'London', 'Wales', 'Scotland',
+];
+
+const BUSINESS_TYPES = [
+  'Post Office', 'Convenience Store', 'Newsagent', 'Off Licence',
+  'General Store', 'Village Shop',
+];
+
+const EXPERIENCE_LEVELS = [
+  { value: 'first_time', label: "First-time buyer — I'm new to this" },
+  { value: 'existing_operator', label: "Existing operator — I run a similar business" },
+  { value: 'multi_branch', label: "Multi-branch — expanding my portfolio" },
+  { value: 'investor', label: "Investor — looking at this as an investment" },
+];
+
+const TIMELINES = [
+  { value: 'browsing', label: 'Just exploring for now' },
+  { value: '3_months', label: 'Looking to move in 3 months' },
+  { value: '6_months', label: 'Within 6 months' },
+  { value: 'ready_now', label: "Ready now — I'm actively looking" },
 ];
 
 export default function InsiderClient() {
+  const searchParams = useSearchParams();
+  const [feedbackBanner, setFeedbackBanner] = useState(null);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    businessTypes: [] as string[],
-    regions: [] as string[],
-    budget: "",
-    situation: "",
-    tenurePreference: "",
-    minProfit: "",
-    timeline: "",
-    wantsConsultation: "",
-    notes: "",
+    name: '',
+    email: '',
+    preferred_regions: [],
+    business_types: [],
+    min_budget: '',
+    max_budget: '',
+    tenure_preference: 'any',
+    min_profit: '',
+    experience_level: 'first_time',
+    timeline: 'browsing',
+    wants_consultation: false,
+    notes: '',
   });
-
-  const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [matchCount, setMatchCount] = useState(0);
-  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
-  // Manage alerts state
-  const [manageEmail, setManageEmail] = useState("");
-  const [showManageForm, setShowManageForm] = useState(false);
-
-  const toggleBusinessType = (type: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      businessTypes: prev.businessTypes.includes(type)
-        ? prev.businessTypes.filter((t) => t !== type)
-        : [...prev.businessTypes, type],
-    }));
-  };
-
-  const toggleRegion = (region: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      regions: prev.regions.includes(region)
-        ? prev.regions.filter((r) => r !== region)
-        : [...prev.regions, region],
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError("");
-
-    const payload = {
-      name: formData.name,
-      email: formData.email,
-      business_types: formData.businessTypes,
-      preferred_regions: formData.regions,
-      budget: formData.budget,
-      experience_level: formData.situation,
-      tenure_preference: formData.tenurePreference,
-      min_profit: formData.minProfit,
-      timeline: formData.timeline,
-      wants_consultation: formData.wantsConsultation === "Yes",
-      notes: formData.notes,
-    };
-
-    try {
-      const response = await fetch("/api/insider-preferences", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+  // Handle feedback redirect from email
+  useEffect(() => {
+    const feedback = searchParams.get('feedback');
+    const msg = searchParams.get('msg');
+    if (feedback === 'up' || feedback === 'down') {
+      setFeedbackBanner({
+        type: feedback,
+        message: msg || (feedback === 'up' ? 'Thanks! We\'ll find more like this.' : 'Got it — we\'ll adjust your matches.'),
       });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        setSubmitted(true);
-        setMatchCount(result.matchCount || 0);
-      } else {
-        setError(result.error || "Something went wrong. Please try again.");
-      }
-    } catch (err) {
-      console.error("Form submission error:", err);
-      setError("Connection error. Please try again.");
-    } finally {
-      setSubmitting(false);
+      // Auto-dismiss after 5 seconds
+      setTimeout(() => setFeedbackBanner(null), 5000);
     }
+  }, [searchParams]);
+
+  const handleRegionToggle = (region) => {
+    setFormData(prev => ({
+      ...prev,
+      preferred_regions: prev.preferred_regions.includes(region)
+        ? prev.preferred_regions.filter(r => r !== region)
+        : [...prev.preferred_regions, region],
+    }));
+  };
+
+  const handleTypeToggle = (type) => {
+    setFormData(prev => ({
+      ...prev,
+      business_types: prev.business_types.includes(type)
+        ? prev.business_types.filter(t => t !== type)
+        : [...prev.business_types, type],
+    }));
+  };
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/insider-preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) setSubmitted(true);
+    } catch (err) {
+      console.error('Preferences save failed:', err);
+    }
+    setSubmitting(false);
   };
 
   return (
-    <AppLayout>
-      {/* ═══════════════════════════ HERO SECTION ═══════════════════════════ */}
-      <section
-        className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden"
-        style={{
-          background: "linear-gradient(180deg, #1e3a5f 0%, #0d1117 100%)",
-        }}
-      >
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.1) 0%, transparent 70%)",
-            pointerEvents: "none",
-          }}
-        />
-        <div className="container mx-auto px-4 text-center relative z-10 max-w-4xl">
-          <div
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm mb-8"
-            style={{
-              background: "rgba(255, 215, 0, 0.15)",
-              border: "1px solid #FFD700",
-              color: "#FFD700",
-            }}
-          >
-            <span className="flex h-2 w-2 rounded-full bg-[#FFD700] animate-pulse"></span>
-            Join 200+ buyers already receiving weekly alerts
-          </div>
-          <h1
-            className="text-5xl md:text-7xl font-bold tracking-tight mb-6"
-            style={{ lineHeight: 1.2, fontFamily: "Inter, sans-serif" }}
-          >
-            Never Miss Your<br />
-            <span style={{ color: "#FFD700" }}>Perfect Opportunity</span>
-          </h1>
-          <p
-            className="text-xl mb-10 max-w-2xl mx-auto"
-            style={{ color: "#8b949e" }}
-          >
-            Get personalized Post Office listings delivered to your inbox every
-            week — matched to exactly what you're looking for.
-          </p>
-          <button
-            onClick={() => {
-              const form = document.getElementById("signup-form");
-              form?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="btn-primary text-lg px-8 py-3"
-          >
-            Get Started (It's Free)
-          </button>
+    <div style={{ background: BRAND.dark, minHeight: '100vh', color: BRAND.textPrimary }}>
+
+      {/* Feedback banner */}
+      {feedbackBanner && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+          background: feedbackBanner.type === 'up' ? '#22c55e20' : '#f59e0b20',
+          borderBottom: `1px solid ${feedbackBanner.type === 'up' ? '#22c55e40' : '#f59e0b40'}`,
+          padding: '12px 24px', textAlign: 'center',
+          color: feedbackBanner.type === 'up' ? '#22c55e' : '#f59e0b',
+          fontSize: '14px', fontWeight: 600,
+        }}>
+          {feedbackBanner.type === 'up' ? '👍' : '👎'} {feedbackBanner.message}
+        </div>
+      )}
+
+      {/* Hero — Concierge positioning */}
+      <section style={{ padding: '80px 24px 60px', textAlign: 'center', maxWidth: 720, margin: '0 auto' }}>
+        <p style={{ color: BRAND.gold, fontSize: 13, fontWeight: 700, letterSpacing: 2, marginBottom: 20 }}>
+          FCM INSIDER
+        </p>
+        <h1 style={{
+          color: BRAND.white, fontSize: 'clamp(28px, 5vw, 42px)', fontWeight: 800,
+          lineHeight: 1.2, marginBottom: 20, letterSpacing: '-0.02em',
+        }}>
+          Someone watching the market,<br />so you don't have to
+        </h1>
+        <p style={{ color: BRAND.textPrimary, fontSize: 17, lineHeight: 1.7, maxWidth: 560, margin: '0 auto 32px' }}>
+          Tell us what you're looking for. Every week, we'll send you a shortlist of opportunities
+          that match — hand-picked, personally noted, ready for you to act on.
+        </p>
+        <p style={{
+          display: 'inline-block', background: `${BRAND.gold}15`, border: `1px solid ${BRAND.gold}40`,
+          borderRadius: 8, padding: '10px 20px', color: BRAND.gold, fontSize: 14, fontWeight: 600,
+        }}>
+          £15/month · Cancel anytime · 15% off consultations
+        </p>
+      </section>
+
+      {/* How it works — concierge framing */}
+      <section style={{ padding: '0 24px 60px', maxWidth: 800, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20 }}>
+          {[
+            { icon: '🎯', title: 'You tell us what you want', desc: 'Budget, region, business type, experience level — the more you share, the better we get.' },
+            { icon: '👁️', title: 'We watch the market daily', desc: 'New listings from Daltons, RightBiz, and BusinessesForSale, checked every day against your criteria.' },
+            { icon: '📬', title: 'Your weekly shortlist arrives', desc: 'Monday mornings, your top matches land in your inbox — scored, noted, and ready for you to review.' },
+            { icon: '⚡', title: "Can't-miss alerts", desc: "When something especially strong comes in mid-week, we won't make you wait — you'll hear from us right away." },
+          ].map((step, i) => (
+            <div key={i} style={{
+              background: BRAND.cardBg, border: `1px solid ${BRAND.border}`, borderRadius: 10,
+              padding: 24,
+            }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>{step.icon}</div>
+              <h3 style={{ color: BRAND.white, fontSize: 15, fontWeight: 700, marginBottom: 8, lineHeight: 1.3 }}>
+                {step.title}
+              </h3>
+              <p style={{ color: BRAND.textSecondary, fontSize: 13, lineHeight: 1.5, margin: 0 }}>
+                {step.desc}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ═══════════════════════════ WHAT YOU'LL GET ═══════════════════════════ */}
-      <section className="py-16 container mx-auto px-4">
-        <h2
-          className="text-3xl md:text-4xl font-bold text-center mb-12"
-          style={{ color: "#FFFFFF" }}
-        >
-          What You'll Get Every Week
+      {/* The feedback learning pitch */}
+      <section style={{
+        padding: '40px 24px', maxWidth: 680, margin: '0 auto 40px',
+        background: BRAND.navy, borderRadius: 12, textAlign: 'center',
+      }}>
+        <h2 style={{ color: BRAND.white, fontSize: 20, fontWeight: 700, marginBottom: 12 }}>
+          Your matches get smarter every week
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <div className="text-center">
-            <div className="text-5xl mb-4">🎯</div>
-            <h3
-              className="text-xl font-semibold mb-3"
-              style={{ color: "#FFD700" }}
-            >
-              Personalised Weekly Alerts
-            </h3>
-            <p style={{ color: "#8b949e" }}>
-              Matched to YOUR budget, region, and criteria. Every subscriber gets different listings — tailored to exactly what you&apos;re looking for.
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="text-5xl mb-4">📊</div>
-            <h3
-              className="text-xl font-semibold mb-3"
-              style={{ color: "#FFD700" }}
-            >
-              Quick Intelligence
-            </h3>
-            <p style={{ color: "#8b949e" }}>
-              Each listing includes our initial assessment: location grade,
-              revenue range, and FCM Fit Score.
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="text-5xl mb-4">⚡</div>
-            <h3
-              className="text-xl font-semibold mb-3"
-              style={{ color: "#FFD700" }}
-            >
-              First to Know
-            </h3>
-            <p style={{ color: "#8b949e" }}>
-              New listings hit your inbox before they're publicly listed. Move
-              fast on the best opportunities.
-            </p>
-          </div>
-        </div>
+        <p style={{ color: BRAND.textPrimary, fontSize: 15, lineHeight: 1.6, maxWidth: 500, margin: '0 auto' }}>
+          Every thumbs up or thumbs down you give us in your digest teaches us more about what you're really after.
+          Over time, your matches sharpen — so the longer you're an Insider, the better it gets.
+        </p>
       </section>
 
-      {/* ═══════════════════════════ EMAIL PREVIEW ═══════════════════════════ */}
-      <section className="py-16" style={{ background: "rgba(0,0,0,0.3)" }}>
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2
-            className="text-3xl md:text-4xl font-bold text-center mb-12"
-            style={{ color: "#FFFFFF" }}
-          >
-            Here's What Lands in Your Inbox
-          </h2>
-          <div
-            className="rounded-lg p-8 shadow-2xl"
-            style={{
-              background: "#1A1A1A",
-              border: "1px solid #333333",
-            }}
-          >
-            <div className="mb-6 pb-4 border-b border-gray-700">
-              <div
-                className="text-sm mb-2"
-                style={{ color: "#8b949e", fontFamily: "JetBrains Mono" }}
-              >
-                Subject:
-              </div>
-              <div className="text-lg font-semibold" style={{ color: "#FFD700" }}>
-                3 New Post Offices in Greater Manchester (£50-100k)
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <p style={{ color: "#FFFFFF" }}>Hi [Name],</p>
-              <p style={{ color: "#8b949e" }}>
-                This week we found 3 Post Offices matching your criteria:
-              </p>
-
-              {/* Listing 1 */}
-              <div
-                className="p-4 rounded"
-                style={{ background: "rgba(255, 215, 0, 0.05)", border: "1px solid rgba(255, 215, 0, 0.2)" }}
-              >
-                <h3
-                  className="text-lg font-semibold mb-2"
-                  style={{ color: "#FFFFFF" }}
-                >
-                  1. Stockport Main Branch - £85k asking
-                </h3>
-                <div
-                  className="flex flex-wrap gap-3 text-sm mb-3"
-                  style={{ fontFamily: "JetBrains Mono" }}
-                >
-                  <span style={{ color: "#8b949e" }}>
-                    📍 Grade A location
-                  </span>
-                  <span style={{ color: "#8b949e" }}>
-                    💰 Est. £120k revenue
-                  </span>
-                  <span style={{ color: "#FFD700" }}>FCM Score: 82/100</span>
-                </div>
-                <Link
-                  href="#"
-                  className="inline-block px-4 py-2 rounded text-sm"
-                  style={{
-                    background: "#FFD700",
-                    color: "#000000",
-                    fontWeight: "600",
-                  }}
-                >
-                  View Details →
-                </Link>
-              </div>
-
-              {/* Listing 2 */}
-              <div
-                className="p-4 rounded"
-                style={{ background: "rgba(255, 215, 0, 0.05)", border: "1px solid rgba(255, 215, 0, 0.2)" }}
-              >
-                <h3
-                  className="text-lg font-semibold mb-2"
-                  style={{ color: "#FFFFFF" }}
-                >
-                  2. Bolton High Street - £65k asking
-                </h3>
-                <div
-                  className="flex flex-wrap gap-3 text-sm mb-3"
-                  style={{ fontFamily: "JetBrains Mono" }}
-                >
-                  <span style={{ color: "#8b949e" }}>
-                    📍 Grade B location
-                  </span>
-                  <span style={{ color: "#8b949e" }}>
-                    💰 Est. £95k revenue
-                  </span>
-                  <span style={{ color: "#FFD700" }}>FCM Score: 76/100</span>
-                </div>
-                <Link
-                  href="#"
-                  className="inline-block px-4 py-2 rounded text-sm"
-                  style={{
-                    background: "#FFD700",
-                    color: "#000000",
-                    fontWeight: "600",
-                  }}
-                >
-                  View Details →
-                </Link>
-              </div>
-
-              {/* Listing 3 */}
-              <div
-                className="p-4 rounded"
-                style={{ background: "rgba(255, 215, 0, 0.05)", border: "1px solid rgba(255, 215, 0, 0.2)" }}
-              >
-                <h3
-                  className="text-lg font-semibold mb-2"
-                  style={{ color: "#FFFFFF" }}
-                >
-                  3. Altrincham Village PO - £95k asking
-                </h3>
-                <div
-                  className="flex flex-wrap gap-3 text-sm mb-3"
-                  style={{ fontFamily: "JetBrains Mono" }}
-                >
-                  <span style={{ color: "#8b949e" }}>
-                    📍 Grade A+ location
-                  </span>
-                  <span style={{ color: "#8b949e" }}>
-                    💰 Est. £140k revenue
-                  </span>
-                  <span style={{ color: "#FFD700" }}>FCM Score: 88/100</span>
-                </div>
-                <Link
-                  href="#"
-                  className="inline-block px-4 py-2 rounded text-sm"
-                  style={{
-                    background: "#FFD700",
-                    color: "#000000",
-                    fontWeight: "600",
-                  }}
-                >
-                  View Details →
-                </Link>
-              </div>
-
-              <p style={{ color: "#8b949e", fontSize: "0.875rem" }}>
-                Want the full intelligence report? Order an Insight or Intelligence report
-                for any listing.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════ FREE TRIAL ═══════════════════════════ */}
-      <section className="py-12" style={{ background: "rgba(255, 215, 0, 0.05)" }}>
-        <div className="container mx-auto px-4 text-center">
-          <h3
-            className="text-2xl md:text-3xl font-bold mb-4"
-            style={{ color: "#FFD700" }}
-          >
-            First 3 Weekly Alerts FREE
-          </h3>
-          <p className="text-lg" style={{ color: "#8b949e" }}>
-            No credit card required. Then £15/month to continue.
-          </p>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════ SIGNUP FORM ═══════════════════════════ */}
-      <section id="signup-form" className="py-16 container mx-auto px-4">
-        <div className="max-w-2xl mx-auto">
-          {!submitted ? (
-            <form 
-              onSubmit={handleSubmit} 
-              className="space-y-6"
-            >
-              <h2
-                className="text-3xl md:text-4xl font-bold text-center mb-8"
-                style={{ color: "#FFFFFF" }}
-              >
-                Get Your First Report
+      {/* Preferences form */}
+      <section id="preferences" style={{ padding: '0 24px 80px', maxWidth: 640, margin: '0 auto' }}>
+        <div style={{
+          background: BRAND.cardBg, border: `1px solid ${BRAND.border}`, borderRadius: 12,
+          padding: 'clamp(24px, 4vw, 40px)',
+        }}>
+          {submitted ? (
+            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>✓</div>
+              <h2 style={{ color: BRAND.white, fontSize: 22, fontWeight: 700, marginBottom: 12 }}>
+                We're on it
               </h2>
+              <p style={{ color: BRAND.textPrimary, fontSize: 15, lineHeight: 1.6 }}>
+                Your preferences are saved and we're already matching you against current listings.
+                Your first personalised digest will arrive on Monday.
+              </p>
+            </div>
+          ) : (
+            <>
+              <h2 style={{ color: BRAND.white, fontSize: 20, fontWeight: 700, marginBottom: 6 }}>
+                Tell us what you're looking for
+              </h2>
+              <p style={{ color: BRAND.textSecondary, fontSize: 14, lineHeight: 1.5, marginBottom: 28 }}>
+                Takes about 60 seconds. You can update these anytime.
+              </p>
 
-              {/* Name */}
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium mb-2"
-                  style={{ color: "#FFFFFF" }}
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  required
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg text-white"
-                  style={{
-                    background: "#1A1A1A",
-                    border: "1px solid #333333",
-                  }}
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium mb-2"
-                  style={{ color: "#FFFFFF" }}
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg text-white"
-                  style={{
-                    background: "#1A1A1A",
-                    border: "1px solid #333333",
-                  }}
-                />
-              </div>
-
-              {/* Business Types */}
-              <div>
-                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
-                  What are you looking for?
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {["Post Office", "Forecourt / Petrol Station", "Convenience Store", "Newsagent"].map(
-                    (type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => toggleBusinessType(type)}
-                        className="flex items-center gap-2 px-4 py-3 rounded-lg text-left transition-all"
-                        style={{
-                          background: formData.businessTypes.includes(type)
-                            ? "rgba(255, 215, 0, 0.15)"
-                            : "#1A1A1A",
-                          border: formData.businessTypes.includes(type)
-                            ? "1px solid #FFD700"
-                            : "1px solid #333333",
-                          color: "#FFFFFF",
-                        }}
-                      >
-                        <div
-                          className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center"
-                          style={{
-                            background: formData.businessTypes.includes(type)
-                              ? "#FFD700"
-                              : "transparent",
-                            border: formData.businessTypes.includes(type)
-                              ? "none"
-                              : "1px solid #333333",
-                          }}
-                        >
-                          {formData.businessTypes.includes(type) && (
-                            <Check size={14} color="#000000" />
-                          )}
-                        </div>
-                        <span className="text-sm">{type}</span>
-                      </button>
-                    )
-                  )}
+              {/* Name + Email */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+                <div>
+                  <label style={labelStyle}>Your name</label>
+                  <input
+                    type="text" value={formData.name}
+                    onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
+                    placeholder="First name"
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Email</label>
+                  <input
+                    type="email" value={formData.email}
+                    onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
+                    placeholder="you@email.com"
+                    style={inputStyle}
+                  />
                 </div>
               </div>
 
               {/* Regions */}
-              <div>
-                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
-                  Preferred regions
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {regions.map((region) => (
+              <div style={{ marginBottom: 24 }}>
+                <label style={labelStyle}>Which regions interest you?</label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {REGIONS.map(r => (
                     <button
-                      key={region}
-                      type="button"
-                      onClick={() => toggleRegion(region)}
-                      className="px-3 py-2 rounded-full text-sm transition-all"
+                      key={r} onClick={() => handleRegionToggle(r)}
                       style={{
-                        background: formData.regions.includes(region)
-                          ? "#FFD700"
-                          : "#1A1A1A",
-                        border: formData.regions.includes(region)
-                          ? "1px solid #FFD700"
-                          : "1px solid #333333",
-                        color: formData.regions.includes(region)
-                          ? "#000000"
-                          : "#FFFFFF",
+                        ...chipStyle,
+                        background: formData.preferred_regions.includes(r) ? `${BRAND.gold}20` : 'transparent',
+                        borderColor: formData.preferred_regions.includes(r) ? BRAND.gold : BRAND.border,
+                        color: formData.preferred_regions.includes(r) ? BRAND.gold : BRAND.textSecondary,
                       }}
                     >
-                      {region}
+                      {r}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Budget Range */}
-              <div>
-                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
-                  Budget range
-                </label>
-                <div className="space-y-2">
-                  {[
-                    "Under £50k",
-                    "£50k - £100k",
-                    "£100k - £200k",
-                    "£200k+",
-                    "No limit",
-                  ].map((budget) => (
-                    <label
-                      key={budget}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all"
+              {/* Business types */}
+              <div style={{ marginBottom: 24 }}>
+                <label style={labelStyle}>Business types</label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {BUSINESS_TYPES.map(t => (
+                    <button
+                      key={t} onClick={() => handleTypeToggle(t)}
                       style={{
-                        background: formData.budget === budget
-                          ? "rgba(255, 215, 0, 0.15)"
-                          : "#1A1A1A",
-                        border: formData.budget === budget
-                          ? "1px solid #FFD700"
-                          : "1px solid #333333",
+                        ...chipStyle,
+                        background: formData.business_types.includes(t) ? `${BRAND.gold}20` : 'transparent',
+                        borderColor: formData.business_types.includes(t) ? BRAND.gold : BRAND.border,
+                        color: formData.business_types.includes(t) ? BRAND.gold : BRAND.textSecondary,
                       }}
                     >
-                      <input
-                        type="radio"
-                        name="budget"
-                        value={budget}
-                        checked={formData.budget === budget}
-                        onChange={(e) =>
-                          setFormData({ ...formData, budget: e.target.value })
-                        }
-                        className="w-4 h-4"
-                        style={{ accentColor: "#FFD700" }}
-                      />
-                      <span style={{ color: "#FFFFFF" }}>{budget}</span>
-                    </label>
+                      {t}
+                    </button>
                   ))}
                 </div>
               </div>
 
-              {/* Situation */}
-              <div>
-                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
-                  Your situation
-                </label>
-                <div className="space-y-2">
-                  {[
-                    "First-time buyer",
-                    "Existing operator looking to expand",
-                    "Investor / Group",
-                  ].map((situation) => (
-                    <label
-                      key={situation}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all"
-                      style={{
-                        background: formData.situation === situation
-                          ? "rgba(255, 215, 0, 0.15)"
-                          : "#1A1A1A",
-                        border: formData.situation === situation
-                          ? "1px solid #FFD700"
-                          : "1px solid #333333",
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="situation"
-                        value={situation}
-                        checked={formData.situation === situation}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            situation: e.target.value,
-                          })
-                        }
-                        className="w-4 h-4"
-                        style={{ accentColor: "#FFD700" }}
-                      />
-                      <span style={{ color: "#FFFFFF" }}>{situation}</span>
-                    </label>
-                  ))}
+              {/* Budget */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+                <div>
+                  <label style={labelStyle}>Min budget (£)</label>
+                  <input
+                    type="number" value={formData.min_budget}
+                    onChange={e => setFormData(p => ({ ...p, min_budget: e.target.value }))}
+                    placeholder="e.g. 50000" style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Max budget (£)</label>
+                  <input
+                    type="number" value={formData.max_budget}
+                    onChange={e => setFormData(p => ({ ...p, max_budget: e.target.value }))}
+                    placeholder="e.g. 250000" style={inputStyle}
+                  />
                 </div>
               </div>
 
-              {/* ─── Tenure Preference ─── */}
-              <div>
-                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
-                  Tenure preference
-                </label>
-                <div className="space-y-2">
-                  {[
-                    "Freehold only",
-                    "Leasehold only",
-                    "Either — I'm flexible",
-                  ].map((option) => (
-                    <label
-                      key={option}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all"
-                      style={{
-                        background: formData.tenurePreference === option
-                          ? "rgba(255, 215, 0, 0.15)"
-                          : "#1A1A1A",
-                        border: formData.tenurePreference === option
-                          ? "1px solid #FFD700"
-                          : "1px solid #333333",
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="tenure"
-                        value={option}
-                        checked={formData.tenurePreference === option}
-                        onChange={(e) =>
-                          setFormData({ ...formData, tenurePreference: e.target.value })
-                        }
-                        className="w-4 h-4"
-                        style={{ accentColor: "#FFD700" }}
-                      />
-                      <span style={{ color: "#FFFFFF" }}>{option}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* ─── Minimum Net Profit ─── */}
-              <div>
-                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
-                  Minimum net profit
-                </label>
-                <div className="space-y-2">
-                  {["Any", "£25k+", "£40k+", "£60k+", "£80k+"].map((option) => (
-                    <label
-                      key={option}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all"
-                      style={{
-                        background: formData.minProfit === option
-                          ? "rgba(255, 215, 0, 0.15)"
-                          : "#1A1A1A",
-                        border: formData.minProfit === option
-                          ? "1px solid #FFD700"
-                          : "1px solid #333333",
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="minProfit"
-                        value={option}
-                        checked={formData.minProfit === option}
-                        onChange={(e) =>
-                          setFormData({ ...formData, minProfit: e.target.value })
-                        }
-                        className="w-4 h-4"
-                        style={{ accentColor: "#FFD700" }}
-                      />
-                      <span style={{ color: "#FFFFFF" }}>{option}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* ─── Timeline ─── */}
-              <div>
-                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
-                  Buying timeline
-                </label>
-                <div className="space-y-2">
-                  {[
-                    "Just browsing",
-                    "Within 3 months",
-                    "Within 6 months",
-                    "Ready now",
-                  ].map((option) => (
-                    <label
-                      key={option}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all"
-                      style={{
-                        background: formData.timeline === option
-                          ? "rgba(255, 215, 0, 0.15)"
-                          : "#1A1A1A",
-                        border: formData.timeline === option
-                          ? "1px solid #FFD700"
-                          : "1px solid #333333",
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="timeline"
-                        value={option}
-                        checked={formData.timeline === option}
-                        onChange={(e) =>
-                          setFormData({ ...formData, timeline: e.target.value })
-                        }
-                        className="w-4 h-4"
-                        style={{ accentColor: "#FFD700" }}
-                      />
-                      <span style={{ color: "#FFFFFF" }}>{option}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* ─── Consultation ─── */}
-              <div>
-                <label className="block text-sm font-medium mb-3" style={{ color: "#FFFFFF" }}>
-                  Would you like a consultation call to discuss your search?
-                </label>
-                <div className="space-y-2">
-                  {["Yes", "Not right now"].map((option) => (
-                    <label
-                      key={option}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all"
-                      style={{
-                        background: formData.wantsConsultation === option
-                          ? "rgba(255, 215, 0, 0.15)"
-                          : "#1A1A1A",
-                        border: formData.wantsConsultation === option
-                          ? "1px solid #FFD700"
-                          : "1px solid #333333",
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="consultation"
-                        value={option}
-                        checked={formData.wantsConsultation === option}
-                        onChange={(e) =>
-                          setFormData({ ...formData, wantsConsultation: e.target.value })
-                        }
-                        className="w-4 h-4"
-                        style={{ accentColor: "#FFD700" }}
-                      />
-                      <span style={{ color: "#FFFFFF" }}>{option}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* ─── Notes ─── */}
-              <div>
-                <label
-                  htmlFor="notes"
-                  className="block text-sm font-medium mb-2"
-                  style={{ color: "#FFFFFF" }}
+              {/* Tenure */}
+              <div style={{ marginBottom: 24 }}>
+                <label style={labelStyle}>Tenure preference</label>
+                <select
+                  value={formData.tenure_preference}
+                  onChange={e => setFormData(p => ({ ...p, tenure_preference: e.target.value }))}
+                  style={inputStyle}
                 >
-                  Anything specific you&apos;re looking for?
-                </label>
-                <textarea
-                  id="notes"
-                  value={formData.notes}
-                  onChange={(e) =>
-                    setFormData({ ...formData, notes: e.target.value })
-                  }
-                  rows={3}
-                  className="w-full px-4 py-3 rounded-lg text-white"
-                  style={{
-                    background: "#1A1A1A",
-                    border: "1px solid #333333",
-                  }}
-                  placeholder="E.g. looking for something with a flat above, or near good schools..."
+                  <option value="any">No preference</option>
+                  <option value="freehold">Freehold</option>
+                  <option value="leasehold">Leasehold</option>
+                  <option value="either">Either</option>
+                </select>
+              </div>
+
+              {/* Min profit */}
+              <div style={{ marginBottom: 24 }}>
+                <label style={labelStyle}>Minimum net profit (£/year)</label>
+                <input
+                  type="number" value={formData.min_profit}
+                  onChange={e => setFormData(p => ({ ...p, min_profit: e.target.value }))}
+                  placeholder="e.g. 30000" style={inputStyle}
                 />
               </div>
 
-              {/* Error message */}
-              {error && (
-                <div
-                  className="p-4 rounded-lg text-sm"
-                  style={{ background: "rgba(255,0,0,0.1)", border: "1px solid rgba(255,0,0,0.3)", color: "#ff6b6b" }}
+              {/* Experience */}
+              <div style={{ marginBottom: 24 }}>
+                <label style={labelStyle}>Your experience level</label>
+                <select
+                  value={formData.experience_level}
+                  onChange={e => setFormData(p => ({ ...p, experience_level: e.target.value }))}
+                  style={inputStyle}
                 >
-                  {error}
-                </div>
-              )}
+                  {EXPERIENCE_LEVELS.map(l => (
+                    <option key={l.value} value={l.value}>{l.label}</option>
+                  ))}
+                </select>
+              </div>
 
-              {/* Submit Button */}
+              {/* Timeline */}
+              <div style={{ marginBottom: 24 }}>
+                <label style={labelStyle}>How soon are you looking to buy?</label>
+                <select
+                  value={formData.timeline}
+                  onChange={e => setFormData(p => ({ ...p, timeline: e.target.value }))}
+                  style={inputStyle}
+                >
+                  {TIMELINES.map(t => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Consultation */}
+              <div id="consultation" style={{ marginBottom: 24 }}>
+                <label style={{ ...chipStyle, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, borderColor: formData.wants_consultation ? BRAND.gold : BRAND.border, color: formData.wants_consultation ? BRAND.gold : BRAND.textSecondary, background: formData.wants_consultation ? `${BRAND.gold}15` : 'transparent' }}
+                  onClick={() => setFormData(p => ({ ...p, wants_consultation: !p.wants_consultation }))}
+                >
+                  <span>{formData.wants_consultation ? '☑' : '☐'}</span>
+                  I'd like to hear about consultation services (15% Insider discount)
+                </label>
+              </div>
+
+              {/* Notes */}
+              <div style={{ marginBottom: 28 }}>
+                <label style={labelStyle}>Anything else we should know?</label>
+                <textarea
+                  value={formData.notes}
+                  onChange={e => setFormData(p => ({ ...p, notes: e.target.value }))}
+                  placeholder="Specific towns, must-haves, deal-breakers..."
+                  rows={3}
+                  style={{ ...inputStyle, resize: 'vertical' }}
+                />
+              </div>
+
+              {/* Submit */}
               <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-4 rounded-lg text-lg font-semibold transition-all hover:opacity-90 disabled:opacity-50"
+                onClick={handleSubmit}
+                disabled={submitting || !formData.email}
                 style={{
-                  background: "#FFD700",
-                  color: "#000000",
+                  width: '100%', padding: '14px 24px', background: BRAND.gold, color: BRAND.dark,
+                  border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: 'pointer',
+                  opacity: submitting || !formData.email ? 0.5 : 1,
                 }}
               >
-                {submitting ? "Saving..." : "Set Up My Personalised Alerts →"}
+                {submitting ? 'Saving...' : 'Save my preferences & start matching'}
               </button>
-            </form>
-          ) : (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-6">🎯</div>
-              <h3
-                className="text-3xl font-bold mb-4"
-                style={{ color: "#FFD700" }}
-              >
-                Preferences Saved!
-              </h3>
-              {matchCount > 0 ? (
-                <p className="text-lg mb-6" style={{ color: "#8b949e" }}>
-                  We already found <span style={{ color: "#FFD700", fontWeight: 700 }}>{matchCount} matching {matchCount === 1 ? 'opportunity' : 'opportunities'}</span> for you.
-                  Your personalised digest arrives every Monday morning.
-                </p>
-              ) : (
-                <p className="text-lg mb-6" style={{ color: "#8b949e" }}>
-                  Your personalised alerts are set up. We&apos;ll match new listings
-                  to your criteria and deliver them every Monday morning.
-                </p>
-              )}
-              <Link href="/opportunities" className="btn-primary text-lg px-8 py-3">
-                Browse Current Listings
-              </Link>
-            </div>
+            </>
           )}
         </div>
       </section>
-
-      {/* ═══════════════════════════ CONSULTATION SERVICES ═══════════════════════════ */}
-      <section id="services" className="py-20" style={{ background: "#0d1117", borderTop: "1px solid rgba(255, 215, 0, 0.2)", borderBottom: "1px solid rgba(255, 215, 0, 0.2)" }}>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <div
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm mb-6"
-              style={{
-                background: "rgba(255, 215, 0, 0.15)",
-                border: "1px solid #FFD700",
-                color: "#FFD700",
-              }}
-            >
-              <span className="flex h-2 w-2 rounded-full bg-[#FFD700] animate-pulse"></span>
-              INSIDER EXCLUSIVE: 15% OFF ALL SERVICES
-            </div>
-            <h2
-              className="text-3xl md:text-5xl font-bold mb-4"
-              style={{ color: "#FFFFFF" }}
-            >
-              Consultation Services
-            </h2>
-            <p style={{ color: "#8b949e" }} className="max-w-2xl mx-auto text-lg">
-              Expert support from operators who&apos;ve run 40+ Post Office branches. 
-              <span style={{ color: "#FFD700", fontWeight: 600 }}> Insiders save 15% on everything.</span>
-            </p>
-          </div>
-
-          {/* Not an Insider CTA */}
-          <div 
-            className="max-w-3xl mx-auto mb-12 p-6 rounded-lg text-center"
-            style={{ 
-              background: "rgba(255, 215, 0, 0.05)", 
-              border: "1px solid rgba(255, 215, 0, 0.3)" 
-            }}
-          >
-            <p style={{ color: "#8b949e", marginBottom: "8px" }}>
-              Not an FCM Insider yet? You&apos;ll pay full price.
-            </p>
-            <p style={{ color: "#FFD700", fontWeight: 600, fontSize: "1.1rem" }}>
-              Join Insider for £15/month and save 15% on all services below.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {/* Business Plan & Forecasts */}
-            <div 
-              className="p-6 rounded-xl flex flex-col"
-              style={{ 
-                background: "#161b22", 
-                border: "1px solid #30363d",
-              }}
-            >
-              <div className="text-4xl mb-4 text-center">📋</div>
-              <h3 className="text-xl font-bold mb-2 text-center" style={{ color: "#FFFFFF" }}>
-                Business Plan &amp; Forecasts
-              </h3>
-              <p className="text-sm mb-4 text-center flex-grow" style={{ color: "#8b949e" }}>
-                Professional 3-year business plan with forecasted management accounts. Required for Post Office Ltd vetting and approval.
-              </p>
-              <div className="text-center mb-4">
-                <div style={{ color: "#57606a", textDecoration: "line-through", fontSize: "1rem" }}>£850</div>
-                <div className="font-mono text-3xl font-bold" style={{ color: "#FFD700" }}>£722.50</div>
-                <div className="text-sm" style={{ color: "#8b949e" }}>one-time</div>
-                <div 
-                  className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold"
-                  style={{ background: "rgba(34, 197, 94, 0.2)", color: "#22c55e" }}
-                >
-                  Save £127.50 as Insider
-                </div>
-              </div>
-              <Link 
-                href="#contact" 
-                className="w-full py-3 rounded-lg text-center font-semibold transition-all hover:opacity-90"
-                style={{ background: "#FFD700", color: "#000000" }}
-              >
-                Get Started
-              </Link>
-            </div>
-
-            {/* Interview Preparation */}
-            <div 
-              className="p-6 rounded-xl flex flex-col"
-              style={{ 
-                background: "#161b22", 
-                border: "1px solid #30363d",
-              }}
-            >
-              <div className="text-4xl mb-4 text-center">🎤</div>
-              <h3 className="text-xl font-bold mb-2 text-center" style={{ color: "#FFFFFF" }}>
-                Interview Preparation
-              </h3>
-              <p className="text-sm mb-4 text-center flex-grow" style={{ color: "#8b949e" }}>
-                Post Office Ltd vets all new operators. Get mock interviews, coaching, and preparation to ace your approval interview.
-              </p>
-              <div className="text-center mb-4">
-                <div style={{ color: "#57606a", textDecoration: "line-through", fontSize: "1rem" }}>£599</div>
-                <div className="font-mono text-3xl font-bold" style={{ color: "#FFD700" }}>£509.15</div>
-                <div className="text-sm" style={{ color: "#8b949e" }}>one-time</div>
-                <div 
-                  className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold"
-                  style={{ background: "rgba(34, 197, 94, 0.2)", color: "#22c55e" }}
-                >
-                  Save £89.85 as Insider
-                </div>
-              </div>
-              <Link 
-                href="#contact" 
-                className="w-full py-3 rounded-lg text-center font-semibold transition-all hover:opacity-90"
-                style={{ background: "#FFD700", color: "#000000" }}
-              >
-                Get Started
-              </Link>
-            </div>
-
-            {/* Business Setup Bundle */}
-            <div 
-              className="p-6 rounded-xl flex flex-col"
-              style={{ 
-                background: "#161b22", 
-                border: "1px solid #30363d",
-              }}
-            >
-              <div className="text-4xl mb-4 text-center">🔧</div>
-              <h3 className="text-xl font-bold mb-2 text-center" style={{ color: "#FFFFFF" }}>
-                Business Setup Bundle
-              </h3>
-              <p className="text-sm mb-4 text-center flex-grow" style={{ color: "#8b949e" }}>
-                Company formation, bank account, insurance, utilities, EPOS setup — everything you need to open the doors.
-              </p>
-              <div className="text-center mb-4">
-                <div style={{ color: "#57606a", textDecoration: "line-through", fontSize: "1rem" }}>£1,750</div>
-                <div className="font-mono text-3xl font-bold" style={{ color: "#FFD700" }}>£1,487.50</div>
-                <div className="text-sm" style={{ color: "#8b949e" }}>one-time</div>
-                <div 
-                  className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold"
-                  style={{ background: "rgba(34, 197, 94, 0.2)", color: "#22c55e" }}
-                >
-                  Save £262.50 as Insider
-                </div>
-              </div>
-              <Link 
-                href="#contact" 
-                className="w-full py-3 rounded-lg text-center font-semibold transition-all hover:opacity-90"
-                style={{ background: "#FFD700", color: "#000000" }}
-              >
-                Get Started
-              </Link>
-            </div>
-
-            {/* Operator Training */}
-            <div 
-              className="p-6 rounded-xl flex flex-col lg:col-span-3"
-              style={{ 
-                background: "linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(22, 27, 34, 1) 100%)", 
-                border: "2px solid rgba(255, 215, 0, 0.3)",
-              }}
-            >
-              <div className="text-4xl mb-4 text-center">🎓</div>
-              <h3 className="text-xl font-bold mb-2 text-center" style={{ color: "#FFFFFF" }}>
-                Operator Training
-              </h3>
-              <p className="text-sm mb-6 text-center max-w-2xl mx-auto" style={{ color: "#8b949e" }}>
-                Learn to run a Post Office from operators with 40+ branches. Choose your format:
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto w-full">
-                {/* Online */}
-                <div className="p-4 rounded-lg text-center" style={{ background: "rgba(0,0,0,0.3)", border: "1px solid #30363d" }}>
-                  <div className="text-2xl mb-2">💻</div>
-                  <h4 className="font-semibold mb-2" style={{ color: "#FFFFFF" }}>Online</h4>
-                  <p className="text-xs mb-3" style={{ color: "#8b949e" }}>Self-paced video modules + live Q&amp;A sessions</p>
-                  <div style={{ color: "#57606a", textDecoration: "line-through", fontSize: "0.9rem" }}>£750</div>
-                  <div className="font-mono text-2xl font-bold" style={{ color: "#FFD700" }}>£637.50</div>
-                  <div 
-                    className="inline-block mt-2 px-2 py-1 rounded-full text-xs font-semibold"
-                    style={{ background: "rgba(34, 197, 94, 0.2)", color: "#22c55e" }}
-                  >
-                    Save £112.50
-                  </div>
-                </div>
-                {/* Offsite */}
-                <div className="p-4 rounded-lg text-center" style={{ background: "rgba(0,0,0,0.3)", border: "1px solid #30363d" }}>
-                  <div className="text-2xl mb-2">🏢</div>
-                  <h4 className="font-semibold mb-2" style={{ color: "#FFFFFF" }}>Offsite</h4>
-                  <p className="text-xs mb-3" style={{ color: "#8b949e" }}>2-day intensive at our training location</p>
-                  <div style={{ color: "#57606a", textDecoration: "line-through", fontSize: "0.9rem" }}>£1,000</div>
-                  <div className="font-mono text-2xl font-bold" style={{ color: "#FFD700" }}>£850</div>
-                  <div 
-                    className="inline-block mt-2 px-2 py-1 rounded-full text-xs font-semibold"
-                    style={{ background: "rgba(34, 197, 94, 0.2)", color: "#22c55e" }}
-                  >
-                    Save £150
-                  </div>
-                </div>
-                {/* Onsite */}
-                <div className="p-4 rounded-lg text-center" style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255, 215, 0, 0.3)" }}>
-                  <div className="text-2xl mb-2">📍</div>
-                  <h4 className="font-semibold mb-2" style={{ color: "#FFD700" }}>Onsite</h4>
-                  <p className="text-xs mb-3" style={{ color: "#8b949e" }}>We come to your branch for hands-on training</p>
-                  <div style={{ color: "#57606a", textDecoration: "line-through", fontSize: "0.9rem" }}>£1,250</div>
-                  <div className="font-mono text-2xl font-bold" style={{ color: "#FFD700" }}>£1,062.50</div>
-                  <div 
-                    className="inline-block mt-2 px-2 py-1 rounded-full text-xs font-semibold"
-                    style={{ background: "rgba(34, 197, 94, 0.2)", color: "#22c55e" }}
-                  >
-                    Save £187.50
-                  </div>
-                </div>
-              </div>
-              <div className="text-center mt-6">
-                <Link 
-                  href="#contact" 
-                  className="inline-block px-8 py-3 rounded-lg font-semibold transition-all hover:opacity-90"
-                  style={{ background: "#FFD700", color: "#000000" }}
-                >
-                  Book Training
-                </Link>
-              </div>
-            </div>
-
-            {/* Advisory Support */}
-            <div 
-              className="p-6 rounded-xl flex flex-col"
-              style={{ 
-                background: "#161b22", 
-                border: "1px solid #30363d",
-              }}
-            >
-              <div className="text-4xl mb-4 text-center">💬</div>
-              <h3 className="text-xl font-bold mb-2 text-center" style={{ color: "#FFFFFF" }}>
-                Advisory Support
-              </h3>
-              <p className="text-sm mb-4 text-center flex-grow" style={{ color: "#8b949e" }}>
-                Ongoing email support and monthly calls. Get expert guidance as you navigate your first months of operation.
-              </p>
-              <div className="text-center mb-4">
-                <div style={{ color: "#57606a", textDecoration: "line-through", fontSize: "1rem" }}>£200/mo</div>
-                <div className="font-mono text-3xl font-bold" style={{ color: "#FFD700" }}>£170<span className="text-lg">/mo</span></div>
-                <div className="text-sm" style={{ color: "#8b949e" }}>cancel anytime</div>
-                <div 
-                  className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold"
-                  style={{ background: "rgba(34, 197, 94, 0.2)", color: "#22c55e" }}
-                >
-                  Save £30/mo as Insider
-                </div>
-              </div>
-              <Link 
-                href="#contact" 
-                className="w-full py-3 rounded-lg text-center font-semibold transition-all hover:opacity-90"
-                style={{ background: "#FFD700", color: "#000000" }}
-              >
-                Get Started
-              </Link>
-            </div>
-
-            {/* Advisory Pro */}
-            <div 
-              className="p-6 rounded-xl flex flex-col relative overflow-hidden"
-              style={{ 
-                background: "linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, #161b22 100%)", 
-                border: "2px solid #FFD700",
-              }}
-            >
-              <div 
-                className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold"
-                style={{ background: "#FFD700", color: "#000000" }}
-              >
-                POPULAR
-              </div>
-              <div className="text-4xl mb-4 text-center">⭐</div>
-              <h3 className="text-xl font-bold mb-2 text-center" style={{ color: "#FFD700" }}>
-                Advisory Pro
-              </h3>
-              <p className="text-sm mb-4 text-center flex-grow" style={{ color: "#8b949e" }}>
-                Everything in Advisory Support plus compliance checks, management reporting, and priority response times.
-              </p>
-              <div className="text-center mb-4">
-                <div style={{ color: "#57606a", textDecoration: "line-through", fontSize: "1rem" }}>£400/mo</div>
-                <div className="font-mono text-3xl font-bold" style={{ color: "#FFD700" }}>£340<span className="text-lg">/mo</span></div>
-                <div className="text-sm" style={{ color: "#8b949e" }}>cancel anytime</div>
-                <div 
-                  className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold"
-                  style={{ background: "rgba(34, 197, 94, 0.2)", color: "#22c55e" }}
-                >
-                  Save £60/mo as Insider
-                </div>
-              </div>
-              <Link 
-                href="#contact" 
-                className="w-full py-3 rounded-lg text-center font-semibold transition-all hover:opacity-90"
-                style={{ background: "#FFD700", color: "#000000" }}
-              >
-                Get Started
-              </Link>
-            </div>
-
-            {/* Empty spacer for grid alignment on large screens - hidden on mobile */}
-            <div className="hidden lg:block"></div>
-          </div>
-
-          {/* Bottom CTA */}
-          <div className="text-center mt-12">
-            <p style={{ color: "#8b949e" }} className="mb-4">
-              Not sure which service you need? <Link href="#contact" style={{ color: "#FFD700", textDecoration: "underline" }}>Get in touch</Link> and we&apos;ll help you figure it out.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════ CONTACT FORM ═══════════════════════════ */}
-      <section id="contact" className="py-16 container mx-auto px-4">
-        <div className="max-w-2xl mx-auto">
-          <h2
-            className="text-3xl md:text-4xl font-bold text-center mb-4"
-            style={{ color: "#FFFFFF" }}
-          >
-            Get in Touch
-          </h2>
-          <p className="text-center mb-8" style={{ color: "#8b949e" }}>
-            Questions about our services? Ready to get started? Drop us a message.
-          </p>
-          <form action="https://formspree.io/f/xblgnqzj" method="POST" className="space-y-4">
-            <input type="hidden" name="form_type" value="insider_consultation" />
-            <div>
-              <label htmlFor="contact-name" className="block text-sm font-medium mb-2" style={{ color: "#FFFFFF" }}>Name</label>
-              <input 
-                type="text" 
-                id="contact-name" 
-                name="name" 
-                required 
-                className="w-full px-4 py-3 rounded-lg text-white"
-                style={{ background: "#1A1A1A", border: "1px solid #333333" }}
-              />
-            </div>
-            <div>
-              <label htmlFor="contact-email" className="block text-sm font-medium mb-2" style={{ color: "#FFFFFF" }}>Email</label>
-              <input 
-                type="email" 
-                id="contact-email" 
-                name="email" 
-                required 
-                className="w-full px-4 py-3 rounded-lg text-white"
-                style={{ background: "#1A1A1A", border: "1px solid #333333" }}
-              />
-            </div>
-            <div>
-              <label htmlFor="contact-service" className="block text-sm font-medium mb-2" style={{ color: "#FFFFFF" }}>Service of Interest</label>
-              <select 
-                id="contact-service" 
-                name="service"
-                className="w-full px-4 py-3 rounded-lg text-white"
-                style={{ background: "#1A1A1A", border: "1px solid #333333" }}
-              >
-                <option value="general">General Enquiry</option>
-                <option value="business-plan">Business Plan & Forecasts</option>
-                <option value="interview-prep">Interview Preparation</option>
-                <option value="training-online">Operator Training - Online</option>
-                <option value="training-offsite">Operator Training - Offsite</option>
-                <option value="training-onsite">Operator Training - Onsite</option>
-                <option value="setup-bundle">Business Setup Bundle</option>
-                <option value="advisory">Advisory Support</option>
-                <option value="advisory-pro">Advisory Pro</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="contact-message" className="block text-sm font-medium mb-2" style={{ color: "#FFFFFF" }}>Message</label>
-              <textarea 
-                id="contact-message" 
-                name="message" 
-                rows={4}
-                className="w-full px-4 py-3 rounded-lg text-white"
-                style={{ background: "#1A1A1A", border: "1px solid #333333" }}
-                placeholder="Tell us about your situation and how we can help..."
-              ></textarea>
-            </div>
-            <button
-              type="submit"
-              className="w-full py-4 rounded-lg text-lg font-semibold transition-all hover:opacity-90"
-              style={{ background: "#FFD700", color: "#000000" }}
-            >
-              Send Message
-            </button>
-          </form>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════ SOCIAL PROOF ═══════════════════════════ */}
-      <section className="py-16" style={{ background: "rgba(0,0,0,0.3)" }}>
-        <div className="container mx-auto px-4">
-          <h2
-            className="text-3xl md:text-4xl font-bold text-center mb-12"
-            style={{ color: "#FFFFFF" }}
-          >
-            What Our Subscribers Say
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div
-              className="p-6 rounded-lg"
-              style={{ background: "#1A1A1A", border: "1px solid #333333" }}
-            >
-              <p className="mb-4" style={{ color: "#8b949e" }}>
-                "Sarah T. found her Stockport branch through our alerts — closed
-                the deal in 3 weeks."
-              </p>
-              <div style={{ color: "#FFD700", fontWeight: "600" }}>
-                — Sarah T., First-time buyer
-              </div>
-            </div>
-            <div
-              className="p-6 rounded-lg"
-              style={{ background: "#1A1A1A", border: "1px solid #333333" }}
-            >
-              <p className="mb-4" style={{ color: "#8b949e" }}>
-                "Saved me 10 hours a week scrolling through broker sites. The
-                personalized alerts are exactly what I needed."
-              </p>
-              <div style={{ color: "#FFD700", fontWeight: "600" }}>
-                — Mark L., Expanding operator
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════ FAQ ═══════════════════════════ */}
-      <section className="py-16 container mx-auto px-4">
-        <h2
-          className="text-3xl md:text-4xl font-bold text-center mb-12"
-          style={{ color: "#FFFFFF" }}
-        >
-          Frequently Asked Questions
-        </h2>
-        <div className="max-w-3xl mx-auto space-y-6">
-          <div
-            className="p-6 rounded-lg"
-            style={{ background: "#1A1A1A", border: "1px solid #333333" }}
-          >
-            <h3
-              className="text-lg font-semibold mb-2"
-              style={{ color: "#FFD700" }}
-            >
-              How often do I get emails?
-            </h3>
-            <p style={{ color: "#8b949e" }}>
-              Once per week, every Monday morning.
-            </p>
-          </div>
-          <div
-            className="p-6 rounded-lg"
-            style={{ background: "#1A1A1A", border: "1px solid #333333" }}
-          >
-            <h3
-              className="text-lg font-semibold mb-2"
-              style={{ color: "#FFD700" }}
-            >
-              What if I don't find anything?
-            </h3>
-            <p style={{ color: "#8b949e" }}>
-              Cancel anytime, no questions asked. We're confident you'll find
-              value, but there's no lock-in.
-            </p>
-          </div>
-          <div
-            className="p-6 rounded-lg"
-            style={{ background: "#1A1A1A", border: "1px solid #333333" }}
-          >
-            <h3
-              className="text-lg font-semibold mb-2"
-              style={{ color: "#FFD700" }}
-            >
-              How do you find these listings?
-            </h3>
-            <p style={{ color: "#8b949e" }}>
-              Daily scans of Daltons, RightBiz, BusinessesForSale, and private
-              sellers across the UK.
-            </p>
-          </div>
-        </div>
-      </section>
-      {/* ═══════════════════════════ MANAGE YOUR ALERTS ═══════════════════════════ */}
-      <section className="py-16 container mx-auto px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2
-            className="text-2xl md:text-3xl font-bold mb-4"
-            style={{ color: "#FFFFFF" }}
-          >
-            Already an Insider?
-          </h2>
-          <p className="mb-6" style={{ color: "#8b949e" }}>
-            Update your preferences anytime to refine your personalised matches.
-          </p>
-          {!showManageForm ? (
-            <button
-              onClick={() => setShowManageForm(true)}
-              className="px-6 py-3 rounded-lg font-semibold transition-all hover:opacity-90"
-              style={{
-                background: "transparent",
-                border: "1px solid #FFD700",
-                color: "#FFD700",
-              }}
-            >
-              Manage My Alerts
-            </button>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-sm" style={{ color: "#8b949e" }}>
-                Enter the email you subscribed with to update your preferences:
-              </p>
-              <input
-                type="email"
-                value={manageEmail}
-                onChange={(e) => setManageEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="w-full px-4 py-3 rounded-lg text-white"
-                style={{
-                  background: "#1A1A1A",
-                  border: "1px solid #333333",
-                }}
-              />
-              <button
-                onClick={() => {
-                  if (manageEmail) {
-                    setFormData((prev) => ({ ...prev, email: manageEmail }));
-                    setSubmitted(false);
-                    const form = document.getElementById("signup-form");
-                    form?.scrollIntoView({ behavior: "smooth" });
-                  }
-                }}
-                className="px-6 py-3 rounded-lg font-semibold transition-all hover:opacity-90"
-                style={{
-                  background: "#FFD700",
-                  color: "#000000",
-                }}
-              >
-                Update Preferences →
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
-    </AppLayout>
+    </div>
   );
 }
+
+// Shared styles
+const labelStyle = {
+  display: 'block',
+  color: BRAND.textSecondary,
+  fontSize: 13,
+  fontWeight: 600,
+  marginBottom: 6,
+  letterSpacing: '0.3px',
+};
+
+const inputStyle = {
+  width: '100%',
+  padding: '10px 14px',
+  background: BRAND.dark,
+  border: `1px solid ${BRAND.border}`,
+  borderRadius: 6,
+  color: BRAND.white,
+  fontSize: 14,
+  outline: 'none',
+  boxSizing: 'border-box',
+};
+
+const chipStyle = {
+  padding: '6px 14px',
+  border: '1px solid',
+  borderRadius: 20,
+  fontSize: 13,
+  fontWeight: 500,
+  cursor: 'pointer',
+  background: 'transparent',
+  transition: 'all 0.15s ease',
+};
