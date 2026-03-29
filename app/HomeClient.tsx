@@ -7,6 +7,7 @@ import { ListingCard, isSoldListingVisible } from "@/components/listing-card";
 import { BuyButton } from "@/components/buy-button";
 import { MiniCard } from "@/components/mini-card";
 import { ReportRequestModal } from "@/components/report-request-modal";
+import { FinalHookCarousel } from "@/components/final-hook-carousel";
 
 import { listings } from "@/lib/listings-data";
 
@@ -792,45 +793,8 @@ export default function HomeClient() {
       </section>
 
       {/* ═══════════════════════════ CONTACT FORM ═══════════════════════════ */}
-      <section className="py-12 container mx-auto px-4" id="contact" style={{ background: 'transparent' }}>
-        <div className="text-center mb-8">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">Ready to Buy Smarter?</h2>
-          <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto">Tell us which listing interests you, and we&apos;ll deliver actionable intelligence within 48 hours.</p>
-        </div>
-        <div className="old-contact-form">
-          <form action="https://formspree.io/f/xblgnqzj" method="POST">
-            <div className="form-group">
-              <label htmlFor="listing">Branch / Listing of Interest</label>
-              <input type="text" id="listing" name="listing" placeholder="e.g., Keith Post Office, Barnsley Mains..." required />
-            </div>
-            <div className="form-group">
-              <label htmlFor="report-type">Report Type</label>
-              <select id="report-type" name="report-type">
-                <option value="intelligence">Intelligence Report — £499</option>
-                <option value="insight">Insight Report — £199</option>
-                <option value="consultation">Consultation Call</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="name">Your Name</label>
-              <input type="text" id="name" name="name" placeholder="Full name" required />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input type="email" id="email" name="email" placeholder="your@email.com" required />
-            </div>
-            <div className="form-group">
-              <label htmlFor="phone">Phone (optional)</label>
-              <input type="tel" id="phone" name="phone" placeholder="07xxx xxxxxx" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="message">Message</label>
-              <textarea id="message" name="message" rows={4} placeholder="Tell us about your requirements, timeline, and any specific questions..."></textarea>
-            </div>
-            <button type="submit" className="submit-btn">Get Your Report</button>
-          </form>
-        </div>
-      </section>
+      {/* ═══════════════════════════ FINAL HOOK CAROUSEL ═══════════════════════════ */}
+      <FinalHookCarousel onGetReport={(tier) => { setModalTier(tier || 'intelligence'); setModalOpen(true); }} />
 
       {/* ═══════════════════════════ FCM INSIDER ═══════════════════════════ */}
       <section className="py-12" id="insider" style={{ background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.08) 0%, rgba(30, 58, 95, 0.12) 100%)', borderTop: '1px solid rgba(201,162,39,0.2)', borderBottom: '1px solid rgba(201,162,39,0.2)' }}>
