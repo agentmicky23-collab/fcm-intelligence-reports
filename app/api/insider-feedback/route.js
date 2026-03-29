@@ -3,9 +3,11 @@
  *
  * Handles thumbs up/down from digest and alert emails.
  * Records feedback on the match, updates aggregate signals,
- * then redirects to a thank-you page or back to the site.
+ * then redirects to /insider with confirmation.
  *
- * Deploy to: app/api/insider-feedback/route.ts (App Router, like insider-click)
+ * Deploy to: app/api/insider-feedback/route.js
+ * NOTE: This is a .js file to avoid TypeScript strict mode issues.
+ * The existing insider-click route uses .ts — this one uses .js for simplicity.
  */
 
 import { NextResponse } from 'next/server';
@@ -26,8 +28,8 @@ export async function GET(request) {
     const vote = searchParams.get('vote');
 
     // Validate
-    if (!subscriberId || !matchId || !['up', 'down'].includes(vote)) {
-      return NextResponse.redirect(`${SITE_URL}/insider?feedback=invalid`);
+    if (!subscriberId || !matchId || !vote || (vote !== 'up' && vote !== 'down')) {
+      return NextResponse.redirect(SITE_URL + '/insider?feedback=invalid');
     }
 
     // 1. Record feedback on the match
@@ -48,23 +50,21 @@ export async function GET(request) {
     await updateFeedbackSignals(subscriberId);
 
     // 3. Redirect to a friendly confirmation
-    const emoji = vote === 'up' ? '👍' : '👎';
     const message = vote === 'up'
       ? "Thanks! We'll find more like this."
       : "Got it — we'll adjust your matches.";
 
     return NextResponse.redirect(
-      `${SITE_URL}/insider?feedback=${vote}&msg=${encodeURIComponent(message)}`
+      SITE_URL + '/insider?feedback=' + vote + '&msg=' + encodeURIComponent(message)
     );
   } catch (err) {
     console.error('Feedback handler error:', err);
-    return NextResponse.redirect(`${SITE_URL}/insider?feedback=error`);
+    return NextResponse.redirect(SITE_URL + '/insider?feedback=error');
   }
 }
 
 /**
  * Rebuild the feedback signals for a subscriber based on all their feedback.
- * This creates a "learned preferences" profile that the matching engine can use.
  */
 async function updateFeedbackSignals(subscriberId) {
   try {
@@ -77,38 +77,39 @@ async function updateFeedbackSignals(subscriberId) {
 
     if (error || !feedbackMatches || feedbackMatches.length === 0) return;
 
-    const upMatches = feedbackMatches.filter(m => m.feedback === 'up');
-    const downMatches = feedbackMatches.filter(m => m.feedback === 'down');
+    const upMatches = feedbackMatches.filter(function(m) { return m.feedback === 'up'; });
+    const downMatches = feedbackMatches.filter(function(m) { return m.feedback === 'down'; });
 
     // Extract region preferences from feedback patterns
     const regionCounts = {};
     for (const m of upMatches) {
-      if (m.pick?.region) {
+      if (m.pick && m.pick.region) {
         regionCounts[m.pick.region] = (regionCounts[m.pick.region] || 0) + 1;
       }
     }
     const avoidedRegions = {};
     for (const m of downMatches) {
-      if (m.pick?.region) {
+      if (m.pick && m.pick.region) {
         avoidedRegions[m.pick.region] = (avoidedRegions[m.pick.region] || 0) + 1;
       }
     }
 
     // Extract price range from liked picks
     const likedPrices = upMatches
-      .map(m => m.pick?.price)
-      .filter(p => p && p > 0);
-    const priceMin = likedPrices.length > 0 ? Math.min(...likedPrices) * 0.8 : null;
-    const priceMax = likedPrices.length > 0 ? Math.max(...likedPrices) * 1.2 : null;
+      .map(function(m) { return m.pick ? m.pick.price : null; })
+      .filter(function(p) { return p && p > 0; });
+    const priceMin = likedPrices.length > 0 ? Math.min.apply(null, likedPrices) * 0.8 : null;
+    const priceMax = likedPrices.length > 0 ? Math.max.apply(null, likedPrices) * 1.2 : null;
 
     // Extract tenure preference
     const tenureCounts = {};
     for (const m of upMatches) {
-      if (m.pick?.tenure) {
+      if (m.pick && m.pick.tenure) {
         tenureCounts[m.pick.tenure] = (tenureCounts[m.pick.tenure] || 0) + 1;
       }
     }
-    const preferredTenure = Object.entries(tenureCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+    const tenureEntries = Object.entries(tenureCounts).sort(function(a, b) { return b[1] - a[1]; });
+    const preferredTenure = tenureEntries.length > 0 ? tenureEntries[0][0] : null;
 
     // Upsert the signals
     await supabase
