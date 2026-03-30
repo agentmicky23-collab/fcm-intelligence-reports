@@ -639,7 +639,7 @@ export default function HomeClient() {
               </div>
 
               {/* Mobile: carousel of section example cards */}
-              <div className="mb-6">
+              <div className="mb-6 sm:hidden">
                 <MobileCarousel autoScrollMs={5000}>
                   {[
                     { label: 'Crime & Safety', score: 38, grade: 'D', color: '#C0392B', headline: '3,087 incidents. 62% violent crime + ASB.', quote: 'Crime data alone saved us from a nightmare location.', quoter: '— Insight buyer' },
@@ -763,7 +763,7 @@ export default function HomeClient() {
               </div>
 
               {/* Mobile: carousel of section example cards */}
-              <div className="mb-6">
+              <div className="mb-6 sm:hidden">
                 <MobileCarousel autoScrollMs={5000}>
                   {[
                     { label: 'Due Diligence Pack', color: '#c9a227', headline: 'Every question. Every document. Walk in prepared.', quote: 'I walked in holding 23 documents to request. His face said it all.', quoter: '— Intelligence buyer' },

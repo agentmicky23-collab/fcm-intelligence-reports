@@ -8,9 +8,9 @@ interface MobileCarouselProps {
 }
 
 /**
- * MobileCarousel — renders children in a fade carousel on mobile (<768px).
- * On desktop, renders nothing (caller handles desktop layout separately).
- * Pattern matches FinalHookCarousel: fade transition, touch/swipe, pause on hover/tap, gold dots.
+ * MobileCarousel — renders children in a fade carousel on mobile (<640px).
+ * On desktop (sm+), hidden via Tailwind sm:hidden — no styled-jsx required.
+ * Features: fade transition, touch/swipe, pause on hover/tap, gold dots.
  */
 export function MobileCarousel({
   children,
@@ -68,8 +68,9 @@ export function MobileCarousel({
   if (total === 0) return null;
 
   return (
+    // sm:hidden — hidden at 640px+ (Tailwind), visible on mobile only
     <div
-      className={`mobile-carousel-wrapper ${className}`}
+      className={`sm:hidden ${className}`}
       onMouseEnter={() => (paused.current = true)}
       onMouseLeave={() => (paused.current = false)}
       onTouchStart={handleTouchStart}
@@ -108,18 +109,6 @@ export function MobileCarousel({
           ))}
         </div>
       )}
-
-      {/* CSS: only show on mobile */}
-      <style jsx>{`
-        .mobile-carousel-wrapper {
-          display: none;
-        }
-        @media (max-width: 768px) {
-          .mobile-carousel-wrapper {
-            display: block;
-          }
-        }
-      `}</style>
     </div>
   );
 }
