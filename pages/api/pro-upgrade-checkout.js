@@ -28,6 +28,7 @@ export default async function handler(req, res) {
       mode: 'subscription',
       customer_email: email,
       line_items: [{ price: PRO_PRICE_ID, quantity: 1 }],
+      allow_promotion_codes: true,
       success_url: `${SITE_URL}/pro?upgraded=true`,
       cancel_url: `${SITE_URL}/pro?upgraded=false`,
       metadata: {

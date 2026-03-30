@@ -8,6 +8,13 @@ function getStripe() {
   return new Stripe(key, { apiVersion: "2026-02-25.clover" });
 }
 
+/* Allowed Insider price IDs — Standard and Pro tiers */
+const ALLOWED_PRICES = new Set([
+  process.env.STRIPE_PRICE_INSIDER,           // Standard (env default)
+  "price_1TAfx4BMIWL7f1H3i5j1Sj7Z",          // Standard £15/mo
+  "price_1TGQWlBMIWL7f1H3z3Ofyoxb",          // Pro £50/mo
+]);
+
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -27,11 +34,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const priceId = process.env.STRIPE_PRICE_INSIDER;
+    /* Accept priceId from request body, fallback to env default */
+    const body = await request.json().catch(() => ({}));
+    const priceId = body.priceId || process.env.STRIPE_PRICE_INSIDER;
+
     if (!priceId) {
       return NextResponse.json(
         { error: "Subscription price not configured" },
         { status: 503 }
+      );
+    }
+
+    /* Only allow known Insider price IDs */
+    if (!ALLOWED_PRICES.has(priceId)) {
+      return NextResponse.json(
+        { error: "Invalid price selected" },
+        { status: 400 }
       );
     }
 
@@ -43,16 +61,20 @@ export async function POST(request: NextRequest) {
       limit: 1,
     });
 
+    const isPro = priceId === "price_1TGQWlBMIWL7f1H3z3Ofyoxb";
+
     const customerParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
-      success_url: `${origin}/opportunities?subscribed=true`,
-      cancel_url: `${origin}/opportunities`,
+      allow_promotion_codes: true,
+      success_url: `${origin}/opportunities?subscribed=true&tier=${isPro ? "pro" : "standard"}`,
+      cancel_url: `${origin}/insider`,
       customer_email: customers.data.length === 0 ? session.user.email : undefined,
       customer: customers.data.length > 0 ? customers.data[0].id : undefined,
       metadata: {
-        source: "opportunities_paywall",
+        source: "insider_signup",
+        tier: isPro ? "pro" : "standard",
         user_email: session.user.email,
       },
     };

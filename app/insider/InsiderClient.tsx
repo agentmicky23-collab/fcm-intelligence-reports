@@ -6,12 +6,14 @@ import { useSearchParams } from 'next/navigation';
 const BRAND = {
   dark: '#0d1117',
   gold: '#c9a227',
+  goldPro: '#D4AF37',
   navy: '#0B1D3A',
   white: '#ffffff',
   textPrimary: '#e6edf3',
   textSecondary: '#8b949e',
   cardBg: '#161b22',
   border: '#30363d',
+  proBorder: '#1e2733',
 };
 
 const REGIONS = [
@@ -70,9 +72,211 @@ const chipStyle = {
   transition: 'all 0.15s ease',
 };
 
+/* ─── Pricing tiers ─── */
+const TIERS = [
+  {
+    id: 'standard',
+    name: 'Standard',
+    price: '£15',
+    period: '/month',
+    priceId: 'price_1TAfx4BMIWL7f1H3i5j1Sj7Z',
+    description: 'Weekly listing alerts matched to your criteria',
+    cta: 'Start Standard',
+    highlighted: false,
+    features: [
+      { text: 'Weekly email digest', included: true },
+      { text: 'Listings matched to your criteria', included: true },
+      { text: 'Thumbs up/down feedback loop', included: true },
+      { text: 'Mid-week hot alerts', included: true },
+      { text: '15% off consultation services', included: true },
+      { text: 'Insider Dashboard', included: false },
+      { text: 'Compare tool', included: false },
+      { text: 'Saved search templates', included: false },
+      { text: 'Add-on services & priority support', included: false },
+    ],
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: '£50',
+    period: '/month',
+    priceId: 'price_1TGQWlBMIWL7f1H3z3Ofyoxb',
+    description: 'Full toolkit for serious buyers',
+    cta: 'Upgrade to Pro',
+    highlighted: true,
+    badge: 'RECOMMENDED',
+    features: [
+      { text: 'Everything in Standard', included: true },
+      { text: 'Insider Dashboard — live market view', included: true },
+      { text: 'Compare tool — side-by-side listings', included: true },
+      { text: 'Saved search templates', included: true },
+      { text: 'Add-on services (mini-reports, area checks)', included: true },
+      { text: 'Priority support & direct line', included: true },
+      { text: '20% off full Intelligence reports', included: true },
+      { text: 'Early access to new features', included: true },
+    ],
+  },
+];
+
+function PricingCards({ onSelectTier }: { onSelectTier: (priceId: string) => void }) {
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const handleCheckout = async (priceId: string) => {
+    setLoading(priceId);
+    try {
+      const res = await fetch('/api/create-insider-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        // If not signed in, scroll to preferences form
+        onSelectTier(priceId);
+        setLoading(null);
+      }
+    } catch {
+      onSelectTier(priceId);
+      setLoading(null);
+    }
+  };
+
+  return (
+    <section style={{ padding: '0 24px 60px', maxWidth: 880, margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: 40 }}>
+        <h2 style={{ color: BRAND.white, fontSize: 26, fontWeight: 800, marginBottom: 8 }}>
+          Choose your plan
+        </h2>
+        <p style={{ color: BRAND.textSecondary, fontSize: 15 }}>
+          Cancel anytime · Promotion codes accepted at checkout
+        </p>
+      </div>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gap: 24,
+        alignItems: 'stretch',
+      }}>
+        {TIERS.map((tier) => {
+          const isPro = tier.highlighted;
+          const borderColor = isPro ? BRAND.goldPro : BRAND.proBorder;
+          return (
+            <div key={tier.id} style={{
+              position: 'relative',
+              background: BRAND.cardBg,
+              border: `${isPro ? '2px' : '1px'} solid ${borderColor}`,
+              borderRadius: 14,
+              padding: '32px 28px 28px',
+              display: 'flex',
+              flexDirection: 'column',
+              ...(isPro ? { boxShadow: `0 0 30px ${BRAND.goldPro}15` } : {}),
+            }}>
+              {tier.badge && (
+                <div style={{
+                  position: 'absolute',
+                  top: -13,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: BRAND.goldPro,
+                  color: BRAND.dark,
+                  fontSize: 11,
+                  fontWeight: 800,
+                  letterSpacing: 1.2,
+                  padding: '5px 16px',
+                  borderRadius: 20,
+                }}>
+                  {tier.badge}
+                </div>
+              )}
+
+              <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                <h3 style={{
+                  color: isPro ? BRAND.goldPro : BRAND.white,
+                  fontSize: 20,
+                  fontWeight: 700,
+                  marginBottom: 4,
+                }}>
+                  {tier.name}
+                </h3>
+                <p style={{ color: BRAND.textSecondary, fontSize: 13, marginBottom: 16 }}>
+                  {tier.description}
+                </p>
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 2 }}>
+                  <span style={{
+                    color: isPro ? BRAND.goldPro : BRAND.white,
+                    fontSize: 40,
+                    fontWeight: 800,
+                    lineHeight: 1,
+                  }}>
+                    {tier.price}
+                  </span>
+                  <span style={{ color: BRAND.textSecondary, fontSize: 15 }}>{tier.period}</span>
+                </div>
+              </div>
+
+              <div style={{ flex: 1, marginBottom: 24 }}>
+                {tier.features.map((f, i) => (
+                  <div key={i} style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 10,
+                    padding: '7px 0',
+                    borderBottom: i < tier.features.length - 1 ? `1px solid ${BRAND.dark}` : 'none',
+                  }}>
+                    <span style={{
+                      color: f.included ? '#22c55e' : BRAND.border,
+                      fontSize: 14,
+                      lineHeight: '20px',
+                      flexShrink: 0,
+                    }}>
+                      {f.included ? '✓' : '—'}
+                    </span>
+                    <span style={{
+                      color: f.included ? BRAND.textPrimary : BRAND.textSecondary,
+                      fontSize: 13.5,
+                      lineHeight: '20px',
+                      opacity: f.included ? 1 : 0.5,
+                    }}>
+                      {f.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => handleCheckout(tier.priceId)}
+                disabled={loading === tier.priceId}
+                style={{
+                  width: '100%',
+                  padding: '14px 24px',
+                  background: isPro ? BRAND.goldPro : 'transparent',
+                  color: isPro ? BRAND.dark : BRAND.white,
+                  border: isPro ? 'none' : `1px solid ${BRAND.border}`,
+                  borderRadius: 8,
+                  fontSize: 15,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  opacity: loading === tier.priceId ? 0.6 : 1,
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {loading === tier.priceId ? 'Loading...' : tier.cta}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function InsiderContent() {
   const searchParams = useSearchParams();
   const [feedbackBanner, setFeedbackBanner] = useState<{ type: string; message: string } | null>(null);
+  const [selectedTier, setSelectedTier] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -121,13 +325,21 @@ function InsiderContent() {
     }));
   };
 
+  const handleSelectTier = (priceId: string) => {
+    setSelectedTier(priceId);
+    // Scroll to preferences form
+    setTimeout(() => {
+      document.getElementById('preferences')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
       const res = await fetch('/api/insider-preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, selectedTier }),
       });
       if (res.ok) setSubmitted(true);
     } catch (err) {
@@ -152,6 +364,7 @@ function InsiderContent() {
         </div>
       )}
 
+      {/* Hero */}
       <section style={{ padding: '80px 24px 60px', textAlign: 'center', maxWidth: 720, margin: '0 auto' }}>
         <p style={{ color: BRAND.gold, fontSize: 13, fontWeight: 700, letterSpacing: 2, marginBottom: 20 }}>
           FCM INSIDER
@@ -166,14 +379,9 @@ function InsiderContent() {
           Tell us what you&apos;re looking for. Every week, we&apos;ll send you a shortlist of opportunities
           that match — hand-picked, personally noted, ready for you to act on.
         </p>
-        <p style={{
-          display: 'inline-block', background: `${BRAND.gold}15`, border: `1px solid ${BRAND.gold}40`,
-          borderRadius: 8, padding: '10px 20px', color: BRAND.gold, fontSize: 14, fontWeight: 600,
-        }}>
-          £15/month · Cancel anytime · 15% off consultations
-        </p>
       </section>
 
+      {/* How it works */}
       <section style={{ padding: '0 24px 60px', maxWidth: 800, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20 }}>
           {[
@@ -193,6 +401,10 @@ function InsiderContent() {
         </div>
       </section>
 
+      {/* Pricing Cards */}
+      <PricingCards onSelectTier={handleSelectTier} />
+
+      {/* Smarter matches callout */}
       <section style={{
         padding: '40px 24px', maxWidth: 680, margin: '0 auto 40px',
         background: BRAND.navy, borderRadius: 12, textAlign: 'center',
@@ -206,6 +418,7 @@ function InsiderContent() {
         </p>
       </section>
 
+      {/* Preferences Form */}
       <section id="preferences" style={{ padding: '0 24px 80px', maxWidth: 640, margin: '0 auto' }}>
         <div style={{
           background: BRAND.cardBg, border: `1px solid ${BRAND.border}`, borderRadius: 12,

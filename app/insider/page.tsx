@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import InsiderClient from "./InsiderClient";
 
 export const metadata: Metadata = {
-  title: 'FCM Insider — £15/month Retail Business Buyer Membership',
+  title: 'FCM Insider — Retail Business Buyer Membership from £15/month',
   description:
-    'Get weekly retail business listing alerts, hand-picked recommendations, 15% off consultation services, and priority support. Cancel anytime. Join 50+ serious buyers.',
+    'Get weekly retail business listing alerts, hand-picked recommendations, dashboard access, and priority support. Standard £15/mo or Pro £50/mo. Cancel anytime.',
   alternates: {
     canonical: 'https://fcmreport.com/insider',
   },
