@@ -1083,7 +1083,7 @@ function Section8({ data, pageNum, images = {} }) {
       <SectionHeader number={8} title="Crime & Safety" pageNum={pageNum} />
       <HeadlineBanner score={data.score} grade={data.grade} headline={data.headline} detail={data.headline_detail} />
 
-      {/* Crime density heatmap — proper gradient visualization */}
+      {/* Crime density heatmap — dual-layer: dark map + color-coded pins */}
       {images.crime_heatmap?.url ? (
         <div style={{ marginBottom: 20, borderRadius: 10, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
           <img
@@ -1092,8 +1092,23 @@ function Section8({ data, pageNum, images = {} }) {
             style={{ width: '100%', display: 'block' }}
             loading="lazy"
           />
-          <div style={{ padding: '8px 12px', background: T.white }}>
-            <p style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, margin: 0 }}>
+          {/* Pin color legend */}
+          <div style={{ padding: '10px 16px', background: T.white, borderTop: `1px solid ${T.offWhite}` }}>
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 6 }}>
+              {[
+                { color: '#3B82F6', label: 'Subject business' },
+                { color: '#FF0000', label: 'Violent crime' },
+                { color: '#FF8C00', label: 'Anti-social behaviour' },
+                { color: '#FFD700', label: 'Theft / burglary' },
+                { color: '#808080', label: 'Other' },
+              ].map((l, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: l.color, border: l.color === '#FFD700' ? '1px solid #ccc' : 'none' }} />
+                  <span style={{ fontFamily: T.body, fontSize: 9, color: T.mutedText }}>{l.label}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontFamily: T.body, fontSize: 9, color: T.lightText, margin: 0, textAlign: 'center' }}>
               {images.crime_heatmap.caption}
             </p>
           </div>
@@ -1413,8 +1428,36 @@ function Section9({ data, pageNum, images = {} }) {
               loading="lazy"
               onError={(e) => { e.target.parentElement.style.display = 'none'; }}
             />
-            <div style={{ padding: '8px 12px', background: T.white }}>
-              <p style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, margin: 0 }}>
+            {/* Competition map legend — catchment zones + numbered pins */}
+            <div style={{ padding: '10px 16px', background: T.white, borderTop: `1px solid ${T.offWhite}` }}>
+              <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
+                {[
+                  { color: T.gold, label: 'Subject business', shape: 'star' },
+                  { color: '#DC2626', label: 'PO competitor', shape: 'circle' },
+                  { color: '#22C55E', label: '1km catchment', shape: 'ring', border: true },
+                  { color: '#FFA500', label: '3km catchment', shape: 'ring', border: true },
+                ].map((l, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    {l.shape === 'ring' ? (
+                      <div style={{ width: 10, height: 10, borderRadius: '50%', border: `2px solid ${l.color}`, background: `${l.color}15` }} />
+                    ) : l.shape === 'star' ? (
+                      <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.color, boxShadow: `0 0 4px ${l.color}` }} />
+                    ) : (
+                      <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.color }} />
+                    )}
+                    <span style={{ fontFamily: T.body, fontSize: 9, color: T.mutedText }}>{l.label}</span>
+                  </div>
+                ))}
+              </div>
+              {/* Numbered competitor key */}
+              {images.competition_map.legend && images.competition_map.legend.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px 12px', marginBottom: 6 }}>
+                  {images.competition_map.legend.map((item, i) => (
+                    <span key={i} style={{ fontFamily: T.mono || T.body, fontSize: 8, color: T.lightText }}>{item}</span>
+                  ))}
+                </div>
+              )}
+              <p style={{ fontFamily: T.body, fontSize: 9, color: T.lightText, margin: 0, textAlign: 'center' }}>
                 {images.competition_map.caption}
               </p>
             </div>
@@ -1496,7 +1539,7 @@ function Section10({ data, pageNum, images = {} }) {
       <HeadlineBanner score={data.score} grade={data.grade} headline={data.headline} detail={data.headline_detail} />
       {data.stat_boxes && <StatBoxes items={data.stat_boxes} />}
 
-      {/* Footfall generator map */}
+      {/* Footfall generator map — dual-layer: catchment zone + categorized pins */}
       {images.footfall_map?.url ? (
         <div style={{ marginBottom: 20, borderRadius: 10, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
           <img
@@ -1506,14 +1549,36 @@ function Section10({ data, pageNum, images = {} }) {
             loading="lazy"
             onError={(e) => { e.target.parentElement.style.display = 'none'; }}
           />
-          <div style={{ padding: '8px 12px', background: T.white }}>
-            <p style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, margin: 0 }}>
+          {/* Footfall category legend */}
+          <div style={{ padding: '10px 16px', background: T.white, borderTop: `1px solid ${T.offWhite}` }}>
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 6 }}>
+              {[
+                { color: '#FFD700', label: 'Subject business', icon: 'P' },
+                { color: '#2563EB', label: 'Schools', icon: 'E' },
+                { color: '#DC2626', label: 'Healthcare', icon: 'H' },
+                { color: '#7C3AED', label: 'Transport', icon: 'T' },
+                { color: '#EA580C', label: 'Retail anchors', icon: 'R' },
+                { color: '#3B82F6', label: '500m catchment', ring: true },
+              ].map((l, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  {l.ring ? (
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', border: `2px solid ${l.color}`, background: `${l.color}15` }} />
+                  ) : (
+                    <div style={{ width: 14, height: 14, borderRadius: '50%', background: l.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontFamily: T.body, fontSize: 7, fontWeight: 700, color: '#fff' }}>{l.icon}</span>
+                    </div>
+                  )}
+                  <span style={{ fontFamily: T.body, fontSize: 9, color: T.mutedText }}>{l.label}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontFamily: T.body, fontSize: 9, color: T.lightText, margin: 0, textAlign: 'center' }}>
               {images.footfall_map.caption}
             </p>
           </div>
         </div>
       ) : (
-        <ImagePlaceholder label="Footfall Generator Map" caption="Map showing schools (green), healthcare (blue), transport (orange), retail (grey)" height={300} icon="📍" />
+        <ImagePlaceholder label="Footfall Generator Map" caption="Map showing schools (blue), healthcare (red), transport (purple), retail (orange)" height={300} icon="📍" />
       )}
 
       {/* Trading day timeline */}
