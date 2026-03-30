@@ -71,6 +71,7 @@ export default async function handler(req, res) {
               <div style="font-size: 13px; color: #6b7280; text-align: center; margin-bottom: 16px;">
                 <p style="margin: 0 0 4px;">You'll need to verify your email address (${order.customer_email}) to access the report.</p>
                 <p style="margin: 0;">Bookmark the link — you can access your report anytime.</p>
+                <p style="margin: 8px 0 0;">You can also access all your reports at <a href="https://fcmreport.com/my-reports" style="color: #D4AF37; text-decoration: underline;">fcmreport.com/my-reports</a></p>
               </div>
               
               ${report.tier === 'insight' ? `

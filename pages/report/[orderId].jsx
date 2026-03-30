@@ -574,7 +574,15 @@ export default function ReportPage({ orderId }) {
       if (cached) {
         fetchReport(orderId);
       } else {
-        setLoading(false);
+        // Check if user authenticated via My Reports magic link
+        const myReportsEmail = sessionStorage.getItem('fcm_reports_email');
+        if (myReportsEmail) {
+          console.log('[DEBUG] My Reports session found, auto-verifying');
+          sessionStorage.setItem(`fcm-verified-${orderId}`, 'true');
+          fetchReport(orderId);
+        } else {
+          setLoading(false);
+        }
       }
     } catch (err) {
       console.error('[DEBUG] sessionStorage access error:', err);

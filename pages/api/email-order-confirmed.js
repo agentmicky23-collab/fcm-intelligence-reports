@@ -186,6 +186,7 @@ export default async function handler(req, res) {
           <!-- Footer -->
           <tr>
             <td style="background-color:#0B1D3A;padding:24px 32px;border-top:1px solid rgba(201,162,39,0.15);">
+              <p style="font-size:12px;color:#8b949e;margin:0 0 8px;text-align:center;">You can access all your reports anytime at <a href="https://fcmreport.com/my-reports" style="color:#c9a227;text-decoration:none;">fcmreport.com/my-reports</a></p>
               <p style="font-size:12px;color:#8b949e;margin:0 0 8px;text-align:center;">Questions about your order? Reply to this email.</p>
               <p style="font-size:11px;color:#484f58;line-height:1.5;margin:0;text-align:center;">
                 Firstclass Managerial Ltd trading as FCM Intelligence<br>

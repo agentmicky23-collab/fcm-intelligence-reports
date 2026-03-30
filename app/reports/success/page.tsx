@@ -243,6 +243,13 @@ function SuccessContent() {
             </Link>
           </div>
 
+          <p className="mt-6 text-sm" style={{ color: "#8b949e" }}>
+            You can access all your reports anytime at{" "}
+            <Link href="/my-reports" style={{ color: "#c9a227", fontWeight: 600 }}>
+              My Reports →
+            </Link>
+          </p>
+
           <p className="mt-8 text-sm" style={{ color: "#57606a" }}>
             Questions? Email us at{" "}
             <a href="mailto:info@fcmgt.co.uk" style={{ color: "#c9a227" }}>
