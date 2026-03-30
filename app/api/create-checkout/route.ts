@@ -153,6 +153,7 @@ export async function POST(request: NextRequest) {
       success_url: `${origin}/reports/success?${successParams.toString()}`,
       cancel_url: product.isSubscription ? `${origin}/#insider` : `${origin}/reports`,
       metadata,
+      allow_promotion_codes: true,
       // Pre-fill customer email if provided
       ...(customer_email && { customer_email: customer_email }),
     };
