@@ -1014,6 +1014,401 @@ function PlaceholderTab({ tabId }) {
 
 
 /* ═══════════════════════════════════════════
+   SERVICES TAB
+   ═══════════════════════════════════════════ */
+function ServicesTab({ subscriberEmail }) {
+  const [expandedTemplate, setExpandedTemplate] = useState(null);
+  const [copySuccess, setCopySuccess] = useState(null);
+  const [toastVisible, setToastVisible] = useState(false);
+
+  const templates = [
+    {
+      id: 'broker_enquiry',
+      title: 'Initial Broker Enquiry',
+      whenToUse: 'First contact with a broker about a listing you\'re interested in',
+      subject: 'Enquiry regarding [BUSINESS NAME] — Serious Buyer',
+      body: `Dear [BROKER NAME],
+
+I am writing to express my interest in [BUSINESS NAME] currently listed at [ASKING PRICE]. I am an experienced retail operator actively seeking acquisition opportunities and have the funding in place to move quickly on the right business.
+
+Could you please provide:
+- Full financial accounts (last 3 years)
+- Current Post Office contract details and remuneration schedule
+- Lease terms and rent review dates
+- Reason for sale
+- Any recent or planned changes to the Post Office network in the area
+
+I am happy to sign an NDA if required. I would welcome the opportunity to arrange a viewing at your earliest convenience.
+
+Kind regards,
+[YOUR NAME]
+[YOUR PHONE]
+[YOUR EMAIL]`,
+    },
+    {
+      id: 'direct_seller',
+      title: 'Direct Seller Contact',
+      whenToUse: 'Contacting a business owner directly (not via broker)',
+      subject: 'Interest in your business — [BUSINESS NAME]',
+      body: `Dear [OWNER NAME],
+
+I hope this message finds you well. I understand [BUSINESS NAME] may be available for sale, and I wanted to reach out directly to express my genuine interest.
+
+I have [X] years of experience in the retail sector and am actively looking to acquire a business like yours. I appreciate this is a significant decision, and I want to assure you that I would approach any discussion with complete confidentiality and respect for your staff and customers.
+
+Would you be open to an informal conversation? I am happy to meet at a time and place that suits you.
+
+Warm regards,
+[YOUR NAME]
+[YOUR PHONE]`,
+    },
+    {
+      id: 'info_request',
+      title: 'Information Request (Post-Viewing)',
+      whenToUse: 'After viewing a business, requesting additional information',
+      subject: 'Follow-up — [BUSINESS NAME] Viewing',
+      body: `Dear [BROKER/OWNER NAME],
+
+Thank you for arranging the viewing of [BUSINESS NAME] on [DATE]. I was impressed with the operation and would like to move forward with my due diligence.
+
+Could you please provide the following additional information:
+- Detailed P&L for the last 3 financial years
+- Staff contracts and wage costs breakdown
+- Utility bills (12 months)
+- Stocktake valuation
+- Details of any ongoing maintenance or compliance requirements
+- Post Office transaction data (monthly sessions/volumes)
+
+I am keen to progress this promptly and would appreciate the information at your earliest convenience.
+
+Best regards,
+[YOUR NAME]`,
+    },
+    {
+      id: 'offer_letter',
+      title: 'Offer Letter (Subject to Contract)',
+      whenToUse: 'Making a formal offer on a business',
+      subject: 'Formal Offer — [BUSINESS NAME]',
+      body: `Dear [BROKER/OWNER NAME],
+
+Further to our discussions and my review of the business, I am pleased to submit a formal offer of £[OFFER AMOUNT] for [BUSINESS NAME], subject to the following conditions:
+
+1. Satisfactory review of full financial accounts
+2. Confirmation of Post Office contract terms and transferability
+3. Satisfactory lease assignment
+4. Stock at valuation
+5. Solicitor and accountant review
+
+This offer is subject to contract and is valid for [14/21/28] days. I have instructed [SOLICITOR NAME] to act on my behalf and they can be contacted at [SOLICITOR DETAILS].
+
+I look forward to your response.
+
+Kind regards,
+[YOUR NAME]`,
+    },
+    {
+      id: 'po_transfer',
+      title: 'Post Office Transfer Enquiry',
+      whenToUse: 'Contacting Post Office Ltd about branch transfer',
+      subject: 'Branch Transfer Enquiry — [BRANCH NAME / FAD CODE]',
+      body: `Dear Post Office Network Team,
+
+I am in the process of acquiring [BUSINESS NAME] ([FAD CODE if known]) and would like to enquire about the branch transfer process.
+
+Could you please advise:
+- The current transfer application process and timeline
+- Any minimum requirements for the incoming operator
+- Whether the current remuneration model will continue post-transfer
+- Any planned network changes affecting this branch
+- The current contract type and remaining term
+
+I have [X] years of retail experience and am committed to maintaining the high service standards your customers expect.
+
+Kind regards,
+[YOUR NAME]
+[YOUR EMAIL]`,
+    },
+    {
+      id: 'lease_assignment',
+      title: 'Lease Assignment Request',
+      whenToUse: 'Contacting the landlord about lease transfer',
+      subject: 'Lease Assignment Enquiry — [PROPERTY ADDRESS]',
+      body: `Dear [LANDLORD/AGENT NAME],
+
+I am in the process of acquiring the business currently trading at [PROPERTY ADDRESS] and understand the property is held under a lease with yourselves.
+
+I would be grateful if you could confirm:
+- Whether lease assignment is permitted under the current terms
+- Any conditions or fees associated with assignment
+- The current rent, next review date, and any break clauses
+- Your requirements for incoming tenant references
+
+I am an experienced retail operator with strong financial credentials and would be happy to provide references and financial information as required.
+
+Kind regards,
+[YOUR NAME]`,
+    },
+  ];
+
+  const reports = [
+    {
+      title: 'Intelligence Report',
+      price: '£499',
+      sections: 15,
+      tagline: 'Full due diligence — everything you need to buy with confidence',
+      features: ['Complete 15-section report', 'Financial analysis & staffing costs', 'Profit improvement opportunities', 'Negotiation leverage data', 'Full due diligence framework'],
+    },
+    {
+      title: 'Insight Report',
+      price: '£199',
+      sections: 10,
+      tagline: 'Is this business worth my time?',
+      features: ['10-section report', 'Location analysis & demographics', 'Crime data & area safety', 'PO remuneration analysis', 'Competition mapping & risk assessment'],
+    },
+  ];
+
+  const addons = [
+    {
+      title: 'Strategy Call',
+      price: '£100',
+      priceId: 'price_1TGQWtBMIWL7f1H3EVzbcC1j',
+      desc: '30-minute call with FCM. Discuss specific listings, overall strategy, or the buying process with someone who\'s done it 40+ times.',
+      icon: '📞',
+    },
+    {
+      title: 'Offer Guidance',
+      price: '£100',
+      priceId: 'price_1TGQX2BMIWL7f1H3MtA0YbLC',
+      desc: 'AI-generated offer guidance with recommended offer range (low/mid/high), risk factors, value factors, and negotiation notes.',
+      icon: '🎯',
+    },
+    {
+      title: 'Lease Breakdown',
+      price: '£150',
+      priceId: 'price_1TGQXABMIWL7f1H35Ai4Xni2',
+      desc: 'AI-generated lease analysis covering key terms, rent reviews, break clauses, repair obligations, flags, and questions for your solicitor.',
+      icon: '📄',
+    },
+  ];
+
+  const copyToClipboard = async (template) => {
+    const text = `Subject: ${template.subject}\n\n${template.body}`;
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+    setCopySuccess(template.id);
+    setToastVisible(true);
+    setTimeout(() => { setCopySuccess(null); setToastVisible(false); }, 2000);
+  };
+
+  const handleServicePurchase = async (priceId, serviceName) => {
+    try {
+      const res = await fetch('/api/pro-service-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId, email: subscriberEmail }),
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch (err) {
+      alert('Could not start checkout. Please try again.');
+    }
+  };
+
+  const highlightBrackets = (text) => {
+    if (!text) return text;
+    const parts = text.split(/(\[[^\]]+\])/g);
+    return parts.map((part, i) =>
+      part.startsWith('[') && part.endsWith(']')
+        ? <span key={i} style={{ color: '#D4AF37', fontWeight: '600', background: '#D4AF3715', padding: '1px 4px', borderRadius: '3px' }}>{part}</span>
+        : part
+    );
+  };
+
+  const sectionHeader = (title) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px', marginTop: '40px' }}>
+      <div style={{ width: '4px', height: '28px', background: '#D4AF37', borderRadius: '2px' }} />
+      <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#e6edf3', margin: 0 }}>{title}</h3>
+    </div>
+  );
+
+  const cardStyle = {
+    background: '#0d1117',
+    border: '1px solid #1e2733',
+    borderRadius: '12px',
+    padding: '20px',
+    transition: 'border-color 0.2s',
+  };
+
+  return (
+    <div style={{ position: 'relative' }}>
+      {/* Toast */}
+      {toastVisible && (
+        <div style={{
+          position: 'fixed', top: '24px', right: '24px', zIndex: 9999,
+          background: '#22c55e', color: '#fff', padding: '10px 20px',
+          borderRadius: '999px', fontSize: '14px', fontWeight: '600',
+          boxShadow: '0 4px 12px rgba(34,197,94,0.3)',
+          animation: 'fadeInOut 2s ease-in-out',
+        }}>
+          Copied to clipboard ✓
+        </div>
+      )}
+      <style>{`
+        @keyframes fadeInOut {
+          0% { opacity: 0; transform: translateY(-10px); }
+          15% { opacity: 1; transform: translateY(0); }
+          85% { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(-10px); }
+        }
+      `}</style>
+
+      {/* Intro */}
+      <div style={{ marginBottom: '32px', padding: '24px', background: 'linear-gradient(135deg, #0d1117 0%, #161b22 100%)', border: '1px solid #D4AF3730', borderRadius: '16px' }}>
+        <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#e6edf3', marginBottom: '8px', marginTop: 0 }}>Services Hub</h2>
+        <p style={{ fontSize: '15px', color: '#8b949e', margin: 0, lineHeight: '1.6' }}>
+          Everything you need to move from browsing to buying. Templates, reports, and expert support — all in one place.
+        </p>
+      </div>
+
+      {/* ── SECTION 1: Email Templates ── */}
+      {sectionHeader('Email Templates')}
+      <div style={{ marginBottom: '12px', padding: '16px 20px', background: '#D4AF3708', border: '1px solid #D4AF3720', borderRadius: '10px' }}>
+        <p style={{ fontSize: '14px', color: '#8b949e', margin: 0, lineHeight: '1.6' }}>
+          We&apos;ve prepared these based on thousands of successful acquisitions. Customise the <span style={{ color: '#D4AF37', fontWeight: '600' }}>[bracketed fields]</span> before sending.
+        </p>
+      </div>
+      <div style={{ display: 'grid', gap: '12px' }}>
+        {templates.map((t) => {
+          const isExpanded = expandedTemplate === t.id;
+          const isCopied = copySuccess === t.id;
+          const previewLines = t.body.split('\n').filter(l => l.trim()).slice(0, 2).join(' ');
+          return (
+            <div key={t.id} style={{ ...cardStyle, cursor: 'pointer', borderColor: isExpanded ? '#D4AF3750' : '#1e2733' }}
+              onClick={() => setExpandedTemplate(isExpanded ? null : t.id)}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '16px', fontWeight: '600', color: '#e6edf3' }}>{t.title}</span>
+                    <span style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s', display: 'inline-flex', color: '#8b949e' }}>
+                      {Icons.chevronDown}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#D4AF37', marginBottom: '6px' }}>{t.whenToUse}</div>
+                  {!isExpanded && (
+                    <div style={{ fontSize: '13px', color: '#6e7681', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '600px' }}>
+                      {previewLines}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); copyToClipboard(t); }}
+                  style={{
+                    padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
+                    cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0, marginLeft: '12px',
+                    background: isCopied ? '#D4AF37' : 'transparent',
+                    border: `1px solid ${isCopied ? '#D4AF37' : '#D4AF3750'}`,
+                    color: isCopied ? '#000' : '#D4AF37',
+                  }}>
+                  {isCopied ? '✓ Copied' : 'Copy'}
+                </button>
+              </div>
+              {isExpanded && (
+                <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #1e2733' }}>
+                  <div style={{ fontSize: '13px', color: '#D4AF37', marginBottom: '8px', fontWeight: '600' }}>
+                    Subject: {highlightBrackets(t.subject)}
+                  </div>
+                  <pre style={{
+                    fontSize: '13px', color: '#8b949e', lineHeight: '1.7',
+                    fontFamily: '"JetBrains Mono", monospace', whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word', margin: 0, background: '#010409',
+                    padding: '16px', borderRadius: '8px', border: '1px solid #1e2733',
+                  }}>
+                    {highlightBrackets(t.body)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── SECTION 2: Intelligence Reports ── */}
+      {sectionHeader('Intelligence Reports')}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+        {reports.map((r) => (
+          <div key={r.title} style={{ ...cardStyle, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+              <h4 style={{ fontSize: '17px', fontWeight: '600', color: '#e6edf3', margin: 0 }}>{r.title}</h4>
+              <span style={{ fontSize: '20px', fontWeight: '700', color: '#D4AF37' }}>{r.price}</span>
+            </div>
+            <p style={{ fontSize: '14px', color: '#D4AF37', margin: '0 0 12px', fontStyle: 'italic' }}>{r.tagline}</p>
+            <ul style={{ fontSize: '13px', color: '#8b949e', lineHeight: '1.8', paddingLeft: '18px', margin: '0 0 16px', flex: 1 }}>
+              {r.features.map((f, i) => <li key={i}>{f}</li>)}
+            </ul>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '12px', color: '#6e7681', background: '#1e2733', padding: '4px 10px', borderRadius: '6px' }}>
+                {r.sections} sections
+              </span>
+              <a href="/reports" target="_blank" rel="noopener noreferrer"
+                style={{
+                  marginLeft: 'auto', padding: '8px 20px', borderRadius: '8px',
+                  background: '#D4AF37', color: '#000', fontSize: '13px', fontWeight: '600',
+                  textDecoration: 'none', transition: 'opacity 0.2s',
+                }}>
+                Order Report →
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── SECTION 3: Add-On Services ── */}
+      {sectionHeader('Add-On Services')}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+        {addons.map((a) => (
+          <div key={a.title} style={{ ...cardStyle, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <span style={{ fontSize: '28px' }}>{a.icon}</span>
+              <div>
+                <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#e6edf3', margin: 0 }}>{a.title}</h4>
+                <span style={{ fontSize: '18px', fontWeight: '700', color: '#D4AF37' }}>{a.price}</span>
+              </div>
+            </div>
+            <p style={{ fontSize: '13px', color: '#8b949e', lineHeight: '1.6', margin: '0 0 16px', flex: 1 }}>{a.desc}</p>
+            <button
+              onClick={() => handleServicePurchase(a.priceId, a.title)}
+              style={{
+                width: '100%', padding: '10px', borderRadius: '8px', border: 'none',
+                background: '#D4AF37', color: '#000', fontSize: '14px', fontWeight: '600',
+                cursor: 'pointer', transition: 'opacity 0.2s',
+              }}>
+              Purchase {a.title}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Disclaimer */}
+      <div style={{ marginTop: '40px', padding: '16px 20px', background: '#0d1117', borderRadius: '10px', border: '1px solid #1e2733' }}>
+        <p style={{ fontSize: '12px', color: '#6e7681', lineHeight: '1.7', margin: 0 }}>
+          Email templates are provided as starting points based on our experience. Customise them for your situation. The add-on services provide guidance based on 17+ years of operational experience — they are not legal, financial, or professional advice. Always consult qualified professionals before making acquisition decisions.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+
+/* ═══════════════════════════════════════════
    MAIN DASHBOARD COMPONENT
    ═══════════════════════════════════════════ */
 export default function ProDashboardClient() {
@@ -1640,8 +2035,11 @@ export default function ProDashboardClient() {
             onPrefsSaved={fetchListings}
           />
         )}
-        {(activeTab === 'calculator' || activeTab === 'services') && (
+        {activeTab === 'calculator' && (
           <PlaceholderTab tabId={activeTab} />
+        )}
+        {activeTab === 'services' && (
+          <ServicesTab subscriberEmail={subscriber?.email} />
         )}
       </div>
     </div>
