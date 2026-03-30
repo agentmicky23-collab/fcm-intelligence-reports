@@ -60,10 +60,55 @@ export async function POST(req: NextRequest) {
     }
 
     // ============================================================
-    // INSIDER SUBSCRIPTION
+    // INSIDER SUBSCRIPTION (Standard or Pro from /insider page)
     // ============================================================
-    if (metadata.tier === 'insider') {
-      console.log('Insider subscription completed - handled separately');
+    if (metadata.source === 'insider_page' || metadata.tier === 'insider' || metadata.tier === 'standard' || metadata.tier === 'pro') {
+      const subEmail = metadata.subscriber_email || session.customer_details?.email || session.customer_email;
+      if (subEmail) {
+        // Parse preferences from metadata
+        let preferredRegions: string[] = [];
+        let businessTypes: string[] = [];
+        try { preferredRegions = metadata.preferred_regions ? JSON.parse(metadata.preferred_regions) : []; } catch { /* ignore */ }
+        try { businessTypes = metadata.business_types ? JSON.parse(metadata.business_types) : []; } catch { /* ignore */ }
+
+        const subscriberData = {
+          email: subEmail.toLowerCase(),
+          name: metadata.subscriber_name || session.customer_details?.name || '',
+          status: 'active',
+          tier: metadata.tier || 'standard',
+          stripe_customer_id: typeof session.customer === 'string' ? session.customer : '',
+          stripe_subscription_id: typeof session.subscription === 'string' ? session.subscription : '',
+          preferred_regions: preferredRegions,
+          min_budget: metadata.min_budget ? parseInt(metadata.min_budget) : null,
+          max_budget: metadata.max_budget ? parseInt(metadata.max_budget) : null,
+          business_types: businessTypes,
+          experience_level: metadata.experience_level || null,
+          timeline: metadata.timeline || null,
+          onboarding_complete: preferredRegions.length > 0 || businessTypes.length > 0,
+          subscribed_at: new Date().toISOString(),
+        };
+
+        // Check if subscriber exists
+        const { data: existing } = await supabase
+          .from('insider_subscribers')
+          .select('id')
+          .eq('email', subEmail.toLowerCase())
+          .single();
+
+        if (existing) {
+          await supabase
+            .from('insider_subscribers')
+            .update(subscriberData)
+            .eq('email', subEmail.toLowerCase());
+          console.log(`Updated insider subscriber: ${subEmail}`);
+        } else {
+          await supabase
+            .from('insider_subscribers')
+            .insert(subscriberData);
+          console.log(`Created insider subscriber: ${subEmail}`);
+        }
+      }
+
       return NextResponse.json({ received: true });
     }
 

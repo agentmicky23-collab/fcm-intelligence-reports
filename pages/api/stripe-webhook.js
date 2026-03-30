@@ -234,8 +234,46 @@ async function handleSubscriptionCreated(subscription) {
 
   console.log(`Subscription created: ${productType} for ${email}`);
 
-  if (productType === 'insider') {
-    // Check if subscriber already exists (might have been created by checkout handler)
+  if (productType === 'insider' || productType === 'insider_pro') {
+    // ── Retrieve checkout session metadata with preferences ──
+    let meta = {};
+    try {
+      const sessions = await stripe.checkout.sessions.list({
+        subscription: subscription.id,
+        limit: 1,
+      });
+      meta = sessions.data[0]?.metadata || {};
+    } catch (err) {
+      console.error('Failed to retrieve checkout session for preferences:', err);
+    }
+
+    // Parse preferences from metadata
+    let preferredRegions = [];
+    let businessTypes = [];
+    try { preferredRegions = meta.preferred_regions ? JSON.parse(meta.preferred_regions) : []; } catch { /* ignore */ }
+    try { businessTypes = meta.business_types ? JSON.parse(meta.business_types) : []; } catch { /* ignore */ }
+
+    const tier = productType === 'insider_pro' ? 'pro' : (meta.tier || 'standard');
+
+    // Build the subscriber record with full preferences
+    const subscriberData = {
+      email: email.toLowerCase(),
+      name: meta.subscriber_name || customer.name || '',
+      status: 'active',
+      tier,
+      stripe_customer_id: customerId,
+      stripe_subscription_id: subscription.id,
+      preferred_regions: preferredRegions,
+      min_budget: meta.min_budget ? parseInt(meta.min_budget) : null,
+      max_budget: meta.max_budget ? parseInt(meta.max_budget) : null,
+      business_types: businessTypes,
+      experience_level: meta.experience_level || null,
+      timeline: meta.timeline || null,
+      onboarding_complete: preferredRegions.length > 0 || businessTypes.length > 0,
+      subscribed_at: new Date().toISOString(),
+    };
+
+    // Check if subscriber already exists
     const { data: existing } = await supabase
       .from('insider_subscribers')
       .select('id')
@@ -243,47 +281,51 @@ async function handleSubscriptionCreated(subscription) {
       .single();
 
     if (!existing) {
-      await supabase.from('insider_subscribers').insert({
-        email: email.toLowerCase(),
-        name: customer.name || '',
-        status: 'active',
-        tier: 'insider',
-        stripe_customer_id: customerId,
-        stripe_subscription_id: subscription.id,
-      });
+      const { error: insertErr } = await supabase
+        .from('insider_subscribers')
+        .insert(subscriberData);
+      if (insertErr) console.error('Insert subscriber error:', insertErr);
+      else console.log(`New subscriber created: ${email} (${tier})`);
     } else {
-      await supabase
+      // Update existing — merge preferences
+      const { error: updateErr } = await supabase
         .from('insider_subscribers')
         .update({
-          status: 'active',
-          stripe_subscription_id: subscription.id,
-          stripe_customer_id: customerId,
+          ...subscriberData,
+          // Keep existing email (already matching)
         })
         .eq('email', email.toLowerCase());
+      if (updateErr) console.error('Update subscriber error:', updateErr);
+      else console.log(`Subscriber updated: ${email} (${tier})`);
     }
 
-    // Send Insider welcome email
+    // ── Run matching engine immediately ──
+    try {
+      const { data: subscriber } = await supabase
+        .from('insider_subscribers')
+        .select('id')
+        .eq('email', email.toLowerCase())
+        .single();
+
+      if (subscriber?.id) {
+        const { runMatching } = await import('../../lib/matching-engine.js');
+        const matches = await runMatching(subscriber.id);
+        console.log(`Matching engine found ${matches?.length || 0} matches for ${email}`);
+      }
+    } catch (matchErr) {
+      console.error('Matching engine error (non-fatal):', matchErr);
+    }
+
+    // Send welcome email
     try {
       await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/email-insider-welcome`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name: customer.name || '', tier: 'insider' }),
+        body: JSON.stringify({ email, name: meta.subscriber_name || customer.name || '', tier }),
       });
     } catch (emailErr) {
-      console.error('Failed to send Insider welcome email:', emailErr);
+      console.error('Failed to send welcome email:', emailErr);
     }
-  } else if (productType === 'insider_pro') {
-    // Pro subscription — handled in checkout.session.completed
-    // But update subscription ID if not set
-    await supabase
-      .from('insider_subscribers')
-      .update({
-        status: 'active',
-        tier: 'pro',
-        stripe_subscription_id: subscription.id,
-        stripe_customer_id: customerId,
-      })
-      .eq('email', email.toLowerCase());
   }
 }
 

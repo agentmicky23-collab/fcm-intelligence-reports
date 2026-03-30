@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       allow_promotion_codes: true,
-      success_url: `${origin}/opportunities?subscribed=true&tier=${isPro ? "pro" : "standard"}`,
+      success_url: `${origin}/insider/welcome?tier=${isPro ? "pro" : "standard"}`,
       cancel_url: `${origin}/insider`,
       customer_email: customers.data.length === 0 ? session.user.email : undefined,
       customer: customers.data.length > 0 ? customers.data[0].id : undefined,

@@ -1628,7 +1628,7 @@ export default function ProDashboardClient() {
 
             <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #1e2733', textAlign: 'center' }}>
               <p style={{ fontSize: '13px', color: '#6b7280', margin: 0 }}>
-                Not a Pro subscriber? <a href="/insider" style={{ color: '#D4AF37', textDecoration: 'none' }}>Learn more about Insider Pro →</a>
+                Not a Pro member yet? <a href="/insider" style={{ color: '#D4AF37', textDecoration: 'none', fontWeight: 600 }}>Compare plans and sign up →</a>
               </p>
             </div>
           </div>
