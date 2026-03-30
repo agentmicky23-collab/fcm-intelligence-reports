@@ -384,15 +384,18 @@ function CommandCentreTab({ listings, marketData, subscriberPrefs, onCompareAdd,
               {/* Compare button */}
               <button
                 onClick={() => onCompareAdd && onCompareAdd(listing.id)}
-                title={compareList?.includes(listing.id) ? 'Added to compare' : 'Add to compare'}
+                title={compareList?.includes(listing.id) ? 'Remove from compare' : 'Add to compare'}
+                disabled={!compareList?.includes(listing.id) && compareList?.length >= 5}
                 style={{
-                  padding: '10px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer',
-                  background: compareList?.includes(listing.id) ? '#3b82f620' : '#161b22',
-                  color: compareList?.includes(listing.id) ? '#3b82f6' : '#8b949e',
-                  border: compareList?.includes(listing.id) ? '1px solid #3b82f640' : '1px solid #1e2733',
+                  padding: '10px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+                  background: compareList?.includes(listing.id) ? '#D4AF37' : 'transparent',
+                  color: compareList?.includes(listing.id) ? '#000' : '#D4AF37',
+                  border: '1px solid #D4AF37',
+                  opacity: (!compareList?.includes(listing.id) && compareList?.length >= 5) ? 0.4 : 1,
+                  transition: 'all 0.15s',
                 }}
               >
-                {compareList?.includes(listing.id) ? '✓ Compare' : '+ Compare'}
+                {compareList?.includes(listing.id) ? '✓ In Compare' : '+ Compare'}
               </button>
             </div>
 
@@ -419,125 +422,335 @@ function CommandCentreTab({ listings, marketData, subscriberPrefs, onCompareAdd,
 /* ═══════════════════════════════════════════
    COMPARE TAB
    ═══════════════════════════════════════════ */
-function CompareTab({ listings, compareList, setCompareList }) {
-  const maxCompare = 5;
-
-  const toggle = (id) => {
-    setCompareList(prev => {
-      if (prev.includes(id)) return prev.filter(x => x !== id);
-      if (prev.length >= maxCompare) return prev;
-      return [...prev, id];
-    });
-  };
-
+function CompareTab({ compareList, listings, setActiveTab, removeFromCompare, clearCompare }) {
   const selectedListings = listings.filter(l => compareList.includes(l.id));
 
-  const metrics = [
-    { label: 'Asking Price', getValue: (l) => l.priceLabel || formatCurrency(l.price), isMono: true },
-    { label: 'PO Salary', getValue: (l) => l.poSalary ? formatCurrency(l.poSalary) + '/yr' : '—', isMono: true },
-    { label: 'Annual Turnover', getValue: (l) => l.annualTurnover ? formatCurrency(l.annualTurnover) + '/yr' : '—', isMono: true },
-    { label: 'Net Profit', getValue: (l) => l.netProfit ? formatCurrency(l.netProfit) + '/yr' : '—', isMono: true },
-    { label: 'Match Score', getValue: (l) => l.matchScore ? l.matchScore + '%' : '—', isMono: true, highlight: true },
-    { label: 'Region', getValue: (l) => l.region || '—' },
-    { label: 'Tenure', getValue: (l) => l.tenure ? l.tenure.charAt(0).toUpperCase() + l.tenure.slice(1) : '—' },
-    { label: 'Source', getValue: (l) => l.sourcePlatform || '—' },
+  // Empty state — no listings selected
+  if (selectedListings.length === 0) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 40px', background: '#0d1117', borderRadius: '16px', border: '1px solid #1e2733' }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚖️</div>
+        <h2 style={{ fontSize: '22px', fontWeight: '600', color: '#e6edf3', marginBottom: '12px' }}>No listings selected</h2>
+        <p style={{ fontSize: '15px', color: '#8b949e', maxWidth: '400px', margin: '0 auto 24px', lineHeight: '1.6' }}>
+          Head to the Command Centre and click &quot;Compare&quot; on up to 5 listings to compare them side by side.
+        </p>
+        <button
+          onClick={() => setActiveTab('command')}
+          style={{
+            padding: '12px 24px', borderRadius: '8px', border: 'none',
+            background: '#D4AF37', color: '#000', fontSize: '15px', fontWeight: '700',
+            cursor: 'pointer', transition: 'opacity 0.2s',
+          }}
+          onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
+          onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+        >
+          Go to Command Centre
+        </button>
+      </div>
+    );
+  }
+
+  // One listing — prompt to add more
+  if (selectedListings.length === 1) {
+    return (
+      <div style={{ textAlign: 'center', padding: '60px 40px', background: '#0d1117', borderRadius: '16px', border: '1px solid #1e2733' }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚖️</div>
+        <h2 style={{ fontSize: '22px', fontWeight: '600', color: '#e6edf3', marginBottom: '12px' }}>Add one more listing</h2>
+        <p style={{ fontSize: '15px', color: '#8b949e', maxWidth: '440px', margin: '0 auto 24px', lineHeight: '1.6' }}>
+          You&apos;ve selected <strong style={{ color: '#D4AF37' }}>{selectedListings[0].name}</strong>. Add at least one more from the Command Centre to start comparing.
+        </p>
+        <button
+          onClick={() => setActiveTab('command')}
+          style={{
+            padding: '12px 24px', borderRadius: '8px', border: 'none',
+            background: '#D4AF37', color: '#000', fontSize: '15px', fontWeight: '700',
+            cursor: 'pointer', transition: 'opacity 0.2s',
+          }}
+          onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
+          onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+        >
+          Back to Command Centre
+        </button>
+      </div>
+    );
+  }
+
+  // 2+ listings — render editable comparison table
+  return (
+    <EditableComparisonTable
+      listings={selectedListings}
+      removeFromCompare={removeFromCompare}
+      clearCompare={clearCompare}
+    />
+  );
+}
+
+/* ═══════════════════════════════════════════
+   EDITABLE COMPARISON TABLE
+   ═══════════════════════════════════════════ */
+function EditableComparisonTable({ listings, removeFromCompare, clearCompare }) {
+  const [overrides, setOverrides] = useState({});
+  const [editingCell, setEditingCell] = useState(null);
+
+  const getFieldValue = (listing, key) => {
+    const overrideKey = `${listing.id}-${key}`;
+    if (overrides[overrideKey] !== undefined) return overrides[overrideKey];
+    return listing[key];
+  };
+
+  const setFieldValue = (listingId, key, value) => {
+    setOverrides(prev => ({ ...prev, [`${listingId}-${key}`]: value }));
+  };
+
+  const parseCurrency = (val) => {
+    if (!val) return null;
+    if (typeof val === 'number') return val;
+    const str = String(val).replace(/[£,\s]/g, '').replace('/yr', '').replace('/week', '');
+    if (str.toLowerCase().endsWith('k')) return parseFloat(str) * 1000;
+    if (str.toLowerCase().endsWith('m')) return parseFloat(str) * 1000000;
+    return parseFloat(str) || null;
+  };
+
+  const getValuationMultiple = (listing) => {
+    const priceRaw = getFieldValue(listing, 'price');
+    const feesRaw = getFieldValue(listing, 'poSalary');
+    const price = parseCurrency(priceRaw);
+    const fees = parseCurrency(feesRaw);
+    if (!price || !fees) return '—';
+    return (price / fees).toFixed(1) + 'x';
+  };
+
+  const rows = [
+    { label: 'Asking Price', key: 'price', editable: true, format: (v) => typeof v === 'number' ? formatCurrency(v) : v },
+    { label: 'PO Fees / Salary', key: 'poSalary', editable: true, format: (v) => typeof v === 'number' && v > 0 ? formatCurrency(v) + '/yr' : v },
+    { label: 'Annual Turnover', key: 'annualTurnover', editable: true, format: (v) => typeof v === 'number' && v > 0 ? formatCurrency(v) + '/yr' : v },
+    { label: 'Net Profit', key: 'netProfit', editable: true, format: (v) => typeof v === 'number' && v > 0 ? formatCurrency(v) + '/yr' : v },
+    { label: 'Valuation Multiple', key: null, computed: true, getValue: getValuationMultiple },
+    { label: 'Region', key: 'region', editable: false },
+    { label: 'Tenure', key: 'tenure', editable: false, format: (v) => v ? v.charAt(0).toUpperCase() + v.slice(1) : null },
+    { label: 'Source', key: 'sourcePlatform', editable: false },
+    { label: 'Match Score', key: 'matchScore', editable: false, format: (v) => v ? `${v}/100` : null, highlight: true },
+    { label: 'FCM Insight', key: 'pickReason', editable: false },
   ];
+
+  const isEmpty = (val) => !val || val === '—' || val === '' || val === 0;
 
   return (
     <div>
-      {/* Selector */}
-      <div style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#e6edf3', margin: 0 }}>Select up to {maxCompare} listings to compare</h3>
-          {compareList.length > 0 && (
-            <button onClick={() => setCompareList([])} style={{ fontSize: '13px', color: '#D4AF37', background: 'none', border: 'none', cursor: 'pointer' }}>Clear all</button>
-          )}
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div>
+          <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#e6edf3', margin: '0 0 4px 0' }}>Comparing {listings.length} listings</h3>
+          <p style={{ fontSize: '13px', color: '#8b949e', margin: 0 }}>Click any empty cell to fill in missing data. Valuation multiple auto-recalculates.</p>
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {listings.map(l => (
-            <button
-              key={l.id}
-              onClick={() => toggle(l.id)}
-              disabled={!compareList.includes(l.id) && compareList.length >= maxCompare}
-              style={{
-                padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer',
-                background: compareList.includes(l.id) ? '#D4AF3720' : '#0d1117',
-                border: compareList.includes(l.id) ? '1px solid #D4AF37' : '1px solid #1e2733',
-                color: compareList.includes(l.id) ? '#D4AF37' : '#8b949e',
-                opacity: !compareList.includes(l.id) && compareList.length >= maxCompare ? 0.4 : 1,
-                transition: 'all 0.15s',
-              }}
-            >
-              {l.matchScore && <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: '600', marginRight: '6px', color: '#22c55e' }}>{l.matchScore}%</span>}
-              {(l.name || '').length > 30 ? (l.name || '').substring(0, 30) + '…' : l.name}
-            </button>
-          ))}
-        </div>
+        <button
+          onClick={clearCompare}
+          style={{
+            padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: '600',
+            background: 'transparent', color: '#ef4444', border: '1px solid #ef444440',
+            cursor: 'pointer', transition: 'all 0.15s',
+          }}
+          onMouseOver={(e) => { e.currentTarget.style.background = '#ef444415'; }}
+          onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
+        >
+          Clear all
+        </button>
       </div>
 
       {/* Comparison table */}
-      {selectedListings.length >= 2 ? (
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '2px solid #D4AF37', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#D4AF37', minWidth: '140px' }}>Metric</th>
-                {selectedListings.map(l => (
-                  <th key={l.id} style={{ textAlign: 'center', padding: '12px 16px', borderBottom: '2px solid #D4AF37', fontSize: '13px', color: '#e6edf3', fontWeight: '600', minWidth: '160px' }}>
-                    <div>{(l.name || '').length > 25 ? (l.name || '').substring(0, 25) + '…' : l.name}</div>
-                    <button onClick={() => toggle(l.id)} style={{ marginTop: '4px', background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: '11px' }}>remove</button>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {metrics.map((metric, mi) => (
-                <tr key={mi}>
-                  <td style={{ padding: '12px 16px', borderBottom: '1px solid #1e2733', fontSize: '13px', color: '#8b949e', fontWeight: '500' }}>{metric.label}</td>
-                  {selectedListings.map(l => (
+      <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #1e2733' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', background: '#0d1117' }}>
+          <thead>
+            <tr>
+              <th style={{
+                textAlign: 'left', padding: '14px 16px', borderBottom: '2px solid #D4AF37',
+                fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em',
+                color: '#D4AF37', minWidth: '150px', background: '#0a0e14',
+              }}>Metric</th>
+              {listings.map(l => (
+                <th key={l.id} style={{
+                  textAlign: 'center', padding: '14px 16px', borderBottom: '2px solid #D4AF37',
+                  fontSize: '13px', color: '#e6edf3', fontWeight: '600', minWidth: '170px',
+                  background: '#0a0e14',
+                }}>
+                  <div style={{ marginBottom: '4px' }}>{(l.name || '').length > 28 ? (l.name || '').substring(0, 28) + '…' : l.name}</div>
+                  <button
+                    onClick={() => removeFromCompare(l.id)}
+                    style={{
+                      background: 'none', border: 'none', color: '#6b7280',
+                      cursor: 'pointer', fontSize: '11px', padding: '2px 6px',
+                      borderRadius: '4px', transition: 'color 0.15s',
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#ef4444'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#6b7280'}
+                  >
+                    ✕ remove
+                  </button>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, ri) => (
+              <tr key={row.label} style={{ background: ri % 2 === 0 ? '#0d1117' : '#0a0e14' }}>
+                <td style={{
+                  padding: '12px 16px', borderBottom: '1px solid #1e2733',
+                  fontSize: '13px', color: '#8b949e', fontWeight: '500',
+                }}>
+                  {row.label}
+                  {row.computed && (
+                    <span style={{ display: 'block', fontSize: '10px', color: '#6b7280', marginTop: '2px' }}>auto-calculated</span>
+                  )}
+                </td>
+                {listings.map(l => {
+                  // Computed rows
+                  if (row.computed) {
+                    const computedVal = row.getValue(l);
+                    return (
+                      <td key={l.id} style={{
+                        padding: '12px 16px', borderBottom: '1px solid #1e2733', textAlign: 'center',
+                        fontSize: '15px', fontFamily: 'JetBrains Mono, monospace', fontWeight: '700',
+                        color: computedVal !== '—' ? '#D4AF37' : '#6b7280',
+                      }}>
+                        {computedVal}
+                      </td>
+                    );
+                  }
+
+                  const rawValue = getFieldValue(l, row.key);
+                  const hasOverride = overrides[`${l.id}-${row.key}`] !== undefined;
+                  const displayValue = row.format ? row.format(rawValue) : rawValue;
+                  const cellEmpty = isEmpty(rawValue) && !hasOverride;
+                  const cellKey = `${l.id}-${row.key}`;
+                  const isEditing = editingCell === cellKey;
+
+                  // Editable field that's empty or being edited
+                  if (row.editable && (cellEmpty || isEditing)) {
+                    return (
+                      <td key={l.id} style={{ padding: '8px 12px', borderBottom: '1px solid #1e2733', textAlign: 'center' }}>
+                        <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', width: '100%', maxWidth: '160px' }}>
+                          <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontSize: '12px', color: '#D4AF3750', pointerEvents: 'none' }}>✏️</span>
+                          <input
+                            type="text"
+                            value={hasOverride ? overrides[cellKey] : ''}
+                            placeholder="Enter value"
+                            autoFocus={isEditing}
+                            onChange={(e) => setFieldValue(l.id, row.key, e.target.value)}
+                            onFocus={() => setEditingCell(cellKey)}
+                            onBlur={() => setEditingCell(null)}
+                            style={{
+                              width: '100%', padding: '8px 10px 8px 30px',
+                              background: '#161b22',
+                              border: '1px dashed #D4AF3760',
+                              borderRadius: '6px', color: '#D4AF37',
+                              fontSize: '13px', fontFamily: 'JetBrains Mono, monospace',
+                              outline: 'none', textAlign: 'center',
+                              transition: 'border-color 0.15s',
+                            }}
+                          />
+                        </div>
+                      </td>
+                    );
+                  }
+
+                  // Editable field with value (clickable to edit)
+                  if (row.editable && !cellEmpty) {
+                    return (
+                      <td
+                        key={l.id}
+                        onClick={() => {
+                          setFieldValue(l.id, row.key, String(hasOverride ? overrides[cellKey] : (rawValue || '')));
+                          setEditingCell(cellKey);
+                        }}
+                        style={{
+                          padding: '12px 16px', borderBottom: '1px solid #1e2733', textAlign: 'center',
+                          fontSize: '14px', fontFamily: 'JetBrains Mono, monospace',
+                          color: hasOverride ? '#D4AF37' : '#e6edf3',
+                          cursor: 'text', transition: 'background 0.15s',
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = '#161b22'}
+                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                        title="Click to edit"
+                      >
+                        {hasOverride ? overrides[cellKey] : (displayValue || '—')}
+                      </td>
+                    );
+                  }
+
+                  // Read-only field
+                  return (
                     <td key={l.id} style={{
                       padding: '12px 16px', borderBottom: '1px solid #1e2733', textAlign: 'center',
-                      fontSize: '14px', fontFamily: metric.isMono ? 'JetBrains Mono, monospace' : 'inherit',
-                      color: metric.highlight && l.matchScore ? getScoreColor(l.matchScore) : '#e6edf3',
+                      fontSize: row.key === 'pickReason' ? '12px' : '14px',
+                      fontFamily: row.highlight ? 'JetBrains Mono, monospace' : 'inherit',
+                      color: row.highlight && rawValue ? getScoreColor(rawValue) : '#e6edf3',
+                      lineHeight: row.key === 'pickReason' ? '1.5' : 'inherit',
                     }}>
-                      {metric.getValue(l)}
+                      {displayValue || '—'}
                     </td>
-                  ))}
-                </tr>
+                  );
+                })}
+              </tr>
+            ))}
+            {/* Listing Link row */}
+            <tr style={{ background: rows.length % 2 === 0 ? '#0d1117' : '#0a0e14' }}>
+              <td style={{ padding: '12px 16px', borderBottom: '1px solid #1e2733', fontSize: '13px', color: '#8b949e', fontWeight: '500' }}>Listing Link</td>
+              {listings.map(l => (
+                <td key={l.id} style={{ padding: '12px 16px', borderBottom: '1px solid #1e2733', textAlign: 'center' }}>
+                  {l.sourceUrl ? (
+                    <a href={l.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#D4AF37', textDecoration: 'none', fontSize: '13px', fontWeight: '600' }}>
+                      View Listing →
+                    </a>
+                  ) : (
+                    <span style={{ color: '#6b7280', opacity: 0.5, fontSize: '13px' }}>Contact FCM</span>
+                  )}
+                </td>
               ))}
-              {/* Source URL row */}
-              <tr>
-                <td style={{ padding: '12px 16px', borderBottom: '1px solid #1e2733', fontSize: '13px', color: '#8b949e', fontWeight: '500' }}>Listing Link</td>
-                {selectedListings.map(l => (
-                  <td key={l.id} style={{ padding: '12px 16px', borderBottom: '1px solid #1e2733', textAlign: 'center' }}>
-                    {l.sourceUrl ? (
-                      <a href={l.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#D4AF37', textDecoration: 'none', fontSize: '13px', fontWeight: '600' }}>
-                        View Listing →
-                      </a>
-                    ) : (
-                      <span style={{ color: '#6b7280', opacity: 0.5, fontSize: '13px' }}>Contact FCM</span>
-                    )}
-                  </td>
-                ))}
-              </tr>
-              {/* Pick reason row */}
-              <tr>
-                <td style={{ padding: '12px 16px', borderBottom: '1px solid #1e2733', fontSize: '13px', color: '#8b949e', fontWeight: '500', verticalAlign: 'top' }}>Pick Reason</td>
-                {selectedListings.map(l => (
-                  <td key={l.id} style={{ padding: '12px 16px', borderBottom: '1px solid #1e2733', fontSize: '12px', color: '#8b949e', lineHeight: '1.5' }}>
-                    {l.pickReason || '—'}
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* Report CTA */}
+      <div style={{
+        marginTop: '24px', padding: '28px',
+        background: 'linear-gradient(135deg, #0d1117 0%, #161b22 100%)',
+        border: '1px solid #D4AF3730', borderRadius: '12px', textAlign: 'center',
+      }}>
+        <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#e6edf3', marginBottom: '8px', margin: '0 0 8px 0' }}>Missing information?</h3>
+        <p style={{ fontSize: '14px', color: '#8b949e', marginBottom: '20px', maxWidth: '520px', margin: '0 auto 20px', lineHeight: '1.6' }}>
+          Fill in the gaps yourself by asking the vendor, or let us do the heavy lifting with a verified Intelligence Report covering all the due diligence data you need.
+        </p>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '16px' }}>
+          <a
+            href="/reports"
+            style={{
+              padding: '12px 24px', borderRadius: '8px', textDecoration: 'none',
+              background: '#D4AF37', color: '#000', fontSize: '14px', fontWeight: '700',
+              transition: 'opacity 0.2s', display: 'inline-block',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
+            onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+          >
+            Intelligence Report — £499
+          </a>
+          <a
+            href="/reports"
+            style={{
+              padding: '12px 24px', borderRadius: '8px', textDecoration: 'none',
+              background: 'transparent', color: '#D4AF37', fontSize: '14px', fontWeight: '600',
+              border: '1px solid #D4AF37', transition: 'all 0.2s', display: 'inline-block',
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.background = '#D4AF3715'; }}
+            onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            Insight Report — £199
+          </a>
         </div>
-      ) : (
-        <div style={{ textAlign: 'center', padding: '60px 20px', background: '#0d1117', borderRadius: '12px', border: '1px solid #1e2733' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚖️</div>
-          <p style={{ fontSize: '16px', color: '#8b949e', margin: 0 }}>Select at least 2 listings above to compare them side by side</p>
-        </div>
-      )}
+        <p style={{ fontSize: '11px', color: '#6b7280', margin: 0, lineHeight: '1.5', maxWidth: '500px', marginLeft: 'auto', marginRight: 'auto' }}>
+          This is guidance based on our experience of 17+ years operating retail businesses. It is not legal, financial, or professional advice. Always consult a qualified professional before making decisions.
+        </p>
+      </div>
     </div>
   );
 }
@@ -1057,8 +1270,8 @@ export default function ProDashboardClient() {
               {/* Compare badge */}
               {tab.id === 'compare' && compareList.length > 0 && !sidebarCollapsed && (
                 <span style={{
-                  marginLeft: 'auto', background: '#3b82f6', color: '#fff', fontSize: '10px',
-                  fontWeight: '700', padding: '2px 6px', borderRadius: '10px',
+                  marginLeft: 'auto', background: '#D4AF37', color: '#000', fontSize: '10px',
+                  fontWeight: '700', padding: '2px 6px', borderRadius: '10px', minWidth: '18px', textAlign: 'center',
                 }}>
                   {compareList.length}
                 </span>
@@ -1137,9 +1350,11 @@ export default function ProDashboardClient() {
         )}
         {activeTab === 'compare' && (
           <CompareTab
-            listings={listings}
             compareList={compareList}
-            setCompareList={setCompareList}
+            listings={listings}
+            setActiveTab={setActiveTab}
+            removeFromCompare={(id) => setCompareList(prev => prev.filter(x => x !== id))}
+            clearCompare={() => setCompareList([])}
           />
         )}
         {activeTab === 'account' && (
