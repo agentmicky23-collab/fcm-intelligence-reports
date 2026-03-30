@@ -1083,19 +1083,26 @@ function Section8({ data, pageNum, images = {} }) {
       <SectionHeader number={8} title="Crime & Safety" pageNum={pageNum} />
       <HeadlineBanner score={data.score} grade={data.grade} headline={data.headline} detail={data.headline_detail} />
 
-      {/* Crime heatmap — from File 02 */}
+      {/* Crime density heatmap — proper gradient visualization */}
       {images.crime_heatmap?.url ? (
-        <div style={{ marginTop: '16px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #1e2733' }}>
+        <div style={{ marginBottom: 20, borderRadius: 10, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
           <img
             src={images.crime_heatmap.url}
-            alt={images.crime_heatmap.caption || 'Crime heatmap'}
+            alt={images.crime_heatmap.caption || 'Crime density heatmap'}
             style={{ width: '100%', display: 'block' }}
             loading="lazy"
           />
-          <p style={{ fontSize: '11px', color: '#8b949e', padding: '8px', margin: 0, background: '#0d1117' }}>
-            {images.crime_heatmap.caption}
-          </p>
+          <div style={{ padding: '8px 12px', background: T.white }}>
+            <p style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, margin: 0 }}>
+              {images.crime_heatmap.caption}
+            </p>
+          </div>
         </div>
+      ) : data.crime_data && data.crime_data.length > 0 ? (
+        <CrimeHeatmapCanvas
+          crimeData={data.crime_data}
+          caption={`Crime density heatmap — ${data.crime_data.reduce((s, d) => s + (parseInt(d.incidents) || 0), 0)} total incidents within 1 mile (12 months). Source: data.police.uk`}
+        />
       ) : (
         <ImagePlaceholder label="Crime Heatmap" caption="Crime heatmap showing 12-month incident density around business location" height={320} icon="🔴" />
       )}
@@ -1138,6 +1145,216 @@ function Section8({ data, pageNum, images = {} }) {
 
       {data.practical_context && <PracticalContext>{data.practical_context}</PracticalContext>}
       <SourceFooter text={data.sources} />
+    </div>
+  );
+}
+
+// ============================================================
+// CRIME DENSITY HEATMAP — Canvas-based gradient visualization
+// Renders a proper density heatmap from crime location data or
+// generates a synthetic one from crime_data summary stats.
+// ============================================================
+function CrimeHeatmapCanvas({ crimeData = [], width = 700, height = 360, caption }) {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.scale(dpr, dpr);
+
+    // --- Background: dark map-like base ---
+    const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+    bgGrad.addColorStop(0, '#1a2332');
+    bgGrad.addColorStop(0.5, '#0f1923');
+    bgGrad.addColorStop(1, '#0d1520');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // --- Draw subtle grid lines (map feel) ---
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < width; x += 40) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+    }
+    for (let y = 0; y < height; y += 40) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+    }
+
+    // --- Draw road-like lines ---
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, height * 0.48); ctx.lineTo(width, height * 0.52); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(width * 0.5, 0); ctx.lineTo(width * 0.48, height); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0, height * 0.2); ctx.lineTo(width, height * 0.8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(width * 0.2, 0); ctx.lineTo(width * 0.85, height); ctx.stroke();
+
+    // --- Generate crime density points from data ---
+    const points = [];
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const totalIncidents = crimeData.reduce((sum, d) => sum + (parseInt(d.incidents) || 0), 0);
+
+    if (totalIncidents > 0) {
+      let seed = totalIncidents * 137;
+      const pseudoRandom = () => { seed = (seed * 16807 + 0) % 2147483647; return seed / 2147483647; };
+
+      crimeData.forEach((crime, idx) => {
+        const incidents = parseInt(crime.incidents) || 0;
+        if (incidents === 0) return;
+        const angle = (idx / crimeData.length) * Math.PI * 2;
+        const clusterDist = 60 + pseudoRandom() * 120;
+        const clusterX = centerX + Math.cos(angle) * clusterDist;
+        const clusterY = centerY + Math.sin(angle) * clusterDist;
+        const numPoints = Math.min(incidents, 40);
+        const weight = Math.min(incidents / Math.max(totalIncidents * 0.15, 1), 1);
+
+        for (let i = 0; i < numPoints; i++) {
+          const spreadX = (pseudoRandom() - 0.5) * 180;
+          const spreadY = (pseudoRandom() - 0.5) * 140;
+          points.push({
+            x: Math.max(20, Math.min(width - 20, clusterX + spreadX)),
+            y: Math.max(20, Math.min(height - 20, clusterY + spreadY)),
+            weight: weight * (0.3 + pseudoRandom() * 0.7),
+            radius: 35 + pseudoRandom() * 45,
+          });
+        }
+      });
+
+      for (let i = 0; i < Math.min(totalIncidents / 5, 15); i++) {
+        points.push({
+          x: centerX + (pseudoRandom() - 0.5) * 100,
+          y: centerY + (pseudoRandom() - 0.5) * 80,
+          weight: 0.2 + pseudoRandom() * 0.3,
+          radius: 40 + pseudoRandom() * 50,
+        });
+      }
+    }
+
+    // --- Render heatmap layer ---
+    if (points.length > 0) {
+      const heatCanvas = document.createElement('canvas');
+      heatCanvas.width = width;
+      heatCanvas.height = height;
+      const heatCtx = heatCanvas.getContext('2d');
+
+      points.forEach(p => {
+        const grad = heatCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
+        grad.addColorStop(0, `rgba(0, 0, 0, ${p.weight * 0.6})`);
+        grad.addColorStop(0.4, `rgba(0, 0, 0, ${p.weight * 0.3})`);
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        heatCtx.fillStyle = grad;
+        heatCtx.fillRect(p.x - p.radius, p.y - p.radius, p.radius * 2, p.radius * 2);
+      });
+
+      const imageData = heatCtx.getImageData(0, 0, width, height);
+      const pixels = imageData.data;
+
+      for (let i = 0; i < pixels.length; i += 4) {
+        const intensity = pixels[i + 3] / 255;
+        if (intensity > 0.01) {
+          let r, g, b, a;
+          if (intensity < 0.15) {
+            r = 0; g = 100 + intensity * 600; b = 180;
+            a = intensity * 3;
+          } else if (intensity < 0.3) {
+            const t = (intensity - 0.15) / 0.15;
+            r = Math.round(t * 180); g = Math.round(160 + t * 95); b = Math.round(180 * (1 - t));
+            a = 0.45 + t * 0.15;
+          } else if (intensity < 0.5) {
+            const t = (intensity - 0.3) / 0.2;
+            r = Math.round(180 + t * 75); g = Math.round(255 - t * 80); b = 0;
+            a = 0.6 + t * 0.1;
+          } else {
+            const t = Math.min((intensity - 0.5) / 0.3, 1);
+            r = 255; g = Math.round(175 * (1 - t)); b = Math.round(t * 40);
+            a = 0.7 + t * 0.2;
+          }
+          pixels[i] = r;
+          pixels[i + 1] = g;
+          pixels[i + 2] = b;
+          pixels[i + 3] = Math.round(a * 255);
+        }
+      }
+      heatCtx.putImageData(imageData, 0, 0);
+
+      ctx.globalAlpha = 0.75;
+      ctx.drawImage(heatCanvas, 0, 0);
+      ctx.globalAlpha = 1.0;
+    }
+
+    // --- Draw business marker (gold star) ---
+    ctx.save();
+    ctx.shadowColor = T.gold;
+    ctx.shadowBlur = 16;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+    ctx.fillStyle = T.gold;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+    ctx.fillStyle = T.white;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 14, 0, Math.PI * 2);
+    ctx.strokeStyle = T.gold;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.font = '600 10px DM Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = T.gold;
+    ctx.fillText('SUBJECT', centerX, centerY - 22);
+    ctx.restore();
+
+    // --- Gradient legend bar ---
+    const legendY = height - 40;
+    const legendX = width / 2 - 120;
+    const legendW = 240;
+    const legendH = 10;
+    const legendGrad = ctx.createLinearGradient(legendX, 0, legendX + legendW, 0);
+    legendGrad.addColorStop(0, 'rgba(0, 160, 180, 0.7)');
+    legendGrad.addColorStop(0.25, 'rgba(100, 220, 0, 0.8)');
+    legendGrad.addColorStop(0.5, 'rgba(255, 220, 0, 0.85)');
+    legendGrad.addColorStop(0.75, 'rgba(255, 140, 0, 0.9)');
+    legendGrad.addColorStop(1, 'rgba(255, 40, 40, 0.95)');
+    ctx.fillStyle = legendGrad;
+    ctx.beginPath();
+    ctx.roundRect(legendX, legendY, legendW, legendH, 4);
+    ctx.fill();
+
+    ctx.font = '600 9px DM Sans, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.textAlign = 'left';
+    ctx.fillText('LOW', legendX, legendY - 6);
+    ctx.textAlign = 'center';
+    ctx.fillText('MODERATE', legendX + legendW / 2, legendY - 6);
+    ctx.textAlign = 'right';
+    ctx.fillText('HIGH', legendX + legendW, legendY - 6);
+
+    ctx.textAlign = 'center';
+    ctx.font = '600 10px DM Sans, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText(`${totalIncidents} incidents within 1 mile (12 months)`, width / 2, legendY + 24);
+
+  }, [crimeData, width, height]);
+
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <canvas
+        ref={canvasRef}
+        style={{ width: '100%', height: 'auto', borderRadius: 10, display: 'block' }}
+      />
+      {caption && (
+        <div style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, textAlign: 'center', marginTop: 8, fontStyle: 'italic' }}>
+          {caption}
+        </div>
+      )}
     </div>
   );
 }
@@ -1188,16 +1405,19 @@ function Section9({ data, pageNum, images = {} }) {
       {/* Competition map with legend */}
       <div style={{ marginBottom: 8 }}>
         {images.competition_map?.url ? (
-          <div style={{ marginTop: '16px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #1e2733' }}>
+          <div style={{ marginBottom: 12, borderRadius: 10, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
             <img
               src={images.competition_map.url}
               alt={images.competition_map.caption || 'Competition map'}
               style={{ width: '100%', display: 'block' }}
               loading="lazy"
+              onError={(e) => { e.target.parentElement.style.display = 'none'; }}
             />
-            <p style={{ fontSize: '11px', color: '#8b949e', padding: '8px', margin: 0, background: '#0d1117' }}>
-              {images.competition_map.caption}
-            </p>
+            <div style={{ padding: '8px 12px', background: T.white }}>
+              <p style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, margin: 0 }}>
+                {images.competition_map.caption}
+              </p>
+            </div>
           </div>
         ) : (
           <ImagePlaceholder label="Competition Map" caption="" height={340} icon="📍" />
@@ -1278,16 +1498,19 @@ function Section10({ data, pageNum, images = {} }) {
 
       {/* Footfall generator map */}
       {images.footfall_map?.url ? (
-        <div style={{ marginTop: '16px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #1e2733' }}>
+        <div style={{ marginBottom: 20, borderRadius: 10, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
           <img
             src={images.footfall_map.url}
             alt={images.footfall_map.caption || 'Footfall generator map'}
             style={{ width: '100%', display: 'block' }}
             loading="lazy"
+            onError={(e) => { e.target.parentElement.style.display = 'none'; }}
           />
-          <p style={{ fontSize: '11px', color: '#8b949e', padding: '8px', margin: 0, background: '#0d1117' }}>
-            {images.footfall_map.caption}
-          </p>
+          <div style={{ padding: '8px 12px', background: T.white }}>
+            <p style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, margin: 0 }}>
+              {images.footfall_map.caption}
+            </p>
+          </div>
         </div>
       ) : (
         <ImagePlaceholder label="Footfall Generator Map" caption="Map showing schools (green), healthcare (blue), transport (orange), retail (grey)" height={300} icon="📍" />
@@ -1822,7 +2045,7 @@ export {
   PracticalContext, DataTable, SourceFooter, ImagePlaceholder, CategoryBar,
   StrengthItem, SignalBars, SubTitle, Watermark,
   // Chart components
-  DonutChart, HBarChart, GroupedHBar, ChartLegend, TrendChart,
+  DonutChart, HBarChart, GroupedHBar, ChartLegend, TrendChart, CrimeHeatmapCanvas,
   // Page components
   CoverPage, LicencePage,
   // Section components

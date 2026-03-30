@@ -372,15 +372,8 @@ function ReportViewer({ reportData, tier, orderId }) {
             </div>
           )}
 
-          {/* Photo Gallery */}
-          {(images.google_business_photos?.length > 0 || images.street_view?.length > 0) && (
-            <div style={{
-              background: T.white, borderRadius: 12, padding: '28px 32px',
-              marginBottom: 32, boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            }}>
-              <ReportImageGallery images={images} />
-            </div>
-          )}
+          {/* Photo gallery removed — images render inside their respective sections:
+             Section 5 (Google Business photos), Section 6 (maps + street view) */}
 
           {/* Licence Page */}
           <div style={{
