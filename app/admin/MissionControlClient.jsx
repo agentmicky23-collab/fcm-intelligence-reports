@@ -196,15 +196,37 @@ function AgentCard({ agent, expanded, onToggle }) {
 
 /* ── Order Card ── */
 function OrderCard({ order, onApprove, onAgentAction }) {
-  const statusColors = { awaiting_approval: GOLD, awaiting: GOLD, writing: BLUE, research: TEAL, researching: TEAL, validating: CORAL, qa: BLUE, delivered: GREEN, completed: GREEN, error: RED, pending: MUTED };
-  const statusLabels = { awaiting_approval: "Awaiting you", awaiting: "Awaiting you", writing: "Writing", research: "Research", researching: "Research", validating: "Validating", qa: "QA Review", delivered: "Delivered", completed: "Completed", error: "Error", pending: "Pending" };
-  const st = order.status || "pending";
+  const statusColors = {
+    queued: "#EAB308",
+    research: TEAL, researching: TEAL,
+    writing: BLUE,
+    validating: CORAL,
+    qa: BLUE,
+    awaiting_approval: GOLD, awaiting: GOLD,
+    delivered: GREEN, completed: GREEN,
+    failed: RED, error: RED,
+    pending: MUTED,
+  };
+  const statusLabels = {
+    queued: "Queued",
+    research: "Researching", researching: "Researching",
+    writing: "Writing",
+    validating: "Validating",
+    qa: "QA Review",
+    awaiting_approval: "Awaiting you", awaiting: "Awaiting you",
+    delivered: "Delivered", completed: "Completed",
+    failed: "Error", error: "Error",
+    pending: "Pending",
+  };
+  // Derive effective status: error_message presence → show as failed
+  const st = (order.error_message ? "failed" : order.status) || "pending";
   const c = statusColors[st] || MUTED;
   const steps = order.steps || deriveSteps(st);
   const isDone = st === "delivered" || st === "completed";
+  const isError = st === "failed" || st === "error";
 
   return (
-    <div style={{ background: CARD, border: st === "awaiting_approval" || st === "awaiting" ? `2px solid ${GOLD}40` : `1px solid ${BORDER}`, borderRadius: 16, padding: 16, marginBottom: 10, opacity: isDone ? 0.5 : 1 }}>
+    <div style={{ background: CARD, border: st === "awaiting_approval" || st === "awaiting" ? `2px solid ${GOLD}40` : isError ? `1px solid ${RED}40` : `1px solid ${BORDER}`, borderRadius: 16, padding: 16, marginBottom: 10, opacity: isDone ? 0.5 : 1 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
         <div style={{ width: 36, height: 36, borderRadius: 8, background: `${c}15`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: c, fontWeight: 600 }}>
           {String(order.id).slice(0, 3)}
@@ -214,7 +236,7 @@ function OrderCard({ order, onApprove, onAgentAction }) {
           <div style={{ fontSize: 11, color: MUTED }}>{order.report_tier || order.tier} | £{order.report_price || order.price || 0} | {order.overall_score || "—"}</div>
         </div>
         <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 99, background: `${c}15`, color: c, fontWeight: 500 }}>
-          {(st === "writing" || st === "research" || st === "researching") ? (
+          {["research", "researching", "writing", "validating", "qa"].includes(st) ? (
             <><span style={{ width: 6, height: 6, borderRadius: "50%", background: c, display: "inline-block", animation: "pulse 1.5s infinite", marginRight: 4 }} />{statusLabels[st]}</>
           ) : statusLabels[st] || st}
         </span>
@@ -227,7 +249,12 @@ function OrderCard({ order, onApprove, onAgentAction }) {
           <button onClick={(e) => { e.stopPropagation(); onAgentAction("re-run-sage", order.id); }} style={{ fontSize: 12, padding: "6px 16px", borderRadius: 8, border: `1px solid ${BORDER}`, background: "transparent", color: MUTED, cursor: "pointer" }}>Re-run Sage</button>
         </div>
       )}
-      {!isDone && st !== "awaiting_approval" && st !== "awaiting" && (
+      {isError && order.error_message && (
+        <div style={{ marginTop: 10, fontSize: 12, color: RED, background: `${RED}10`, border: `1px solid ${RED}30`, borderRadius: 8, padding: "8px 12px" }}>
+          ❌ {order.error_message}
+        </div>
+      )}
+      {!isDone && !isError && st !== "awaiting_approval" && st !== "awaiting" && (
         <div style={{ display: "flex", gap: 12, marginTop: 10, fontSize: 11, color: MUTED }}>
           <span>{order.section_count || "—"} sections</span>
           <span>{order.image_count || "—"} images</span>
@@ -239,12 +266,14 @@ function OrderCard({ order, onApprove, onAgentAction }) {
 
 function deriveSteps(status) {
   switch (status) {
+    case "queued": return [0, 0, 0, 0, 0, 0];
     case "researching": case "research": return [0.5, 0, 0, 0, 0, 0];
     case "writing": return [1, 0.5, 0, 0, 0, 0];
     case "validating": return [1, 1, 0.5, 0, 0, 0];
     case "qa": return [1, 1, 1, 1, 0.5, 0];
     case "awaiting_approval": case "awaiting": return [1, 1, 1, 1, 1, 0.5];
     case "delivered": case "completed": return [1, 1, 1, 1, 1, 1];
+    case "failed": case "error": return [0, 0, 0, 0, 0, 0];
     default: return [0, 0, 0, 0, 0, 0];
   }
 }
@@ -375,7 +404,7 @@ export default function MissionControlClient() {
   if (!authed) return <LoginScreen onLogin={() => setAuthed(true)} />;
 
   const awaitingOrders = orders.filter(o => o.status === "awaiting_approval" || o.status === "awaiting");
-  const activeOrders = orders.filter(o => !["delivered", "completed", "awaiting_approval", "awaiting"].includes(o.status));
+  const activeOrders = orders.filter(o => !["delivered", "completed", "awaiting_approval", "awaiting", "failed", "error"].includes(o.status));
 
   // Build agent objects with REAL data from agent_runs table
   const agents = AGENTS_META.map(a => {
