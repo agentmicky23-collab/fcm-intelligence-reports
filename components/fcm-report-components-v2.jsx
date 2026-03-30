@@ -871,30 +871,69 @@ function Section6({ data, pageNum, images }) {
           {data.address_discrepancy.detail}
         </WarningCallout>
       )}
-      {data.photos_primary && (
+      {/* Google Business Photos — try images prop first, then data.photos_primary/secondary */}
+      {images?.google_business_photos && images.google_business_photos.length > 0 ? (
+        (() => {
+          // Group photos by address for multi-listing businesses
+          const grouped = {};
+          images.google_business_photos.forEach(p => {
+            const key = p.address || 'Business';
+            if (!grouped[key]) grouped[key] = { photos: [], meta: p };
+            grouped[key].photos.push(p);
+          });
+          return Object.entries(grouped).map(([addr, { photos, meta }], gi) => (
+            <div key={gi}>
+              <SubTitle>Google Business Photos — {addr}</SubTitle>
+              {meta.business_name && (
+                <div style={{ fontFamily: T.body, fontSize: 11, color: T.mutedText, marginBottom: 12 }}>
+                  {meta.business_name} • {meta.rating}★ • {meta.review_count} reviews
+                </div>
+              )}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+                {photos.map((p, i) => (
+                  <div key={i} style={{ borderRadius: 12, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
+                    <img
+                      src={p.url}
+                      alt={p.caption || `Photo ${i+1}`}
+                      style={{ width: '100%', height: 200, objectFit: 'cover', display: 'block' }}
+                      loading="lazy"
+                      onError={(e) => { e.target.parentElement.style.display = 'none'; }}
+                    />
+                    {p.caption && <p style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, padding: '8px 12px', margin: 0, background: T.white }}>{p.caption}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ));
+        })()
+      ) : (
         <>
-          <SubTitle>Google Business Photos — {data.photos_primary.address}</SubTitle>
-          <div style={{ fontFamily: T.body, fontSize: 11, color: T.mutedText, marginBottom: 12 }}>
-            {data.photos_primary.name} • {data.photos_primary.rating}★ • {data.photos_primary.reviews} reviews
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
-            {data.photos_primary.images.map((img, i) => (
-              <ImagePlaceholder key={i} label={img.label} caption={img.caption} height={200} icon="🏪" />
-            ))}
-          </div>
-        </>
-      )}
-      {data.photos_secondary && (
-        <>
-          <SubTitle>Google Business Photos — {data.photos_secondary.address}</SubTitle>
-          <div style={{ fontFamily: T.body, fontSize: 11, color: T.mutedText, marginBottom: 12 }}>
-            {data.photos_secondary.name} • {data.photos_secondary.rating}★ • {data.photos_secondary.reviews} reviews
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
-            {data.photos_secondary.images.map((img, i) => (
-              <ImagePlaceholder key={i} label={img.label} caption={img.caption} height={200} icon="🏢" />
-            ))}
-          </div>
+          {data.photos_primary && (
+            <>
+              <SubTitle>Google Business Photos — {data.photos_primary.address}</SubTitle>
+              <div style={{ fontFamily: T.body, fontSize: 11, color: T.mutedText, marginBottom: 12 }}>
+                {data.photos_primary.name} • {data.photos_primary.rating}★ • {data.photos_primary.reviews} reviews
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+                {data.photos_primary.images.map((img, i) => (
+                  <ImagePlaceholder key={i} label={img.label} caption={img.caption} height={200} icon="🏪" />
+                ))}
+              </div>
+            </>
+          )}
+          {data.photos_secondary && (
+            <>
+              <SubTitle>Google Business Photos — {data.photos_secondary.address}</SubTitle>
+              <div style={{ fontFamily: T.body, fontSize: 11, color: T.mutedText, marginBottom: 12 }}>
+                {data.photos_secondary.name} • {data.photos_secondary.rating}★ • {data.photos_secondary.reviews} reviews
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+                {data.photos_secondary.images.map((img, i) => (
+                  <ImagePlaceholder key={i} label={img.label} caption={img.caption} height={200} icon="🏢" />
+                ))}
+              </div>
+            </>
+          )}
         </>
       )}
       {/* Maps — real images if available, otherwise placeholder */}

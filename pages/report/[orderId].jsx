@@ -284,10 +284,33 @@ function ReportViewer({ reportData, tier, orderId }) {
   const report = reportData;
   const images = { ...(report?.images || {}) };
 
-  // ── Merge section-level image refs into the images object ──
-  // The data pipeline stores map URLs as *_ref strings inside each section
-  // (e.g. sections.s8_crime_safety.crime_heatmap_ref). The components expect
-  // images.crime_heatmap.url, images.competition_map.url, etc.  Bridge the gap.
+  // ── Promote maps[] entries into top-level image keys ──
+  // The data pipeline stores generated map URLs in images.maps[] with map_type
+  // (e.g. "crime_heatmap", "competition", "footfall"). The section components
+  // expect images.crime_heatmap.url, images.competition_map.url, etc.
+  // Bridge the gap by promoting maps[] entries into the expected keys.
+  const mapTypeToKey = {
+    crime_heatmap: 'crime_heatmap',
+    competition:   'competition_map',
+    footfall:      'footfall_map',
+  };
+  if (Array.isArray(images.maps)) {
+    for (const map of images.maps) {
+      const targetKey = mapTypeToKey[map.map_type];
+      if (targetKey && !images[targetKey]?.url) {
+        images[targetKey] = { url: map.url, caption: map.caption, legend: map.legend };
+      }
+    }
+  }
+
+  // Also check research-pack-style keys (public_url instead of url)
+  for (const key of ['crime_heatmap', 'competition_map', 'footfall_map']) {
+    if (images[key] && !images[key].url && images[key].public_url) {
+      images[key].url = images[key].public_url;
+    }
+  }
+
+  // Fallback: check section-level refs (only if they look like actual URLs)
   const sectionImageRefs = [
     { section: 's8_crime_safety',        refKey: 'crime_heatmap_ref',   imageKey: 'crime_heatmap',   caption: 'Crime density heatmap' },
     { section: 's9_competition_mapping',  refKey: 'competition_map_ref', imageKey: 'competition_map', caption: 'Competition map' },
@@ -296,7 +319,8 @@ function ReportViewer({ reportData, tier, orderId }) {
   for (const { section, refKey, imageKey, caption } of sectionImageRefs) {
     if (!images[imageKey]?.url) {
       const refUrl = report?.sections?.[section]?.[refKey];
-      if (refUrl) {
+      // Only use if it looks like an actual URL (not a slug like "crime-heatmap")
+      if (refUrl && (refUrl.startsWith('http://') || refUrl.startsWith('https://'))) {
         images[imageKey] = { url: refUrl, caption };
       }
     }
