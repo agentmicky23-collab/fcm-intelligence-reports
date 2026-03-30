@@ -511,10 +511,15 @@ export default function ReportPage({ orderId }) {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
+  // ── Admin bypass: ?admin=fcm-pipeline-2026-secure-key ──
+  const adminKey = router.query.admin;
+  const isAdmin = adminKey === 'fcm-pipeline-2026-secure-key';
+
   // ── DEBUG: Log every render cycle ──
   console.log('[DEBUG] ReportPage render', {
     orderId,  // from getServerSideProps — always available
     verified,
+    isAdmin,
     tier,
     loading,
     hasReportData: !!reportData,
@@ -523,13 +528,21 @@ export default function ReportPage({ orderId }) {
 
   // Check if already verified (sessionStorage for this tab only)
   // orderId now comes from getServerSideProps — always available on first render
+  // Admin bypass skips email gate entirely
   useEffect(() => {
     if (!orderId) {
       console.log('[DEBUG] useEffect skipped — no orderId');
       setLoading(false);
       return;
     }
-    console.log('[DEBUG] useEffect running for orderId:', orderId);
+    console.log('[DEBUG] useEffect running for orderId:', orderId, 'isAdmin:', isAdmin);
+
+    // Admin bypass — skip email gate, fetch report directly
+    if (isAdmin) {
+      console.log('[DEBUG] Admin bypass active — fetching report directly');
+      fetchReport(orderId);
+      return;
+    }
 
     try {
       const cached = sessionStorage.getItem(`fcm-verified-${orderId}`);
@@ -543,7 +556,7 @@ export default function ReportPage({ orderId }) {
       console.error('[DEBUG] sessionStorage access error:', err);
       setLoading(false);
     }
-  }, [orderId]);
+  }, [orderId, isAdmin]);
 
   const fetchReport = async (id) => {
     console.log('[DEBUG] fetchReport called for id:', id);
@@ -711,7 +724,7 @@ export default function ReportPage({ orderId }) {
     );
   }
 
-  if (!verified) {
+  if (!verified && !isAdmin) {
     return (
       <>
         <Head>
