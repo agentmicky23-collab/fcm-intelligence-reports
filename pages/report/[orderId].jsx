@@ -417,7 +417,7 @@ function ReportViewer({ reportData, tier, orderId }) {
             const { Component } = sectionMeta;
             // Pass images to sections that need them
             const extraProps = {};
-            if (sectionId === 's5_online_presence' || sectionId === 's6_location_intelligence') {
+            if (sectionId === 's5_online_presence' || sectionId === 's6_location_intelligence' || sectionId === 's8_crime_safety' || sectionId === 's9_competition_mapping' || sectionId === 's10_footfall_analysis') {
               extraProps.images = images;
             }
             return (

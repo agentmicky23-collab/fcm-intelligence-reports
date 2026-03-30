@@ -1074,7 +1074,7 @@ function Section7({ data, pageNum }) {
 // ============================================================
 // SECTION 8: CRIME & SAFETY (STRUCTURAL-02 + SIGNIFICANT-07 fix — merged)
 // ============================================================
-function Section8({ data, pageNum }) {
+function Section8({ data, pageNum, images = {} }) {
   const crimeColors = (data.crime_data || []).map(d =>
     (d.vs_average_numeric || 0) > 10 ? T.amberText : (d.vs_average_numeric || 0) > 0 ? T.gold : T.greenText
   );
@@ -1084,7 +1084,21 @@ function Section8({ data, pageNum }) {
       <HeadlineBanner score={data.score} grade={data.grade} headline={data.headline} detail={data.headline_detail} />
 
       {/* Crime heatmap — from File 02 */}
-      <ImagePlaceholder label="Crime Heatmap" caption="Crime heatmap showing 12-month incident density around business location" height={320} icon="🔴" />
+      {images.crime_heatmap?.url ? (
+        <div style={{ marginTop: '16px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #1e2733' }}>
+          <img
+            src={images.crime_heatmap.url}
+            alt={images.crime_heatmap.caption || 'Crime heatmap'}
+            style={{ width: '100%', display: 'block' }}
+            loading="lazy"
+          />
+          <p style={{ fontSize: '11px', color: '#8b949e', padding: '8px', margin: 0, background: '#0d1117' }}>
+            {images.crime_heatmap.caption}
+          </p>
+        </div>
+      ) : (
+        <ImagePlaceholder label="Crime Heatmap" caption="Crime heatmap showing 12-month incident density around business location" height={320} icon="🔴" />
+      )}
 
       {/* Crime bar chart — from File 01 */}
       {data.crime_data && data.crime_data.some(d => d.vs_average_numeric !== undefined) && (
@@ -1165,7 +1179,7 @@ function TrendChart({ data, width = 700, height = 200 }) {
 // ============================================================
 // SECTION 9: COMPETITION MAPPING (STRUCTURAL-02 fix — File 02 as base)
 // ============================================================
-function Section9({ data, pageNum }) {
+function Section9({ data, pageNum, images = {} }) {
   return (
     <div>
       <SectionHeader number={9} title="Competition Mapping" pageNum={pageNum} />
@@ -1173,7 +1187,21 @@ function Section9({ data, pageNum }) {
 
       {/* Competition map with legend */}
       <div style={{ marginBottom: 8 }}>
-        <ImagePlaceholder label="Competition Map" caption="" height={340} icon="📍" />
+        {images.competition_map?.url ? (
+          <div style={{ marginTop: '16px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #1e2733' }}>
+            <img
+              src={images.competition_map.url}
+              alt={images.competition_map.caption || 'Competition map'}
+              style={{ width: '100%', display: 'block' }}
+              loading="lazy"
+            />
+            <p style={{ fontSize: '11px', color: '#8b949e', padding: '8px', margin: 0, background: '#0d1117' }}>
+              {images.competition_map.caption}
+            </p>
+          </div>
+        ) : (
+          <ImagePlaceholder label="Competition Map" caption="" height={340} icon="📍" />
+        )}
         <div style={{ display: "flex", gap: 20, justifyContent: "center", marginBottom: 20 }}>
           {[{ color: T.gold, label: "Subject business" }, { color: T.redText, label: "Full-service PO" }, { color: T.blueText, label: "Drop & Collect" }, { color: T.mutedText, label: "Supermarket" }].map((l, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -1221,7 +1249,7 @@ function Section9({ data, pageNum }) {
 // ============================================================
 // SECTION 10: FOOTFALL (SIGNIFICANT-08 fix — split by type + map)
 // ============================================================
-function Section10({ data, pageNum }) {
+function Section10({ data, pageNum, images = {} }) {
   const iCol = { HIGH: T.gold, MODERATE: T.goldLight, LOW: "#E5E7EB" };
   const iTxt = { HIGH: T.navy, MODERATE: T.navy, LOW: T.mutedText };
 
@@ -1249,7 +1277,21 @@ function Section10({ data, pageNum }) {
       {data.stat_boxes && <StatBoxes items={data.stat_boxes} />}
 
       {/* Footfall generator map */}
-      <ImagePlaceholder label="Footfall Generator Map" caption="Map showing schools (green), healthcare (blue), transport (orange), retail (grey)" height={300} icon="📍" />
+      {images.footfall_map?.url ? (
+        <div style={{ marginTop: '16px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #1e2733' }}>
+          <img
+            src={images.footfall_map.url}
+            alt={images.footfall_map.caption || 'Footfall generator map'}
+            style={{ width: '100%', display: 'block' }}
+            loading="lazy"
+          />
+          <p style={{ fontSize: '11px', color: '#8b949e', padding: '8px', margin: 0, background: '#0d1117' }}>
+            {images.footfall_map.caption}
+          </p>
+        </div>
+      ) : (
+        <ImagePlaceholder label="Footfall Generator Map" caption="Map showing schools (green), healthcare (blue), transport (orange), retail (grey)" height={300} icon="📍" />
+      )}
 
       {/* Trading day timeline */}
       {data.trading_timeline && data.trading_timeline.length > 0 && (
