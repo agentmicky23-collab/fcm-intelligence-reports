@@ -645,6 +645,12 @@ function InsiderContent() {
 
   return (
     <div style={{ background: BRAND.dark, minHeight: '100vh', color: BRAND.textPrimary }}>
+      {/* Back nav */}
+      <div style={{ padding: '24px 24px 0', maxWidth: 900, margin: '0 auto' }}>
+        <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#8b949e', fontSize: '14px', textDecoration: 'none', marginBottom: '24px' }}>
+          ← Back to Home
+        </a>
+      </div>
       {/* Feedback banner */}
       {feedbackBanner && (
         <div style={{
@@ -713,16 +719,11 @@ function InsiderContent() {
         </p>
       </section>
 
-      {/* Already a Pro member? */}
+      {/* Already subscribed? Login link */}
       <section style={{ padding: '0 24px 80px', textAlign: 'center' }}>
-        <p style={{ fontSize: 14, color: BRAND.textSecondary, marginBottom: 8 }}>
-          Already a Pro member?
+        <p style={{ fontSize: '14px', color: '#8b949e', textAlign: 'center', marginTop: '16px' }}>
+          Already subscribed? <a href="/pro" style={{ color: '#D4AF37', textDecoration: 'none', fontWeight: 600 }}>Sign in to Pro Dashboard →</a>
         </p>
-        <a href="/pro" style={{
-          color: BRAND.goldPro, fontWeight: 600, fontSize: 14, textDecoration: 'none',
-        }}>
-          Sign in to your Pro Dashboard →
-        </a>
       </section>
 
       {/* Preferences Modal */}
