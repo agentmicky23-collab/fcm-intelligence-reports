@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const BRAND = {
   dark: '#0d1117',
@@ -737,8 +738,10 @@ function InsiderContent() {
 
 export default function InsiderClient() {
   return (
-    <Suspense fallback={<div style={{ background: '#0d1117', minHeight: '100vh' }} />}>
-      <InsiderContent />
-    </Suspense>
+    <AppLayout>
+      <Suspense fallback={<div style={{ background: '#0d1117', minHeight: '100vh' }} />}>
+        <InsiderContent />
+      </Suspense>
+    </AppLayout>
   );
 }
