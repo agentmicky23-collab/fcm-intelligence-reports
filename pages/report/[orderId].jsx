@@ -227,8 +227,62 @@ function EmailGate({ orderId, onVerified }) {
 // ============================================================
 // REPORT VIEWER (main renderer)
 // ============================================================
+// ============================================================
+// REPORT IMAGE GALLERY — renders Google Business + Street View photos
+// ============================================================
+function ReportImageGallery({ images }) {
+  const allPhotos = [
+    ...(images.google_business_photos || []),
+    ...(images.street_view || []),
+  ];
+
+  if (allPhotos.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: 32 }}>
+      <h3 style={{
+        fontFamily: T.display, fontSize: 16, fontWeight: 600,
+        color: T.navy, marginBottom: 16,
+      }}>
+        📸 Property & Location Images
+      </h3>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+        gap: 12,
+      }}>
+        {allPhotos.map((photo, i) => (
+          <div key={i} style={{
+            borderRadius: 12, overflow: 'hidden',
+            border: `1px solid ${T.offWhite}`,
+            background: T.white,
+          }}>
+            <img
+              src={photo.url}
+              alt={photo.caption || 'Property image'}
+              style={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }}
+              loading="lazy"
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+            <div style={{ padding: '8px 12px' }}>
+              <p style={{
+                fontFamily: T.body, fontSize: 11, color: T.mutedText,
+                margin: 0, lineHeight: 1.4,
+              }}>{photo.caption}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// REPORT VIEWER (main renderer)
+// ============================================================
 function ReportViewer({ reportData, tier, orderId }) {
   const report = reportData;
+  const images = report?.images || {};
 
   // Source of truth for tier: DB column (passed as prop), NOT JSON
   const customerTier = tier || 'intelligence';
@@ -283,8 +337,50 @@ function ReportViewer({ reportData, tier, orderId }) {
 
           {/* Cover Page */}
           <div style={{ marginBottom: 32 }}>
-            <CoverPage data={coverData} />
+            <CoverPage data={coverData} coverImage={images.cover_image} />
           </div>
+
+          {/* Cover Image Hero */}
+          {images.cover_image?.url && (
+            <div style={{
+              position: 'relative', width: '100%', height: 300,
+              borderRadius: 12, overflow: 'hidden', marginBottom: 32,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            }}>
+              <img
+                src={images.cover_image.url}
+                alt={images.cover_image.caption || 'Business exterior'}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                onError={(e) => { e.target.parentElement.style.display = 'none'; }}
+              />
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0,
+                background: 'linear-gradient(transparent, rgba(0,0,0,0.65))',
+                padding: '24px 20px 16px',
+              }}>
+                <p style={{
+                  fontFamily: T.body, color: '#fff', fontSize: 13,
+                  margin: 0, fontWeight: 500,
+                }}>{images.cover_image.caption}</p>
+                {images.cover_image.source && (
+                  <p style={{
+                    fontFamily: T.body, color: 'rgba(255,255,255,0.5)',
+                    fontSize: 11, margin: '4px 0 0',
+                  }}>Source: {images.cover_image.source}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Photo Gallery */}
+          {(images.google_business_photos?.length > 0 || images.street_view?.length > 0) && (
+            <div style={{
+              background: T.white, borderRadius: 12, padding: '28px 32px',
+              marginBottom: 32, boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            }}>
+              <ReportImageGallery images={images} />
+            </div>
+          )}
 
           {/* Licence Page */}
           <div style={{
@@ -319,12 +415,17 @@ function ReportViewer({ reportData, tier, orderId }) {
             if (!sectionData) return null;
 
             const { Component } = sectionMeta;
+            // Pass images to sections that need them
+            const extraProps = {};
+            if (sectionId === 's5_online_presence' || sectionId === 's6_location_intelligence') {
+              extraProps.images = images;
+            }
             return (
               <div key={sectionId} style={{
                 background: T.white, borderRadius: 12, padding: "28px 32px",
                 marginBottom: 32, boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
               }}>
-                <Component data={sectionData} />
+                <Component data={sectionData} {...extraProps} />
               </div>
             );
           })}
@@ -673,3 +774,4 @@ export async function getServerSideProps({ params }) {
     props: { orderId: params.orderId },
   };
 }
+

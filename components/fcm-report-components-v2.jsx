@@ -485,7 +485,7 @@ function Watermark({ email, children }) {
 // ============================================================
 // COVER PAGE
 // ============================================================
-function CoverPage({ data, pageNum }) {
+function CoverPage({ data, pageNum, coverImage }) {
   return (
     <div style={{ background: T.navy, borderRadius: 12, padding: 0, overflow: "hidden", minHeight: 600, position: "relative" }}>
       <div style={{ height: 4, background: `linear-gradient(90deg, ${T.gold}, ${T.goldLight}, ${T.gold})` }} />
@@ -494,10 +494,26 @@ function CoverPage({ data, pageNum }) {
         <span style={{ fontFamily: T.body, fontSize: 11, color: "rgba(255,255,255,0.6)" }}>Business Intelligence Reports</span>
       </div>
       <div style={{ position: "relative", margin: "20px 32px", borderRadius: 10, overflow: "hidden" }}>
-        <div style={{ width: "100%", height: 260, background: "linear-gradient(135deg, #2a3a5c 0%, #1a2a4a 50%, #0d1d35 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {coverImage?.url ? (
+          <img
+            src={coverImage.url}
+            alt={coverImage.caption || 'Business exterior'}
+            style={{ width: '100%', height: 260, objectFit: 'cover', display: 'block' }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextElementSibling && (e.target.nextElementSibling.style.display = 'flex');
+            }}
+          />
+        ) : null}
+        <div style={{
+          width: "100%", height: 260,
+          background: "linear-gradient(135deg, #2a3a5c 0%, #1a2a4a 50%, #0d1d35 100%)",
+          display: coverImage?.url ? "none" : "flex",
+          alignItems: "center", justifyContent: "center",
+        }}>
           <div style={{ textAlign: "center" }}>
             <span style={{ fontSize: 48, display: "block", marginBottom: 8, opacity: 0.4 }}>🏪</span>
-            <span style={{ fontFamily: T.body, fontSize: 12, color: "rgba(255,255,255,0.5)" }}>Google Business Photo — loaded by Scout</span>
+            <span style={{ fontFamily: T.body, fontSize: 12, color: "rgba(255,255,255,0.5)" }}>Google Business Photo</span>
           </div>
         </div>
         <div style={{ position: "absolute", bottom: -10, right: 24 }}>
@@ -736,7 +752,7 @@ function Section4({ data, pageNum }) {
 // ============================================================
 // SECTION 5: ONLINE PRESENCE (SIGNIFICANT-05 fix)
 // ============================================================
-function Section5({ data, pageNum }) {
+function Section5({ data, pageNum, images }) {
   // Collect all positive/negative themes across listings
   const allPositive = data.google_business_listings
     ? data.google_business_listings.flatMap(l => l.positive_themes || [])
@@ -761,6 +777,35 @@ function Section5({ data, pageNum }) {
         <WarningCallout title="⚠️ Two Listings Identified">{data.address_discrepancy.detail || data.discrepancy}</WarningCallout>
       )}
       {statItems.length > 0 && <StatBoxes items={statItems} />}
+
+      {/* Real Google Business Photos */}
+      {images?.google_business_photos && images.google_business_photos.length > 0 && (
+        <>
+          <SubTitle>Google Business Photos</SubTitle>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12, marginBottom: 24 }}>
+            {images.google_business_photos.map((photo, i) => (
+              <div key={i} style={{ borderRadius: 10, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
+                <img
+                  src={photo.url}
+                  alt={photo.caption || 'Google Business photo'}
+                  style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }}
+                  loading="lazy"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+                <div style={{ padding: '8px 12px', background: T.white }}>
+                  <p style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, margin: 0 }}>{photo.caption}</p>
+                  {photo.business_name && (
+                    <p style={{ fontFamily: T.body, fontSize: 9, color: T.lightText, margin: '2px 0 0' }}>
+                      {photo.business_name} • {photo.rating}★ • {photo.review_count} reviews
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
       <SubTitle>Google Business Profiles</SubTitle>
       <DataTable
         headers={["ADDRESS", "GOOGLE NAME", "RATING", "REVIEWS"]}
@@ -816,7 +861,7 @@ function Section5({ data, pageNum }) {
 // ============================================================
 // SECTION 6: LOCATION INTELLIGENCE
 // ============================================================
-function Section6({ data, pageNum }) {
+function Section6({ data, pageNum, images }) {
   return (
     <div>
       <SectionHeader number={6} title="Location Intelligence" pageNum={pageNum} />
@@ -852,12 +897,49 @@ function Section6({ data, pageNum }) {
           </div>
         </>
       )}
-      <ImagePlaceholder label="Area Map — 1km radius" caption="Area map showing key landmarks around business location" height={300} icon="🗺️" />
+      {/* Maps — real images if available, otherwise placeholder */}
+      {images?.maps && images.maps.length > 0 ? (
+        <div style={{ display: 'grid', gridTemplateColumns: images.maps.length > 1 ? '1fr 1fr' : '1fr', gap: 12, marginBottom: 24 }}>
+          {images.maps.map((map, i) => (
+            <div key={i} style={{ borderRadius: 12, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
+              <img
+                src={map.url}
+                alt={map.caption || 'Location map'}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+                loading="lazy"
+                onError={(e) => { e.target.parentElement.style.display = 'none'; }}
+              />
+              <p style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, padding: '8px 12px', margin: 0, background: T.white }}>{map.caption}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <ImagePlaceholder label="Area Map — 1km radius" caption="Area map showing key landmarks around business location" height={300} icon="🗺️" />
+      )}
+
       <SubTitle>Virtual Site Visit — Street View</SubTitle>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
-        <ImagePlaceholder label="Street View: The Premises" caption="Street View showing shopfront and signage" height={200} icon="📸" />
-        <ImagePlaceholder label="Street View: Street Context" caption="Street View showing wider trading environment" height={200} icon="📸" />
-      </div>
+      {/* Street View — real images if available, otherwise placeholder */}
+      {images?.street_view && images.street_view.length > 0 ? (
+        <div style={{ display: 'grid', gridTemplateColumns: images.street_view.length > 1 ? '1fr 1fr' : '1fr', gap: 12, marginBottom: 24 }}>
+          {images.street_view.map((sv, i) => (
+            <div key={i} style={{ borderRadius: 12, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
+              <img
+                src={sv.url}
+                alt={sv.caption || 'Street View'}
+                style={{ width: '100%', height: 220, objectFit: 'cover', display: 'block' }}
+                loading="lazy"
+                onError={(e) => { e.target.parentElement.style.display = 'none'; }}
+              />
+              <p style={{ fontFamily: T.body, fontSize: 10, color: T.mutedText, padding: '8px 12px', margin: 0, background: T.white }}>{sv.caption}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+          <ImagePlaceholder label="Street View: The Premises" caption="Street View showing shopfront and signage" height={200} icon="📸" />
+          <ImagePlaceholder label="Street View: Street Context" caption="Street View showing wider trading environment" height={200} icon="📸" />
+        </div>
+      )}
       {data.landmarks && data.landmarks.length > 0 && (
         <>
           <SubTitle>Key Landmarks Within 1km</SubTitle>
@@ -1710,3 +1792,4 @@ export {
   // Tier visibility
   TIER_SECTIONS,
 };
+
