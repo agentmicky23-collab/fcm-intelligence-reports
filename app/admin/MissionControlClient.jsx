@@ -21,6 +21,30 @@ const AGENTS_META = [
   { id: "oracle", name: "Oracle", role: "QA", color: BLUE, icon: "M12 22a10 10 0 100-20 10 10 0 000 20zM12 16v-4M12 8h.01", caps: ["Live viewer check", "Customer perspective", "Visual QA", "Clarity scoring", "Final approval"] },
 ];
 
+function formatDuration(seconds) {
+  if (seconds == null) return "—";
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+function deriveLevel(successCount) {
+  if (successCount >= 50) return { level: 5, title: "Master" };
+  if (successCount >= 25) return { level: 4, title: "Expert" };
+  if (successCount >= 10) return { level: 3, title: "Skilled" };
+  if (successCount >= 3) return { level: 2, title: "Learning" };
+  return { level: 1, title: "Rookie" };
+}
+
+function deriveXp(successCount) {
+  const thresholds = [0, 3, 10, 25, 50];
+  const level = deriveLevel(successCount).level;
+  if (level >= 5) return 100;
+  const low = thresholds[level - 1];
+  const high = thresholds[level];
+  return Math.round(((successCount - low) / (high - low)) * 100);
+}
+
 function getApiKey() {
   if (typeof window !== "undefined") return sessionStorage.getItem("fcm_admin_key") || "";
   return "";
@@ -286,6 +310,7 @@ export default function MissionControlClient() {
   const [orders, setOrders] = useState([]);
   const [activity, setActivity] = useState([]);
   const [subscribers, setSubscribers] = useState([]);
+  const [agentStats, setAgentStats] = useState(null);
   const [actionMsg, setActionMsg] = useState("");
 
   useEffect(() => {
@@ -300,14 +325,16 @@ export default function MissionControlClient() {
 
   const fetchAll = async () => {
     try {
-      const [s, o, a] = await Promise.all([
+      const [s, o, a, ag] = await Promise.all([
         apiFetch("/api/admin/stats"),
         apiFetch("/api/admin/orders"),
         apiFetch("/api/admin/activity"),
+        apiFetch("/api/admin/agent-stats"),
       ]);
       setStats(s);
       setOrders(o);
       setActivity(a);
+      setAgentStats(ag);
     } catch (e) {
       console.error("Poll failed:", e);
     }
@@ -349,26 +376,51 @@ export default function MissionControlClient() {
 
   const awaitingOrders = orders.filter(o => o.status === "awaiting_approval" || o.status === "awaiting");
   const activeOrders = orders.filter(o => !["delivered", "completed", "awaiting_approval", "awaiting"].includes(o.status));
-  const onlineAgents = 4;
 
-  // Build agent objects with live status from orders
+  // Build agent objects with REAL data from agent_runs table
   const agents = AGENTS_META.map(a => {
-    const activeOrder = orders.find(o => {
+    const as = agentStats?.[a.id];
+    const isRunning = as?.running > 0;
+    const activeOrderId = as?.activeOrderId;
+
+    // Derive active status from real agent_runs data
+    const activeLabel = isRunning && activeOrderId
+      ? `${a.role === "Writer" ? "Writing" : a.role === "Research" ? "Researching" : a.role === "Validator" ? "Validating" : "Reviewing"} #${activeOrderId}`
+      : null;
+
+    // Fallback: also check order statuses for backward compat
+    const activeOrder = !activeLabel ? orders.find(o => {
       if (a.id === "scout" && (o.status === "research" || o.status === "researching")) return true;
       if (a.id === "sage" && o.status === "writing") return true;
       if (a.id === "sentinel" && o.status === "validating") return true;
       if (a.id === "oracle" && o.status === "qa") return true;
       return false;
-    });
+    }) : null;
+
+    const finalActiveLabel = activeLabel || (activeOrder
+      ? `${a.role === "Writer" ? "Writing" : a.role === "Research" ? "Researching" : a.role === "Validator" ? "Validating" : "Reviewing"} #${activeOrder.id}`
+      : null);
+
+    const successCount = as?.successRuns || 0;
+    const { level, title } = deriveLevel(successCount);
+    const xp = deriveXp(successCount);
+
     return {
       ...a,
-      activeOrder: activeOrder ? `${a.role === "Writer" ? "Writing" : a.role === "Research" ? "Researching" : a.role === "Validator" ? "Validating" : "Reviewing"} #${activeOrder.id}` : null,
-      stats: a.id === "scout" ? { missions: stats?.agents?.scoutRuns || 4, rate: "100%", avg: "3:45", level: 4, xp: 95, title: "Expert researcher" }
-           : a.id === "sage" ? { missions: stats?.agents?.sageRuns || 6, rate: "90%", avg: "5:10", level: 3, xp: 78, title: "Skilled writer" }
-           : a.id === "sentinel" ? { missions: stats?.agents?.sentinelRuns || 5, rate: "67%", avg: "1:22", level: 2, xp: 55, title: "Learning fast" }
-           : { missions: stats?.agents?.oracleRuns || 3, rate: "100%", avg: "2:50", level: 5, xp: 100, title: "Master judge" },
+      activeOrder: finalActiveLabel,
+      stats: {
+        missions: as?.totalRuns || 0,
+        rate: as?.successRate != null ? `${as.successRate}%` : "—",
+        avg: formatDuration(as?.avgDurationSeconds),
+        level,
+        xp,
+        title: as ? `${title} — $${as.totalCostUsd} spent` : "No data",
+      },
     };
   });
+
+  // Online agents = agents with at least 1 run OR currently running
+  const onlineAgents = agents.filter(a => a.stats.missions > 0 || a.activeOrder).length;
 
   const tabs = [
     { id: "hq", label: "HQ" },
@@ -425,8 +477,8 @@ export default function MissionControlClient() {
             {[
               { label: "Revenue MTD", val: stats ? `£${(stats.revenue?.mtd || 0).toLocaleString()}` : "—", sub: stats ? `+£${stats.revenue?.weekChange || 0} this week` : "—", subColor: GREEN, pct: stats ? Math.min(100, Math.round(((stats.revenue?.mtd || 0) / (stats.revenue?.target || 5000)) * 100)) : 0, pctColor: GREEN, target: stats ? `${Math.round(((stats.revenue?.mtd || 0) / (stats.revenue?.target || 5000)) * 100)}% to £${((stats.revenue?.target || 5000) / 1000).toFixed(0)}k` : "—" },
               { label: "Pipeline", val: stats ? `${stats.pipeline?.active || 0} active` : "—", sub: stats ? `${stats.pipeline?.awaiting || 0} awaiting you` : "—", subColor: GOLD, pct: stats ? Math.min(100, Math.round(((stats.pipeline?.total || 0) / 10) * 100)) : 0, pctColor: BLUE, target: stats ? `${stats.pipeline?.total || 0} total` : "—" },
-              { label: "Agent ops today", val: stats ? `${stats.agents?.opsToday || 0}` : "—", sub: stats ? `${stats.agents?.errors || 0} errors` : "—", subColor: GREEN, pct: stats ? Math.round(stats.agents?.uptime || 0) : 0, pctColor: GREEN, target: stats ? `${stats.agents?.uptime || 0}% uptime` : "—" },
-              { label: "API spend", val: stats ? `$${stats.apiSpend?.today || 0}` : "—", sub: stats ? `~$${stats.apiSpend?.perReport || 0}/report` : "—", subColor: MUTED, pct: stats ? Math.min(100, Math.round(((stats.apiSpend?.today || 0) / (stats.apiSpend?.budget || 300)) * 100)) : 0, pctColor: CORAL, target: stats ? `$${stats.apiSpend?.budget || 300} budget` : "—" },
+              { label: "Agent ops today", val: stats ? `${stats.agents?.opsToday || 0}` : "—", sub: stats ? `${stats.agents?.errorsToday || 0} errors today` : "—", subColor: stats?.agents?.errorsToday > 0 ? RED : GREEN, pct: stats?.agents?.uptime != null ? Math.round(stats.agents.uptime) : 0, pctColor: GREEN, target: stats?.agents?.uptime != null ? `${stats.agents.uptime}% success rate` : "No data" },
+              { label: "API spend", val: stats?.apiSpend?.today != null ? `$${stats.apiSpend.today}` : "—", sub: stats?.apiSpend?.perReport != null ? `$${stats.apiSpend.perReport}/report avg` : "No runs yet", subColor: MUTED, pct: stats?.apiSpend?.month != null ? Math.min(100, Math.round((stats.apiSpend.month / (stats.apiSpend.budget || 300)) * 100)) : 0, pctColor: CORAL, target: stats?.apiSpend?.month != null ? `$${stats.apiSpend.month} / $${stats.apiSpend.budget} budget` : "No data" },
             ].map((m, i) => (
               <div key={i} style={{ background: CARD, borderRadius: 12, padding: 16, border: `1px solid ${BORDER}` }}>
                 <div style={{ fontSize: 11, color: MUTED, marginBottom: 6 }}>{m.label}</div>

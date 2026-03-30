@@ -17,8 +17,9 @@ export default async function handler(req, res) {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
     const startOfWeek = new Date(now.getTime() - 7 * 86400000).toISOString();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
 
-    // Revenue MTD
+    // ── Revenue MTD (real from orders) ──
     const { data: monthOrders } = await supabase
       .from("orders")
       .select("report_price, created_at")
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
       .filter(o => new Date(o.created_at) >= new Date(startOfWeek))
       .reduce((sum, o) => sum + (o.report_price || 0), 0);
 
-    // Pipeline
+    // ── Pipeline (real from orders) ──
     const { data: allOrders } = await supabase.from("orders").select("status");
     const activeStatuses = ["researching", "research", "writing", "validating", "qa"];
     const awaitingStatuses = ["awaiting_approval", "awaiting"];
@@ -37,26 +38,64 @@ export default async function handler(req, res) {
     const awaiting = (allOrders || []).filter(o => awaitingStatuses.includes(o.status)).length;
     const total = (allOrders || []).length;
 
-    // Notifications count for ops today
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    // ── Agent Ops Today (real from agent_runs) ──
     const { count: opsToday } = await supabase
-      .from("notifications")
+      .from("agent_runs")
       .select("id", { count: "exact", head: true })
-      .gte("created_at", todayStart);
+      .gte("started_at", todayStart);
 
-    const errors = (allOrders || []).filter(o => o.status === "error").length;
+    const { count: errorsToday } = await supabase
+      .from("agent_runs")
+      .select("id", { count: "exact", head: true })
+      .gte("started_at", todayStart)
+      .eq("status", "failed");
+
+    // Total runs ever for uptime calc
+    const { count: totalRuns } = await supabase
+      .from("agent_runs")
+      .select("id", { count: "exact", head: true });
+
+    const { count: totalFailed } = await supabase
+      .from("agent_runs")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "failed");
+
+    const uptime = totalRuns > 0
+      ? Math.round(((totalRuns - totalFailed) / totalRuns) * 1000) / 10
+      : null;
+
+    // ── API Spend (real from agent_runs.cost_usd) ──
+    const { data: todayCosts } = await supabase
+      .from("agent_runs")
+      .select("cost_usd")
+      .gte("started_at", todayStart);
+
+    const spendToday = (todayCosts || []).reduce((sum, r) => sum + (parseFloat(r.cost_usd) || 0), 0);
+
+    const { data: monthCosts } = await supabase
+      .from("agent_runs")
+      .select("cost_usd")
+      .gte("started_at", startOfMonth);
+
+    const spendMonth = (monthCosts || []).reduce((sum, r) => sum + (parseFloat(r.cost_usd) || 0), 0);
+
+    // Per-report cost: total spend / total completed orders
+    const completedOrders = (allOrders || []).filter(o => ["delivered", "completed", "awaiting_approval", "awaiting"].includes(o.status)).length;
+    const perReport = completedOrders > 0 ? Math.round((spendMonth / completedOrders) * 100) / 100 : null;
 
     return res.status(200).json({
       revenue: { mtd, weekChange, target: 5000 },
       pipeline: { active, awaiting, total },
       agents: {
         opsToday: opsToday || 0,
-        errors,
-        uptime: errors === 0 ? 99.9 : 95.0,
+        errorsToday: errorsToday || 0,
+        errors: (allOrders || []).filter(o => o.status === "error").length,
+        uptime,
       },
       apiSpend: {
-        today: total * 29,
-        perReport: 29,
+        today: Math.round(spendToday * 100) / 100,
+        month: Math.round(spendMonth * 100) / 100,
+        perReport,
         budget: 300,
       },
     });
