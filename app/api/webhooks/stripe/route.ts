@@ -136,6 +136,19 @@ export async function POST(req: NextRequest) {
     });
 
     console.log(`✅ Order ${orderId} created in Supabase`);
+
+    // Trigger pipeline
+    try {
+      const triggerUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://fcmreport.com'}/api/trigger-report`;
+      await fetch(triggerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId }),
+      });
+      console.log(`Pipeline triggered for ${orderId}`);
+    } catch (triggerErr) {
+      console.error('Failed to trigger pipeline:', triggerErr);
+    }
   }
 
   // 5. Handle subscription events
