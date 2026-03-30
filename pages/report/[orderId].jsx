@@ -282,7 +282,25 @@ function ReportImageGallery({ images }) {
 // ============================================================
 function ReportViewer({ reportData, tier, orderId }) {
   const report = reportData;
-  const images = report?.images || {};
+  const images = { ...(report?.images || {}) };
+
+  // ── Merge section-level image refs into the images object ──
+  // The data pipeline stores map URLs as *_ref strings inside each section
+  // (e.g. sections.s8_crime_safety.crime_heatmap_ref). The components expect
+  // images.crime_heatmap.url, images.competition_map.url, etc.  Bridge the gap.
+  const sectionImageRefs = [
+    { section: 's8_crime_safety',        refKey: 'crime_heatmap_ref',   imageKey: 'crime_heatmap',   caption: 'Crime density heatmap' },
+    { section: 's9_competition_mapping',  refKey: 'competition_map_ref', imageKey: 'competition_map', caption: 'Competition map' },
+    { section: 's10_footfall_analysis',   refKey: 'footfall_map_ref',    imageKey: 'footfall_map',    caption: 'Footfall generator map' },
+  ];
+  for (const { section, refKey, imageKey, caption } of sectionImageRefs) {
+    if (!images[imageKey]?.url) {
+      const refUrl = report?.sections?.[section]?.[refKey];
+      if (refUrl) {
+        images[imageKey] = { url: refUrl, caption };
+      }
+    }
+  }
 
   // Source of truth for tier: DB column (passed as prop), NOT JSON
   const customerTier = tier || 'intelligence';
