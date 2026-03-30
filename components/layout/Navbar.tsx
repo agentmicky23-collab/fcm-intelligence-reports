@@ -9,6 +9,7 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/reports", label: "Reports" },
   { href: "/opportunities", label: "Opportunities" },
+  { href: "/pro", label: "Pro Dashboard", special: true },
   { href: "/insider", label: "Insider" },
 ];
 
@@ -40,6 +41,8 @@ export function Navbar() {
                 className={
                   link.label === "Insider"
                     ? "text-sm font-semibold px-4 py-2 rounded-lg bg-primary text-black hover:bg-primary/90 transition-colors"
+                    : link.special
+                    ? "text-sm font-semibold px-4 py-2 rounded-lg border border-primary text-primary hover:bg-primary hover:text-black transition-colors"
                     : "text-sm text-muted-foreground hover:text-primary transition-colors"
                 }
               >
@@ -68,6 +71,8 @@ export function Navbar() {
                 className={
                   link.label === "Insider"
                     ? "block py-2 px-4 my-2 text-sm font-semibold rounded-lg bg-primary text-black text-center"
+                    : link.special
+                    ? "block py-2 px-4 my-2 text-sm font-semibold rounded-lg border border-primary text-primary text-center hover:bg-primary hover:text-black transition-colors"
                     : "block py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                 }
               >

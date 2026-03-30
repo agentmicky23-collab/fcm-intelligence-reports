@@ -1134,11 +1134,32 @@ export default function ProDashboardClient() {
     return 'Good evening';
   };
 
+  /* ─── CAROUSEL STATE ─── */
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const SLIDE_COUNT = 4;
+  const SLIDE_INTERVAL = 5000;
+
+  useEffect(() => {
+    if (authed) return;
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % SLIDE_COUNT);
+    }, SLIDE_INTERVAL);
+    return () => clearInterval(timer);
+  }, [authed]);
+
   /* ─── LOGIN SCREEN ─── */
   if (!authed) {
+    const slideCaptions = [
+      '35 live listings with personalised match scores. Filter by region, budget, and type.',
+      'Compare up to 5 listings side by side. Fill in missing data — valuations recalculate live.',
+      'Market intelligence across 12 UK regions. Average prices, listing counts, and trends.',
+      'Set your criteria once. We match every new listing automatically and alert you to the best opportunities.',
+    ];
+
     return (
-      <div style={{ minHeight: '100vh', background: '#010409', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-        <div style={{ width: '100%', maxWidth: '440px' }}>
+      <div style={{ minHeight: '100vh', background: '#010409', padding: '20px 20px 60px' }}>
+        {/* Login section */}
+        <div style={{ maxWidth: '440px', margin: '0 auto', paddingTop: '60px' }}>
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <div style={{ fontSize: '14px', fontWeight: '700', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4AF37', marginBottom: '8px' }}>FCM Intelligence</div>
             <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#e6edf3', marginBottom: '8px', fontFamily: 'Playfair Display, serif' }}>Insider Pro</h1>
@@ -1168,7 +1189,7 @@ export default function ProDashboardClient() {
               {error === 'UPGRADE' ? (
                 <div>
                   <div style={{ padding: '16px', background: '#D4AF3710', border: '1px solid #D4AF3730', borderRadius: '8px', marginBottom: '16px' }}>
-                    <p style={{ fontSize: '14px', color: '#D4AF37', margin: '0 0 8px 0', fontWeight: '600' }}>You're an Insider — upgrade to Pro!</p>
+                    <p style={{ fontSize: '14px', color: '#D4AF37', margin: '0 0 8px 0', fontWeight: '600' }}>You&apos;re an Insider — upgrade to Pro!</p>
                     <p style={{ fontSize: '13px', color: '#8b949e', margin: 0 }}>Get the full dashboard, live listings, compare tool, market intel, and more for £50/month.</p>
                   </div>
                   <button
@@ -1203,6 +1224,249 @@ export default function ProDashboardClient() {
                 Not a Pro subscriber? <a href="/insider" style={{ color: '#D4AF37', textDecoration: 'none' }}>Learn more about Insider Pro →</a>
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Feature Carousel */}
+        <div style={{ maxWidth: '900px', margin: '48px auto 0', position: 'relative' }}>
+          <div style={{ background: '#0d1117', border: '1px solid #1e2733', borderRadius: '16px', overflow: 'hidden', position: 'relative' }}>
+            {/* Slide container */}
+            <div style={{ position: 'relative', minHeight: '340px' }}>
+              {/* Slide 0: Command Centre */}
+              <div style={{
+                position: 'absolute', inset: 0, padding: '24px',
+                opacity: currentSlide === 0 ? 1 : 0,
+                transition: 'opacity 0.5s ease',
+                pointerEvents: currentSlide === 0 ? 'auto' : 'none',
+              }}>
+                {/* Fake filter bar */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', opacity: 0.5 }}>
+                  <div style={{ flex: 1, padding: '8px 12px', background: '#161b22', border: '1px solid #1e2733', borderRadius: '6px', fontSize: '12px', color: '#6b7280' }}>Search listings...</div>
+                  <div style={{ padding: '8px 12px', background: '#161b22', border: '1px solid #1e2733', borderRadius: '6px', fontSize: '12px', color: '#6b7280', minWidth: '100px' }}>All Regions</div>
+                  <div style={{ padding: '8px 12px', background: '#161b22', border: '1px solid #1e2733', borderRadius: '6px', fontSize: '12px', color: '#6b7280', minWidth: '100px' }}>Sort: Match</div>
+                </div>
+                {/* Listing cards grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  {[
+                    { name: 'Bilsborrow PO & Store', region: 'North West', price: '£240,000', score: 97, fees: '£80,000/yr' },
+                    { name: 'Barnsley Licensed Conv.', region: 'Yorkshire', price: '£99,950', score: 95, fees: '£62,000/yr' },
+                    { name: 'Fleetwood PO & Newsagent', region: 'North West', price: '£75,000', score: 93, fees: '£46,000/yr' },
+                    { name: 'Kendal Village Store', region: 'North West', price: '£180,000', score: 92, fees: '£55,000/yr' },
+                  ].map((item, i) => (
+                    <div key={i} style={{ background: '#161b22', border: '1px solid #D4AF3720', borderRadius: '10px', padding: '14px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
+                        <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: '700', background: '#D4AF3715', color: '#D4AF37', border: '1px solid #D4AF3730', fontFamily: 'JetBrains Mono, monospace' }}>
+                          Match: {item.score}%
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '13px', fontWeight: '600', color: '#e6edf3', marginBottom: '4px' }}>{item.name}</div>
+                      <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '8px' }}>{item.region}</div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                        <div>
+                          <div style={{ fontSize: '9px', textTransform: 'uppercase', color: '#6b7280', marginBottom: '2px' }}>Price</div>
+                          <div style={{ fontFamily: 'JetBrains Mono, monospace', color: '#e6edf3', fontWeight: '600' }}>{item.price}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '9px', textTransform: 'uppercase', color: '#6b7280', marginBottom: '2px' }}>PO Fees</div>
+                          <div style={{ fontFamily: 'JetBrains Mono, monospace', color: '#22c55e', fontWeight: '600' }}>{item.fees}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Slide 1: Compare Tool */}
+              <div style={{
+                position: 'absolute', inset: 0, padding: '24px',
+                opacity: currentSlide === 1 ? 1 : 0,
+                transition: 'opacity 0.5s ease',
+                pointerEvents: currentSlide === 1 ? 'auto' : 'none',
+              }}>
+                <div style={{ overflowX: 'auto', borderRadius: '10px', border: '1px solid #1e2733' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', background: '#161b22', fontSize: '13px' }}>
+                    <thead>
+                      <tr>
+                        <th style={{ textAlign: 'left', padding: '12px', borderBottom: '2px solid #D4AF37', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#D4AF37', background: '#0d1117' }}>Metric</th>
+                        <th style={{ textAlign: 'center', padding: '12px', borderBottom: '2px solid #D4AF37', color: '#e6edf3', fontWeight: '600', background: '#0d1117' }}>Bilsborrow PO</th>
+                        <th style={{ textAlign: 'center', padding: '12px', borderBottom: '2px solid #D4AF37', color: '#e6edf3', fontWeight: '600', background: '#0d1117' }}>Barnsley Conv.</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { label: 'Asking Price', v1: '£240,000', v2: '£99,950' },
+                        { label: 'PO Fees', v1: '£80,000/yr', v2: '£62,000/yr' },
+                        { label: 'Turnover', v1: '£520,000/yr', v2: null },
+                        { label: 'Valuation Multiple', v1: '3.0x', v2: '1.6x' },
+                      ].map((row, i) => (
+                        <tr key={i} style={{ background: i % 2 === 0 ? '#161b22' : '#0d1117' }}>
+                          <td style={{ padding: '10px 12px', borderBottom: '1px solid #1e2733', color: '#8b949e', fontWeight: '500' }}>{row.label}</td>
+                          <td style={{ padding: '10px 12px', borderBottom: '1px solid #1e2733', textAlign: 'center', fontFamily: 'JetBrains Mono, monospace', color: '#e6edf3' }}>{row.v1}</td>
+                          <td style={{ padding: '10px 12px', borderBottom: '1px solid #1e2733', textAlign: 'center' }}>
+                            {row.v2 ? (
+                              <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#e6edf3' }}>{row.v2}</span>
+                            ) : (
+                              <span style={{
+                                display: 'inline-block', padding: '6px 12px', border: '1px dashed #D4AF3760',
+                                borderRadius: '6px', background: '#161b22', color: '#D4AF3780',
+                                fontSize: '12px', fontFamily: 'JetBrains Mono, monospace',
+                              }}>
+                                Enter value
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Slide 2: Regional Market Intel */}
+              <div style={{
+                position: 'absolute', inset: 0, padding: '24px',
+                opacity: currentSlide === 2 ? 1 : 0,
+                transition: 'opacity 0.5s ease',
+                pointerEvents: currentSlide === 2 ? 'auto' : 'none',
+              }}>
+                <div style={{ fontSize: '15px', fontWeight: '600', color: '#e6edf3', marginBottom: '16px' }}>📊 Regional Market Overview</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  {[
+                    { region: 'North West', listings: 6, avg: '£172k', trend: '↑', trendColor: '#22c55e' },
+                    { region: 'Yorkshire', listings: 4, avg: '£170k', trend: '→', trendColor: '#f59e0b' },
+                    { region: 'East Anglia', listings: 3, avg: '£130k', trend: '→', trendColor: '#f59e0b' },
+                    { region: 'Scotland', listings: 2, avg: '£185k', trend: '↑', trendColor: '#22c55e' },
+                    { region: 'South East', listings: 5, avg: '£210k', trend: '↑', trendColor: '#22c55e' },
+                    { region: 'East Midlands', listings: 3, avg: '£145k', trend: '→', trendColor: '#f59e0b' },
+                  ].map((r, i) => (
+                    <div key={i} style={{ background: '#161b22', borderRadius: '10px', padding: '16px', border: '1px solid #1e2733' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#e6edf3' }}>{r.region}</span>
+                        <span style={{ fontSize: '18px', color: r.trendColor }}>{r.trend}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                        <div>
+                          <div style={{ color: '#6b7280', marginBottom: '2px' }}>Listings</div>
+                          <div style={{ fontFamily: 'JetBrains Mono, monospace', color: '#D4AF37', fontWeight: '600' }}>{r.listings}</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ color: '#6b7280', marginBottom: '2px' }}>Avg Price</div>
+                          <div style={{ fontFamily: 'JetBrains Mono, monospace', color: '#e6edf3', fontWeight: '600' }}>{r.avg}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Slide 3: Personalised Preferences */}
+              <div style={{
+                position: 'absolute', inset: 0, padding: '24px',
+                opacity: currentSlide === 3 ? 1 : 0,
+                transition: 'opacity 0.5s ease',
+                pointerEvents: currentSlide === 3 ? 'auto' : 'none',
+              }}>
+                <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+                  <div style={{ fontSize: '15px', fontWeight: '600', color: '#e6edf3', marginBottom: '16px' }}>⚙️ Your Acquisition Preferences</div>
+                  {/* Budget slider preview */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <div style={{ fontSize: '12px', color: '#8b949e', marginBottom: '6px' }}>Budget Range</div>
+                    <div style={{ height: '6px', background: '#1e2733', borderRadius: '3px', position: 'relative' }}>
+                      <div style={{ position: 'absolute', left: '10%', right: '40%', height: '100%', background: 'linear-gradient(90deg, #D4AF37, #D4AF3780)', borderRadius: '3px' }}></div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+                      <span>£50k</span><span>£300k</span><span>£500k</span>
+                    </div>
+                  </div>
+                  {/* Region checkboxes */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <div style={{ fontSize: '12px', color: '#8b949e', marginBottom: '8px' }}>Preferred Regions</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {[
+                        { name: 'North West', checked: true },
+                        { name: 'Yorkshire', checked: true },
+                        { name: 'East Midlands', checked: true },
+                        { name: 'Scotland', checked: false },
+                        { name: 'South East', checked: false },
+                        { name: 'Wales', checked: false },
+                      ].map((r, i) => (
+                        <span key={i} style={{
+                          padding: '5px 12px', borderRadius: '16px', fontSize: '11px',
+                          background: r.checked ? '#D4AF3720' : 'transparent',
+                          border: r.checked ? '1px solid #D4AF37' : '1px solid #30363d',
+                          color: r.checked ? '#D4AF37' : '#6b7280',
+                        }}>
+                          {r.checked ? '✓ ' : ''}{r.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Business type toggles */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <div style={{ fontSize: '12px', color: '#8b949e', marginBottom: '8px' }}>Business Types</div>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      {[
+                        { name: 'Post Office', on: true },
+                        { name: 'Convenience', on: true },
+                        { name: 'Newsagent', on: false },
+                      ].map((t, i) => (
+                        <span key={i} style={{
+                          padding: '5px 12px', borderRadius: '16px', fontSize: '11px',
+                          background: t.on ? '#3b82f620' : 'transparent',
+                          border: t.on ? '1px solid #3b82f6' : '1px solid #30363d',
+                          color: t.on ? '#3b82f6' : '#6b7280',
+                        }}>
+                          {t.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Match score preview */}
+                  <div style={{
+                    background: '#161b22', border: '1px solid #D4AF3730', borderRadius: '12px',
+                    padding: '20px', textAlign: 'center',
+                  }}>
+                    <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '6px' }}>Your Match Score</div>
+                    <div style={{ fontSize: '36px', fontWeight: '700', fontFamily: 'JetBrains Mono, monospace', color: '#22c55e' }}>97<span style={{ fontSize: '18px', color: '#6b7280' }}>/100</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Preview overlay */}
+            <div style={{
+              position: 'absolute', inset: 0, pointerEvents: 'none',
+              background: 'linear-gradient(180deg, transparent 70%, #0d1117 100%)',
+              borderRadius: '16px',
+            }}></div>
+          </div>
+
+          {/* Dot indicators */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}>
+            {[0, 1, 2, 3].map(i => (
+              <button
+                key={i}
+                onClick={() => setCurrentSlide(i)}
+                style={{
+                  width: currentSlide === i ? '24px' : '8px',
+                  height: '8px',
+                  borderRadius: '4px',
+                  border: 'none',
+                  background: currentSlide === i ? '#D4AF37' : '#30363d',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  padding: 0,
+                }}
+                aria-label={`Slide ${i + 1}`}
+              />
+            ))}
+          </div>
+
+          {/* Caption */}
+          <div style={{ textAlign: 'center', marginTop: '12px', minHeight: '40px' }}>
+            <p style={{ fontSize: '14px', color: '#8b949e', margin: 0, lineHeight: '1.5', transition: 'opacity 0.3s' }}>
+              {slideCaptions[currentSlide]}
+            </p>
           </div>
         </div>
       </div>
