@@ -500,7 +500,12 @@ function EditableComparisonTable({ listings, removeFromCompare, clearCompare }) 
   };
 
   const setFieldValue = (listingId, key, value) => {
-    setOverrides(prev => ({ ...prev, [`${listingId}-${key}`]: value }));
+    console.log('[Compare] Setting override:', { listingId, key, value });
+    setOverrides(prev => {
+      const newOverrides = { ...prev, [`${listingId}-${key}`]: value };
+      console.log('[Compare] New overrides state:', newOverrides);
+      return newOverrides;
+    });
   };
 
   const parseCurrency = (val) => {
@@ -517,8 +522,11 @@ function EditableComparisonTable({ listings, removeFromCompare, clearCompare }) 
     const rawPrice = getFieldValue(listing, 'price');
     const price = parseCurrency(rawPrice);
     
-    const rawFees = getFieldValue(listing, 'poSalary');
+    // Try both field names (API uses poSalary, but fallback to fees if needed)
+    const rawFees = getFieldValue(listing, 'poSalary') || getFieldValue(listing, 'fees');
     const fees = parseCurrency(rawFees);
+    
+    console.log('[Compare] Valuation calc for listing', listing.id, ':', { rawPrice, price, rawFees, fees, result: price && fees ? (price/fees).toFixed(1) : '—' });
     
     if (!price || !fees || fees === 0) return '—';
     return (price / fees).toFixed(1) + 'x';
