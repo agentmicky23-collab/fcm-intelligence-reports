@@ -68,6 +68,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: true, subscriber: data });
   } catch (err) {
     console.error('Error saving preferences:', err);
-    return res.status(500).json({ error: 'Failed to save preferences' });
+    return res.status(500).json({ error: 'Failed to save preferences', detail: err?.message || String(err) });
   }
 }
