@@ -107,6 +107,21 @@ export async function POST(req: NextRequest) {
             .insert(subscriberData);
           console.log(`Created insider subscriber: ${subEmail}`);
         }
+
+        // After subscriber created successfully, send welcome email
+        try {
+          fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/email-insider-welcome`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: subEmail,
+              name: subscriberData.name,
+              tier: subscriberData.tier,
+            }),
+          });
+        } catch (e) {
+          console.error('Failed to send welcome email:', e);
+        }
       }
 
       return NextResponse.json({ received: true });
@@ -173,14 +188,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Database error' }, { status: 500 });
     }
 
+    console.log(`✅ Order ${orderId} created in Supabase`);
+
+    // After order created successfully, send confirmation email
+    try {
+      fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/email-order-confirmed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: orderId,
+          email: session.customer_details?.email || metadata.customer_email || '',
+          name: session.customer_details?.name || '',
+          tier: metadata.tier || 'unknown',
+          businessName: metadata.business_name || 'Unknown Business',
+        }),
+      });
+    } catch (e) {
+      console.error('Failed to send order confirmation email:', e);
+    }
+
     // Log notification for Discord
     await supabase.from('notifications').insert({
       order_id: orderId,
       event: 'order_received',
       message: `🆕 **New Order #${orderId}**\n📋 ${metadata.tier?.charAt(0).toUpperCase()}${metadata.tier?.slice(1)} Report (£${price})\n🏢 ${metadata.business_name || 'Unknown'}\n📍 ${metadata.postcode || 'No postcode'}, ${metadata.town_city || ''}\n📧 ${session.customer_details?.email || metadata.customer_email || 'unknown'}`,
     });
-
-    console.log(`✅ Order ${orderId} created in Supabase`);
 
     // Trigger pipeline
     try {
