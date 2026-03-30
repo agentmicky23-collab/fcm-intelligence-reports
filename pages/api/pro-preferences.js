@@ -40,7 +40,6 @@ export default async function handler(req, res) {
         tenure_preference: tenure_preference || 'any',
         experience_level: experience_level || null,
         timeline: timeline || null,
-        updated_at: new Date().toISOString(),
       })
       .eq('email', session.email.toLowerCase())
       .select()
