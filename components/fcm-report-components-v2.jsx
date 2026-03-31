@@ -751,9 +751,27 @@ function Section3({ data, pageNum }) {
         const savings = aa.savings || [];
         const valCtx = aa.valuation_context;
 
-        // Top 5 costs for donut
-        const sortedCosts = [...costs].sort((a, b) => (b.annual || 0) - (a.annual || 0)).slice(0, 5);
-        const donutData = sortedCosts.map(c => c.annual || 0);
+        // Build revenue rows from Sage's named-key format (no streams array)
+        const revenueRows = [];
+        if (rev.po_remuneration) revenueRows.push({ name: "PO Remuneration", amount: rev.po_remuneration.amount, source: rev.po_remuneration.source, notes: rev.po_remuneration.notes });
+        if (rev.retail_sales) revenueRows.push({ name: "Retail Sales", amount: rev.retail_sales.amount, source: rev.retail_sales.source, notes: rev.retail_sales.notes });
+        if (rev.other_income) revenueRows.push({ name: "Other Income", amount: rev.other_income.amount, source: rev.other_income.source, notes: rev.other_income.notes });
+        // Legacy streams array fallback
+        if (rev.streams && rev.streams.length > 0 && revenueRows.length === 0) {
+          rev.streams.forEach(s => revenueRows.push({ name: s.source || s.name, amount: s.annual, source: s.data_source, notes: s.notes }));
+        }
+        const hasRevenueRows = revenueRows.length > 0;
+
+        // Normalise profitability — Sage sends objects { amount, margin, verdict }, legacy sends flat values
+        const profAdjusted = (prof.adjusted_profit && typeof prof.adjusted_profit === "object") ? prof.adjusted_profit : { amount: prof.adjusted_profit, margin: prof.adjusted_margin, verdict: prof.adjusted_verdict };
+        const profOperating = (prof.operating_profit && typeof prof.operating_profit === "object") ? prof.operating_profit : (prof.as_listed || { amount: prof.operating_profit });
+        const profOptimised = (prof.optimised_profit && typeof prof.optimised_profit === "object") ? prof.optimised_profit : (prof.optimised || { amount: prof.optimised_profit });
+        const profGross = (prof.gross_profit && typeof prof.gross_profit === "object") ? prof.gross_profit : { amount: prof.gross_profit };
+        const monthlyTH = prof.monthly_take_home || {};
+
+        // Top 5 costs for donut — use .amount (Sage) with .annual fallback (legacy)
+        const sortedCosts = [...costs].sort((a, b) => (b.amount || b.annual || 0) - (a.amount || a.annual || 0)).slice(0, 5);
+        const donutData = sortedCosts.map(c => c.amount || c.annual || 0);
         const donutLabels = sortedCosts.map(c => c.category || c.name);
         const donutTotal = donutData.reduce((s, v) => s + v, 0);
 
@@ -771,12 +789,12 @@ function Section3({ data, pageNum }) {
             {/* 3 Summary Metric Cards */}
             <StatBoxes items={[
               { label: "TOTAL REVENUE (ANNUAL)", value: fmt(rev.total_revenue) },
-              { label: "ADJUSTED NET PROFIT", value: fmt(prof.adjusted_profit) + (prof.adjusted_margin ? ` (${prof.adjusted_margin})` : "") },
+              { label: "ADJUSTED NET PROFIT", value: fmt(profAdjusted.amount) + (profAdjusted.margin != null ? ` (${profAdjusted.margin}%)` : "") },
               { label: "POTENTIAL SAVINGS", value: fmt(aa.total_savings) },
             ]} />
 
             {/* Revenue Table */}
-            {rev.streams && rev.streams.length > 0 && (
+            {hasRevenueRows && (
               <>
                 <SubTitle>Revenue Breakdown</SubTitle>
                 <div style={{ borderRadius: 8, overflow: "hidden", marginBottom: 20, border: `1px solid ${T.offWhite}` }}>
@@ -789,13 +807,13 @@ function Section3({ data, pageNum }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {rev.streams.map((s, ri) => (
+                      {revenueRows.map((s, ri) => (
                         <tr key={ri} style={{ background: ri % 2 === 0 ? T.white : "#FAFAF8" }}>
-                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{s.source || s.name}</td>
-                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(s.annual)}</td>
-                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(s.monthly)}</td>
+                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{s.name}</td>
+                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(s.amount)}</td>
+                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(s.amount != null ? Math.round(s.amount / 12) : null)}</td>
                           <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>
-                            {s.data_source && <span style={pillStyle(s.data_source)}>{s.data_source}</span>}
+                            {s.source && <span style={pillStyle(s.source)}>{s.source}</span>}
                           </td>
                         </tr>
                       ))}
@@ -803,7 +821,7 @@ function Section3({ data, pageNum }) {
                       <tr style={{ background: T.offWhite }}>
                         <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>TOTAL</td>
                         <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(rev.total_revenue)}</td>
-                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(rev.total_monthly)}</td>
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(rev.total_revenue != null ? Math.round(rev.total_revenue / 12) : null)}</td>
                         <td style={{ padding: "10px 14px", borderBottom: `1px solid ${T.offWhite}` }} />
                       </tr>
                     </tbody>
@@ -831,12 +849,14 @@ function Section3({ data, pageNum }) {
                           <tr style={{ background: ri % 2 === 0 ? T.white : "#FAFAF8" }}>
                             <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>
                               {c.category || c.name}
-                              {c.flags && c.flags.includes("highest_cost") && <span style={pillStyle("highest_cost")}>HIGHEST</span>}
-                              {c.flags && c.flags.includes("saving_potential") && <span style={pillStyle("saving_potential")}>SAVE</span>}
+                              {c.flag === "highest_cost" && <span style={pillStyle("highest_cost")}>HIGHEST</span>}
+                              {c.flag === "saving_potential" && <span style={pillStyle("saving_potential")}>SAVE</span>}
+                              {c.flags && c.flags.includes && c.flags.includes("highest_cost") && <span style={pillStyle("highest_cost")}>HIGHEST</span>}
+                              {c.flags && c.flags.includes && c.flags.includes("saving_potential") && <span style={pillStyle("saving_potential")}>SAVE</span>}
                             </td>
-                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(c.annual)}</td>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(c.amount || c.annual)}</td>
                             <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(c.monthly)}</td>
-                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmtPct(c.pct_of_revenue || c.percent_of_revenue)}</td>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmtPct(c.pct_revenue || c.pct_of_revenue || c.percent_of_revenue)}</td>
                             <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>
                               {c.source && <span style={pillStyle(c.estimated ? "estimated" : (c.source || "estimated"))}>{c.estimated ? "EST" : c.source}</span>}
                               {!c.source && c.estimated && <span style={pillStyle("estimated")}>EST</span>}
@@ -852,8 +872,8 @@ function Section3({ data, pageNum }) {
                       {/* Total row */}
                       <tr style={{ background: T.offWhite }}>
                         <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>TOTAL COSTS</td>
-                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(aa.total_costs || costs.reduce((s, c) => s + (c.annual || 0), 0))}</td>
-                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(aa.total_costs_monthly || Math.round(costs.reduce((s, c) => s + (c.annual || 0), 0) / 12))}</td>
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(aa.total_costs || costs.reduce((s, c) => s + (c.amount || c.annual || 0), 0))}</td>
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(aa.total_costs_monthly || Math.round(costs.reduce((s, c) => s + (c.amount || c.annual || 0), 0) / 12))}</td>
                         <td colSpan={2} style={{ padding: "10px 14px", borderBottom: `1px solid ${T.offWhite}` }} />
                       </tr>
                     </tbody>
@@ -863,7 +883,7 @@ function Section3({ data, pageNum }) {
             )}
 
             {/* Profitability Summary */}
-            {prof && (prof.operating_profit || prof.adjusted_profit || prof.optimised_profit) && (
+            {prof && (profOperating.amount != null || profAdjusted.amount != null || profOptimised.amount != null) && (
               <>
                 <SubTitle>Profitability Summary</SubTitle>
                 <div style={{ borderRadius: 8, overflow: "hidden", marginBottom: 20, border: `1px solid ${T.offWhite}` }}>
@@ -877,18 +897,18 @@ function Section3({ data, pageNum }) {
                     </thead>
                     <tbody>
                       {[
-                        { label: "Operating Profit (As Listed)", ...(prof.operating_profit || prof.as_listed || {}) },
-                        { label: "Adjusted Profit (Owner-Operator)", amount: prof.adjusted_profit, margin: prof.adjusted_margin, verdict: prof.adjusted_verdict, monthly_take_home: prof.monthly_take_home },
-                        { label: "Optimised Profit (All Savings)", ...(prof.optimised_profit || prof.optimised || {}) },
+                        { label: "Operating Profit (As Listed)", amount: profOperating.amount, margin: profOperating.margin, verdict: profOperating.verdict, monthly_take_home: monthlyTH.as_is },
+                        { label: "Adjusted Profit (Owner-Operator)", amount: profAdjusted.amount, margin: profAdjusted.margin, verdict: profAdjusted.verdict, monthly_take_home: monthlyTH.adjusted },
+                        { label: "Optimised Profit (All Savings)", amount: profOptimised.amount, margin: profOptimised.margin, verdict: profOptimised.verdict, monthly_take_home: monthlyTH.optimised },
                       ].map((row, ri) => {
-                        const amt = row.amount != null ? row.amount : row.annual;
+                        const amt = row.amount;
                         const isNeg = typeof amt === "number" ? amt < 0 : (typeof amt === "string" && amt.startsWith("-"));
                         return (
                           <tr key={ri} style={{ background: ri % 2 === 0 ? T.white : "#FAFAF8" }}>
                             <td style={{ padding: "10px 14px", fontWeight: 600, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{row.label}</td>
                             <td style={{ padding: "10px 14px", fontWeight: 600, color: isNeg ? T.redText : T.greenText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(amt)}</td>
-                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{row.margin || ""}</td>
-                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{row.monthly_take_home ? fmt(row.monthly_take_home) : "—"}</td>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{row.margin != null ? row.margin + "%" : ""}</td>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{row.monthly_take_home != null ? fmt(row.monthly_take_home) : "—"}</td>
                             <td style={{ padding: "10px 14px", borderBottom: `1px solid ${T.offWhite}` }}>
                               {row.verdict && <span style={{ fontWeight: 600, color: verdictColor(row.verdict) }}>{row.verdict}</span>}
                             </td>
@@ -910,7 +930,7 @@ function Section3({ data, pageNum }) {
                 </div>
                 <ChartLegend items={sortedCosts.map((c, i) => ({
                   label: c.category || c.name,
-                  value: donutTotal > 0 ? Math.round((c.annual / donutTotal) * 100) + "%" : "—",
+                  value: donutTotal > 0 ? Math.round(((c.amount || c.annual || 0) / donutTotal) * 100) + "%" : "—",
                   color: cols[i],
                 }))} />
               </div>
@@ -960,7 +980,7 @@ function Section3({ data, pageNum }) {
                 borderRadius: 8, padding: "18px 22px", marginBottom: 20,
               }}>
                 <div style={{ fontFamily: T.display, fontSize: 14, fontWeight: 700, color: T.navy, marginBottom: 10 }}>Valuation Verdict</div>
-                {(valCtx.asking_price || valCtx.adjusted_profit || valCtx.payback_years || valCtx.pe_ratio) && (
+                {(valCtx.asking_price || valCtx.adjusted_profit || valCtx.payback_years || valCtx.pe_ratio || valCtx.price_to_earnings) && (
                   <div style={{ display: "flex", gap: 16, marginBottom: 12, flexWrap: "wrap" }}>
                     {valCtx.asking_price && (
                       <div style={{ background: T.white, borderRadius: 6, padding: "8px 14px", fontSize: 11, fontFamily: T.body }}>
@@ -980,10 +1000,10 @@ function Section3({ data, pageNum }) {
                         <div style={{ fontWeight: 700, color: T.navy }}>{valCtx.payback_years} years</div>
                       </div>
                     )}
-                    {valCtx.pe_ratio && (
+                    {(valCtx.pe_ratio || valCtx.price_to_earnings) && (
                       <div style={{ background: T.white, borderRadius: 6, padding: "8px 14px", fontSize: 11, fontFamily: T.body }}>
                         <div style={{ fontSize: 9, color: T.mutedText, textTransform: "uppercase", letterSpacing: "1px" }}>P/E Ratio</div>
-                        <div style={{ fontWeight: 700, color: T.navy }}>{valCtx.pe_ratio}x</div>
+                        <div style={{ fontWeight: 700, color: T.navy }}>{valCtx.pe_ratio || valCtx.price_to_earnings}x</div>
                       </div>
                     )}
                   </div>
