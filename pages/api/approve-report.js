@@ -73,7 +73,10 @@ export default async function handler(req, res) {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `https://${req.headers.host}`;
     const deliverRes = await fetch(`${baseUrl}/api/deliver-report`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.FCM_PIPELINE_SECRET || "",
+      },
       body: JSON.stringify({ orderId }),
     });
 

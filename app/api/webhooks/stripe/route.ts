@@ -110,7 +110,8 @@ export async function POST(req: NextRequest) {
 
         // After subscriber created successfully, send welcome email
         try {
-          fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/email-insider-welcome`, {
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fcmreport.com';
+          const welcomeRes = await fetch(`${siteUrl}/api/email-insider-welcome`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -119,6 +120,11 @@ export async function POST(req: NextRequest) {
               tier: subscriberData.tier,
             }),
           });
+          if (welcomeRes.ok) {
+            console.log(`✅ Welcome email sent to ${subEmail}`);
+          } else {
+            console.error(`❌ Welcome email failed (${welcomeRes.status}):`, await welcomeRes.text());
+          }
         } catch (e) {
           console.error('Failed to send welcome email:', e);
         }
@@ -192,7 +198,8 @@ export async function POST(req: NextRequest) {
 
     // After order created successfully, send confirmation email
     try {
-      fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/email-order-confirmed`, {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fcmreport.com';
+      const confirmRes = await fetch(`${siteUrl}/api/email-order-confirmed`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -203,6 +210,11 @@ export async function POST(req: NextRequest) {
           businessName: metadata.business_name || 'Unknown Business',
         }),
       });
+      if (confirmRes.ok) {
+        console.log(`✅ Order confirmation email sent for ${orderId}`);
+      } else {
+        console.error(`❌ Order confirmation email failed (${confirmRes.status}):`, await confirmRes.text());
+      }
     } catch (e) {
       console.error('Failed to send order confirmation email:', e);
     }
