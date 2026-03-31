@@ -124,14 +124,14 @@ function RotatingHeadline() {
   );
 }
 
-// Get 3 featured listings with daily rotation
+// Get 6 featured listings with daily rotation
 function getFeaturedListings() {
   const availableListings = listings.filter(listing => isSoldListingVisible(listing));
   const today = new Date();
   const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
-  const startIndex = dayOfYear % Math.max(1, availableListings.length - 2);
+  const startIndex = dayOfYear % Math.max(1, availableListings.length - 5);
   const featured = [];
-  for (let i = 0; i < 3 && i < availableListings.length; i++) {
+  for (let i = 0; i < 6 && i < availableListings.length; i++) {
     const idx = (startIndex + i) % availableListings.length;
     featured.push(availableListings[idx]);
   }
