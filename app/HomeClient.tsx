@@ -229,7 +229,7 @@ export default function HomeClient() {
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm mb-6" style={{ background: 'rgba(201, 162, 39, 0.15)', border: '1px solid #c9a227', color: '#c9a227' }}>
             <span className="flex h-2 w-2 rounded-full bg-[#c9a227] animate-pulse"></span>
-            Trusted by 200+ Buyers Since 2009
+            Trusted by 50+ Buyers Since 2009
           </div>
           <RotatingHeadline />
           <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: '#8b949e' }}>
