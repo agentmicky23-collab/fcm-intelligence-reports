@@ -415,7 +415,7 @@ export default function ReportShowcase() {
 
       {/* ---- TRUST ---- */}
       <div style={{ display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap", paddingBottom: 70 }}>
-        {[{ icon: "🏆", text: "15 years PO ops" }, { icon: "🏢", text: "40 branches" }, { icon: "📊", text: "200+ reports" }, { icon: "🇬🇧", text: "UK based" }].map((t, i) => (
+        {[{ icon: "🏆", text: "15 years PO ops" }, { icon: "🏢", text: "40 branches" }, { icon: "📊", text: "50+ reports" }, { icon: "🇬🇧", text: "UK based" }].map((t, i) => (
           <span key={i} style={{ fontFamily: T.body, fontSize: 13, color: T.lightText, display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ fontSize: 15 }}>{t.icon}</span> {t.text}
           </span>
