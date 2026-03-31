@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const BRAND = {
   dark: '#0d1117',
@@ -644,13 +645,8 @@ function InsiderContent() {
   };
 
   return (
+    <AppLayout>
     <div style={{ background: BRAND.dark, minHeight: '100vh', color: BRAND.textPrimary }}>
-      {/* Back nav */}
-      <div style={{ padding: '24px 24px 0', maxWidth: 900, margin: '0 auto' }}>
-        <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#8b949e', fontSize: '14px', textDecoration: 'none', marginBottom: '24px' }}>
-          ← Back to Home
-        </a>
-      </div>
       {/* Feedback banner */}
       {feedbackBanner && (
         <div style={{
@@ -666,7 +662,7 @@ function InsiderContent() {
       )}
 
       {/* Hero */}
-      <section style={{ padding: '80px 24px 60px', textAlign: 'center', maxWidth: 720, margin: '0 auto' }}>
+      <section style={{ padding: '100px 24px 60px', textAlign: 'center', maxWidth: 720, margin: '0 auto' }}>
         <p style={{ color: BRAND.gold, fontSize: 13, fontWeight: 700, letterSpacing: 2, marginBottom: 20 }}>
           FCM INSIDER
         </p>
@@ -719,6 +715,49 @@ function InsiderContent() {
         </p>
       </section>
 
+      {/* ═══════════════════════════ CONSULTATION SERVICES ═══════════════════════════ */}
+      <section id="services" style={{ padding: '60px 24px', maxWidth: 800, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <div style={{
+            display: 'inline-block', padding: '4px 16px', borderRadius: 20,
+            background: 'rgba(201,162,39,0.2)', border: '1px solid rgba(201,162,39,0.4)',
+            color: BRAND.goldPro, fontSize: 12, fontWeight: 600, letterSpacing: 1,
+            textTransform: 'uppercase', marginBottom: 16,
+          }}>
+            🎓 Insider Services
+          </div>
+          <h2 style={{ color: BRAND.white, fontSize: 26, fontWeight: 800, marginBottom: 8 }}>
+            Consultation &amp; Support Services
+          </h2>
+          <p style={{ color: BRAND.textSecondary, fontSize: 15 }}>
+            All Insiders get <strong style={{ color: BRAND.goldPro }}>15% off</strong> every service below.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20 }}>
+          {[
+            { icon: '📋', title: 'Business Plans', desc: 'Professional business plans for bank lending and Post Office interviews.', price: 'From £299' },
+            { icon: '🎤', title: 'Interview Prep', desc: 'Mock interviews and coaching for Post Office operator interviews.', price: 'From £149' },
+            { icon: '🎓', title: 'Operator Training', desc: 'Hands-on training for new Post Office operators — compliance, systems, day one.', price: 'From £399' },
+            { icon: '💬', title: 'Advisory Calls', desc: 'One-to-one strategy calls with 15+ years of operational experience.', price: 'From £99/hr' },
+          ].map((service, i) => (
+            <div key={i} style={{
+              background: BRAND.cardBg, border: `1px solid ${BRAND.border}`, borderRadius: 12, padding: 24,
+              display: 'flex', flexDirection: 'column',
+            }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>{service.icon}</div>
+              <h3 style={{ color: BRAND.white, fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{service.title}</h3>
+              <p style={{ color: BRAND.textSecondary, fontSize: 13, lineHeight: 1.5, flex: 1, margin: '0 0 12px' }}>{service.desc}</p>
+              <div style={{ fontSize: 14, fontWeight: 600, color: BRAND.goldPro }}>{service.price}</div>
+            </div>
+          ))}
+        </div>
+
+        <p style={{ textAlign: 'center', marginTop: 24, color: BRAND.textSecondary, fontSize: 14 }}>
+          Contact us at <a href="mailto:info@fcmgt.co.uk" style={{ color: BRAND.goldPro, textDecoration: 'none' }}>info@fcmgt.co.uk</a> to enquire about any service.
+        </p>
+      </section>
+
       {/* Already subscribed? Login link */}
       <section style={{ padding: '0 24px 80px', textAlign: 'center' }}>
         <p style={{ fontSize: '14px', color: '#8b949e', textAlign: 'center', marginTop: '16px' }}>
@@ -733,6 +772,7 @@ function InsiderContent() {
         tier={selectedTier}
       />
     </div>
+    </AppLayout>
   );
 }
 

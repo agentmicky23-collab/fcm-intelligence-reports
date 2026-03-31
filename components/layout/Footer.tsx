@@ -4,6 +4,22 @@ import Image from "next/image";
 export function Footer() {
   return (
     <footer className="border-t border-gray-900 bg-black py-12">
+      {/* Contact Section */}
+      <div id="contact" className="container mx-auto px-4 md:px-8 mb-12 pb-12 border-b border-gray-900">
+        <div className="max-w-xl mx-auto text-center">
+          <h3 className="text-lg font-semibold text-primary mb-2">Get in Touch</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Questions about a report, listing, or our services? We&apos;re here to help.
+          </p>
+          <a
+            href="mailto:info@fcmreport.com"
+            className="inline-block px-6 py-3 bg-primary text-black font-semibold text-sm rounded-lg hover:opacity-90 transition-opacity"
+          >
+            Email us — info@fcmreport.com
+          </a>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}

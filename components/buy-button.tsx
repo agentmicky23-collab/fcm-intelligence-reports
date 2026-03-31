@@ -45,10 +45,10 @@ export function BuyButton({ tier = "intelligence", label, className = "btn-prima
         window.location.href = data.url;
       } else {
         alert(data.error || "Checkout unavailable. Redirecting to contact form.");
-        window.location.href = "#contact";
+        window.location.href = "/#contact";
       }
     } catch {
-      window.location.href = "#contact";
+      window.location.href = "/#contact";
     } finally {
       setLoading(false);
     }
