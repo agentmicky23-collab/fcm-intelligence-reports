@@ -6,7 +6,7 @@
 // Single file. No duplicates. Forge-ready.
 // ============================================================
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as Chart from "chart.js";
 
 Chart.Chart.register(
