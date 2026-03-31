@@ -710,7 +710,309 @@ function Section3({ data, pageNum }) {
       )}
       {data.bank_closure_opportunity && <OpportunityCallout>{data.bank_closure_opportunity}</OpportunityCallout>}
       <InsightCallout>{data.key_insight}</InsightCallout>
-      <SourceFooter text={data.sources} />
+
+      {/* ── Adjusted Management Accounts (appended below existing S3 content) ── */}
+      {(() => {
+        const aa = data.adjusted_accounts || (data.content && data.content.adjusted_accounts);
+        if (!aa) return <SourceFooter text={data.sources} />;
+
+        const fmt = (v) => {
+          if (v == null) return "—";
+          if (typeof v === "string") return v;
+          return "£" + Number(v).toLocaleString("en-GB");
+        };
+        const fmtPct = (v) => (v != null ? v + "%" : "");
+        const pillStyle = (variant) => {
+          const map = {
+            "PO contract": { bg: T.gold + "22", color: T.gold, border: T.gold },
+            listing: { bg: T.blueBg, color: T.blueText, border: T.blueText },
+            estimated: { bg: "#EBEBEB", color: T.mutedText, border: T.mutedText },
+            highest_cost: { bg: T.amberBg, color: T.amberText, border: T.amberText },
+            saving_potential: { bg: T.greenBg, color: T.greenText, border: T.greenText },
+          };
+          const m = map[variant] || map.estimated;
+          return {
+            display: "inline-block", fontSize: 9, fontWeight: 600, padding: "2px 8px",
+            borderRadius: 10, background: m.bg, color: m.color, border: `1px solid ${m.border}30`,
+            marginLeft: 4, lineHeight: "16px", verticalAlign: "middle",
+          };
+        };
+        const verdictColor = (v) => {
+          if (!v) return T.darkText;
+          const vl = v.toLowerCase();
+          if (vl === "strong") return T.scoreExcellent;
+          if (vl === "viable") return T.greenText;
+          if (vl === "marginal") return T.amberText;
+          return T.redText;
+        };
+        const rev = aa.revenue || {};
+        const prof = aa.profitability || {};
+        const costs = aa.operating_costs || [];
+        const savings = aa.savings || [];
+        const valCtx = aa.valuation_context;
+
+        // Top 5 costs for donut
+        const sortedCosts = [...costs].sort((a, b) => (b.annual || 0) - (a.annual || 0)).slice(0, 5);
+        const donutData = sortedCosts.map(c => c.annual || 0);
+        const donutLabels = sortedCosts.map(c => c.category || c.name);
+        const donutTotal = donutData.reduce((s, v) => s + v, 0);
+
+        return (
+          <>
+            {/* Divider */}
+            <div style={{ borderTop: `2px solid ${T.gold}`, margin: "32px 0 24px", opacity: 0.5 }} />
+
+            {/* Heading */}
+            <SubTitle>Adjusted Management Accounts</SubTitle>
+            {aa.summary && (
+              <div style={{ fontFamily: T.body, fontSize: 12, color: T.mutedText, lineHeight: 1.65, marginBottom: 20 }}>{aa.summary}</div>
+            )}
+
+            {/* 3 Summary Metric Cards */}
+            <StatBoxes items={[
+              { label: "TOTAL REVENUE (ANNUAL)", value: fmt(rev.total_revenue) },
+              { label: "ADJUSTED NET PROFIT", value: fmt(prof.adjusted_profit) + (prof.adjusted_margin ? ` (${prof.adjusted_margin})` : "") },
+              { label: "POTENTIAL SAVINGS", value: fmt(aa.total_savings) },
+            ]} />
+
+            {/* Revenue Table */}
+            {rev.streams && rev.streams.length > 0 && (
+              <>
+                <SubTitle>Revenue Breakdown</SubTitle>
+                <div style={{ borderRadius: 8, overflow: "hidden", marginBottom: 20, border: `1px solid ${T.offWhite}` }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: T.body, fontSize: 11 }}>
+                    <thead>
+                      <tr style={{ background: T.navy }}>
+                        {["SOURCE", "ANNUAL", "MONTHLY", "DATA SOURCE"].map((h, i) => (
+                          <th key={i} style={{ padding: "10px 14px", color: T.white, fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1px", textAlign: "left" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rev.streams.map((s, ri) => (
+                        <tr key={ri} style={{ background: ri % 2 === 0 ? T.white : "#FAFAF8" }}>
+                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{s.source || s.name}</td>
+                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(s.annual)}</td>
+                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(s.monthly)}</td>
+                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>
+                            {s.data_source && <span style={pillStyle(s.data_source)}>{s.data_source}</span>}
+                          </td>
+                        </tr>
+                      ))}
+                      {/* Total row */}
+                      <tr style={{ background: T.offWhite }}>
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>TOTAL</td>
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(rev.total_revenue)}</td>
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(rev.total_monthly)}</td>
+                        <td style={{ padding: "10px 14px", borderBottom: `1px solid ${T.offWhite}` }} />
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+
+            {/* Operating Costs Table */}
+            {costs.length > 0 && (
+              <>
+                <SubTitle>Operating Costs</SubTitle>
+                <div style={{ borderRadius: 8, overflow: "hidden", marginBottom: 20, border: `1px solid ${T.offWhite}` }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: T.body, fontSize: 11 }}>
+                    <thead>
+                      <tr style={{ background: T.navy }}>
+                        {["CATEGORY", "ANNUAL", "MONTHLY", "% OF REVENUE", "SOURCE"].map((h, i) => (
+                          <th key={i} style={{ padding: "10px 14px", color: T.white, fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1px", textAlign: "left" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {costs.map((c, ri) => (
+                        <React.Fragment key={ri}>
+                          <tr style={{ background: ri % 2 === 0 ? T.white : "#FAFAF8" }}>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>
+                              {c.category || c.name}
+                              {c.flags && c.flags.includes("highest_cost") && <span style={pillStyle("highest_cost")}>HIGHEST</span>}
+                              {c.flags && c.flags.includes("saving_potential") && <span style={pillStyle("saving_potential")}>SAVE</span>}
+                            </td>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(c.annual)}</td>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(c.monthly)}</td>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmtPct(c.pct_of_revenue || c.percent_of_revenue)}</td>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>
+                              {c.source && <span style={pillStyle(c.estimated ? "estimated" : (c.source || "estimated"))}>{c.estimated ? "EST" : c.source}</span>}
+                              {!c.source && c.estimated && <span style={pillStyle("estimated")}>EST</span>}
+                            </td>
+                          </tr>
+                          {c.notes && (
+                            <tr style={{ background: ri % 2 === 0 ? T.white : "#FAFAF8" }}>
+                              <td colSpan={5} style={{ padding: "2px 14px 8px", fontSize: 10, color: T.lightText, borderBottom: `1px solid ${T.offWhite}` }}>{c.notes}</td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      ))}
+                      {/* Total row */}
+                      <tr style={{ background: T.offWhite }}>
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>TOTAL COSTS</td>
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(aa.total_costs || costs.reduce((s, c) => s + (c.annual || 0), 0))}</td>
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(aa.total_costs_monthly || Math.round(costs.reduce((s, c) => s + (c.annual || 0), 0) / 12))}</td>
+                        <td colSpan={2} style={{ padding: "10px 14px", borderBottom: `1px solid ${T.offWhite}` }} />
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+
+            {/* Profitability Summary */}
+            {prof && (prof.operating_profit || prof.adjusted_profit || prof.optimised_profit) && (
+              <>
+                <SubTitle>Profitability Summary</SubTitle>
+                <div style={{ borderRadius: 8, overflow: "hidden", marginBottom: 20, border: `1px solid ${T.offWhite}` }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: T.body, fontSize: 11 }}>
+                    <thead>
+                      <tr style={{ background: T.navy }}>
+                        {["SCENARIO", "ANNUAL PROFIT", "MARGIN", "MONTHLY TAKE-HOME", "VERDICT"].map((h, i) => (
+                          <th key={i} style={{ padding: "10px 14px", color: T.white, fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1px", textAlign: "left" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { label: "Operating Profit (As Listed)", ...(prof.operating_profit || prof.as_listed || {}) },
+                        { label: "Adjusted Profit (Owner-Operator)", amount: prof.adjusted_profit, margin: prof.adjusted_margin, verdict: prof.adjusted_verdict, monthly_take_home: prof.monthly_take_home },
+                        { label: "Optimised Profit (All Savings)", ...(prof.optimised_profit || prof.optimised || {}) },
+                      ].map((row, ri) => {
+                        const amt = row.amount != null ? row.amount : row.annual;
+                        const isNeg = typeof amt === "number" ? amt < 0 : (typeof amt === "string" && amt.startsWith("-"));
+                        return (
+                          <tr key={ri} style={{ background: ri % 2 === 0 ? T.white : "#FAFAF8" }}>
+                            <td style={{ padding: "10px 14px", fontWeight: 600, color: T.navy, borderBottom: `1px solid ${T.offWhite}` }}>{row.label}</td>
+                            <td style={{ padding: "10px 14px", fontWeight: 600, color: isNeg ? T.redText : T.greenText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(amt)}</td>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{row.margin || ""}</td>
+                            <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{row.monthly_take_home ? fmt(row.monthly_take_home) : "—"}</td>
+                            <td style={{ padding: "10px 14px", borderBottom: `1px solid ${T.offWhite}` }}>
+                              {row.verdict && <span style={{ fontWeight: 600, color: verdictColor(row.verdict) }}>{row.verdict}</span>}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+
+            {/* Cost Breakdown Doughnut */}
+            {sortedCosts.length > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: 24, marginBottom: 24, background: T.white, border: `1px solid ${T.offWhite}`, borderRadius: 8, padding: "16px 20px" }}>
+                <div>
+                  <SubTitle>Cost Breakdown</SubTitle>
+                  <DonutChart data={donutData} labels={donutLabels} colors={cols} width={180} height={180} />
+                </div>
+                <ChartLegend items={sortedCosts.map((c, i) => ({
+                  label: c.category || c.name,
+                  value: donutTotal > 0 ? Math.round((c.annual / donutTotal) * 100) + "%" : "—",
+                  color: cols[i],
+                }))} />
+              </div>
+            )}
+
+            {/* Savings Table */}
+            {savings.length > 0 && (
+              <>
+                <SubTitle>Identified Savings</SubTitle>
+                <div style={{ borderRadius: 8, overflow: "hidden", marginBottom: 20, border: `1px solid ${T.offWhite}` }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: T.body, fontSize: 11 }}>
+                    <thead>
+                      <tr style={{ background: T.navy }}>
+                        {["AREA", "CURRENT", "POTENTIAL", "SAVING", "NOTES"].map((h, i) => (
+                          <th key={i} style={{ padding: "10px 14px", color: T.white, fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1px", textAlign: "left" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {savings.map((s, ri) => (
+                        <tr key={ri} style={{ background: ri % 2 === 0 ? T.white : "#FAFAF8" }}>
+                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{s.area || s.name}</td>
+                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(s.current)}</td>
+                          <td style={{ padding: "10px 14px", color: T.darkText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(s.potential)}</td>
+                          <td style={{ padding: "10px 14px", color: T.greenText, fontWeight: 600, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(s.saving)}</td>
+                          <td style={{ padding: "10px 14px", color: T.mutedText, fontSize: 10, borderBottom: `1px solid ${T.offWhite}` }}>{s.notes || ""}</td>
+                        </tr>
+                      ))}
+                      {/* Total row */}
+                      <tr style={{ background: T.greenBg }}>
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.greenText, borderBottom: `1px solid ${T.offWhite}` }}>TOTAL SAVINGS</td>
+                        <td style={{ padding: "10px 14px", borderBottom: `1px solid ${T.offWhite}` }} />
+                        <td style={{ padding: "10px 14px", borderBottom: `1px solid ${T.offWhite}` }} />
+                        <td style={{ padding: "10px 14px", fontWeight: 700, color: T.greenText, borderBottom: `1px solid ${T.offWhite}` }}>{fmt(aa.total_savings || savings.reduce((s, r) => s + (r.saving || 0), 0))}</td>
+                        <td style={{ padding: "10px 14px", borderBottom: `1px solid ${T.offWhite}` }} />
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+
+            {/* Verdict Box */}
+            {valCtx && (
+              <div style={{
+                background: T.navy + "08", border: `1px solid ${T.gold}`, borderLeft: `4px solid ${T.gold}`,
+                borderRadius: 8, padding: "18px 22px", marginBottom: 20,
+              }}>
+                <div style={{ fontFamily: T.display, fontSize: 14, fontWeight: 700, color: T.navy, marginBottom: 10 }}>Valuation Verdict</div>
+                {(valCtx.asking_price || valCtx.adjusted_profit || valCtx.payback_years || valCtx.pe_ratio) && (
+                  <div style={{ display: "flex", gap: 16, marginBottom: 12, flexWrap: "wrap" }}>
+                    {valCtx.asking_price && (
+                      <div style={{ background: T.white, borderRadius: 6, padding: "8px 14px", fontSize: 11, fontFamily: T.body }}>
+                        <div style={{ fontSize: 9, color: T.mutedText, textTransform: "uppercase", letterSpacing: "1px" }}>Asking Price</div>
+                        <div style={{ fontWeight: 700, color: T.navy }}>{fmt(valCtx.asking_price)}</div>
+                      </div>
+                    )}
+                    {valCtx.adjusted_profit && (
+                      <div style={{ background: T.white, borderRadius: 6, padding: "8px 14px", fontSize: 11, fontFamily: T.body }}>
+                        <div style={{ fontSize: 9, color: T.mutedText, textTransform: "uppercase", letterSpacing: "1px" }}>Adj. Profit</div>
+                        <div style={{ fontWeight: 700, color: T.navy }}>{fmt(valCtx.adjusted_profit)}</div>
+                      </div>
+                    )}
+                    {valCtx.payback_years && (
+                      <div style={{ background: T.white, borderRadius: 6, padding: "8px 14px", fontSize: 11, fontFamily: T.body }}>
+                        <div style={{ fontSize: 9, color: T.mutedText, textTransform: "uppercase", letterSpacing: "1px" }}>Payback</div>
+                        <div style={{ fontWeight: 700, color: T.navy }}>{valCtx.payback_years} years</div>
+                      </div>
+                    )}
+                    {valCtx.pe_ratio && (
+                      <div style={{ background: T.white, borderRadius: 6, padding: "8px 14px", fontSize: 11, fontFamily: T.body }}>
+                        <div style={{ fontSize: 9, color: T.mutedText, textTransform: "uppercase", letterSpacing: "1px" }}>P/E Ratio</div>
+                        <div style={{ fontWeight: 700, color: T.navy }}>{valCtx.pe_ratio}x</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {valCtx.verdict && (
+                  <div style={{ fontFamily: T.body, fontSize: 12, color: T.darkText, lineHeight: 1.65 }}>{valCtx.verdict}</div>
+                )}
+                {valCtx.scenarios && valCtx.scenarios.length > 0 && (
+                  <div style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    {valCtx.scenarios.map((sc, i) => (
+                      <div key={i} style={{ background: T.white, borderRadius: 6, padding: "8px 12px", fontSize: 10, fontFamily: T.body, flex: "1 1 140px" }}>
+                        <div style={{ fontWeight: 600, color: T.navy, marginBottom: 4 }}>{sc.label || sc.name}</div>
+                        <div style={{ color: T.mutedText }}>{sc.detail || sc.description || fmt(sc.amount)}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Disclaimer */}
+            {aa.disclaimer && (
+              <div style={{ fontFamily: T.body, fontSize: 9, color: T.lightText, lineHeight: 1.5, marginBottom: 16 }}>{aa.disclaimer}</div>
+            )}
+
+            <SourceFooter text={data.sources} />
+          </>
+        );
+      })()}
     </div>
   );
 }
