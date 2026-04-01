@@ -108,7 +108,7 @@ export default function OpportunitiesClient() {
       {/* ═══════════════════════════ FREE ACCESS BANNER ═══════════════════════════ */}
       {!bannerDismissed && (
         <div
-          className="relative w-full py-3 px-4 text-center"
+          className="relative w-full mt-16 py-3 px-4 text-center z-40"
           style={{
             background: 'linear-gradient(135deg, #D4AF37 0%, #c9a227 50%, #b8960f 100%)',
             color: '#0d1117',
@@ -146,7 +146,7 @@ export default function OpportunitiesClient() {
 
       {/* ═══════════════════════════ HERO (COMPACT) ═══════════════════════════ */}
       <section 
-        className="relative pt-24 pb-12 md:pt-32 md:pb-16" 
+        className={`relative pb-12 md:pb-16 ${bannerDismissed ? 'pt-24 md:pt-32 mt-16' : 'pt-12 md:pt-16'}`}
         style={{ background: 'linear-gradient(180deg, #1e3a5f 0%, #0d1117 100%)' }}
       >
         <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(201, 162, 39, 0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
