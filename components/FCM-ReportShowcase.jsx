@@ -407,7 +407,7 @@ export default function ReportShowcase() {
           <div style={{ fontFamily: T.heading, fontSize: 20, fontWeight: 700, color: T.white, marginBottom: 6 }}>Work with us</div>
           <div style={{ fontFamily: T.body, fontSize: 14, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>More reports. More knowledge. Volume pricing, priority turnaround, white-label ready.</div>
         </div>
-        <a href="mailto:brokers@fcmreport.com?subject=Broker%20Account%20Enquiry" style={{
+        <a href="mailto:info@fcmreport.com?subject=Broker%20Account%20Enquiry" style={{
           fontFamily: T.body, fontSize: 14, fontWeight: 600, color: T.gold, textDecoration: "none",
           border: "1px solid rgba(201,162,39,0.25)", padding: "14px 22px", borderRadius: 8, whiteSpace: "nowrap",
         }}>Broker account →</a>

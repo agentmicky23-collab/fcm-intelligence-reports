@@ -130,10 +130,15 @@ function getFeaturedListings() {
   const today = new Date();
   const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
   const startIndex = dayOfYear % Math.max(1, availableListings.length - 5);
-  const featured = [];
-  for (let i = 0; i < 6 && i < availableListings.length; i++) {
+  const featured: typeof availableListings = [];
+  const seenIds = new Set<string>();
+  for (let i = 0; featured.length < 6 && i < availableListings.length; i++) {
     const idx = (startIndex + i) % availableListings.length;
-    featured.push(availableListings[idx]);
+    const listing = availableListings[idx];
+    if (!seenIds.has(listing.id)) {
+      seenIds.add(listing.id);
+      featured.push(listing);
+    }
   }
   return featured;
 }
@@ -204,10 +209,7 @@ function CountUp({ target, suffix = "", duration = 6000, delay = 6000 }: { targe
   }, [hasAnimated, target, duration, delay]);
 
   return (
-    <span ref={ref}>
-      <span className="sr-only">{target}{suffix}</span>
-      <span aria-hidden="true">{count}{suffix}</span>
-    </span>
+    <span ref={ref}>{count}{suffix}</span>
   );
 }
 
@@ -255,7 +257,7 @@ export default function HomeClient() {
               <div className="text-sm font-medium uppercase tracking-wider" style={{ color: '#8b949e' }}>Branches Operated</div>
             </div>
             <div>
-              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}><CountUp target={200} suffix="+" /></div>
+              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}><CountUp target={50} suffix="+" /></div>
               <div className="text-sm font-medium uppercase tracking-wider" style={{ color: '#8b949e' }}>Reports Delivered</div>
             </div>
             <div>
