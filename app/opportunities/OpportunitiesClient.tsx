@@ -16,6 +16,7 @@ export default function OpportunitiesClient() {
   const [budget, setBudget] = useState<string>('all');
   const [insiderOnly, setInsiderOnly] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   // Get unique regions from listings
   const regions = useMemo(() => {
@@ -104,6 +105,45 @@ export default function OpportunitiesClient() {
 
   return (
     <AppLayout>
+      {/* ═══════════════════════════ FREE ACCESS BANNER ═══════════════════════════ */}
+      {!bannerDismissed && (
+        <div
+          className="relative w-full py-3 px-4 text-center"
+          style={{
+            background: 'linear-gradient(135deg, #D4AF37 0%, #c9a227 50%, #b8960f 100%)',
+            color: '#0d1117',
+          }}
+        >
+          <div className="container mx-auto px-4 flex items-center justify-center gap-4 flex-wrap">
+            <p className="text-sm md:text-base font-semibold" style={{ color: '#0d1117' }}>
+              Free access for now — Soon you&apos;ll need an Insider subscription to view these opportunities. Subscribe today to lock in early access.
+            </p>
+            <Link
+              href="/insider"
+              className="inline-flex items-center px-5 py-2 rounded-lg text-sm font-bold transition-all hover:opacity-90"
+              style={{
+                background: '#0d1117',
+                color: '#D4AF37',
+                border: '1px solid #0d1117',
+              }}
+            >
+              Subscribe →
+            </Link>
+          </div>
+          <button
+            onClick={() => setBannerDismissed(true)}
+            className="absolute top-1/2 right-3 -translate-y-1/2 p-1 rounded-full transition-all hover:bg-black/10"
+            style={{ color: '#0d1117', lineHeight: 1 }}
+            aria-label="Dismiss banner"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       {/* ═══════════════════════════ HERO (COMPACT) ═══════════════════════════ */}
       <section 
         className="relative pt-24 pb-12 md:pt-32 md:pb-16" 
