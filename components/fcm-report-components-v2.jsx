@@ -497,7 +497,7 @@ function CoverPage({ data, pageNum, coverImage }) {
         {coverImage?.url ? (
           <img
             src={coverImage.url}
-            alt={coverImage.caption || 'Business exterior'}
+            alt={coverImage.caption || 'Business exterior photograph for acquisition report'}
             style={{ width: '100%', height: 260, objectFit: 'cover', display: 'block' }}
             onError={(e) => {
               e.target.style.display = 'none';
@@ -1109,7 +1109,7 @@ function Section5({ data, pageNum, images }) {
               <div key={i} style={{ borderRadius: 10, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
                 <img
                   src={photo.url}
-                  alt={photo.caption || 'Google Business photo'}
+                  alt={photo.caption || 'Google Business listing photo of the premises'}
                   style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }}
                   loading="lazy"
                   onError={(e) => { e.target.style.display = 'none'; }}
@@ -1216,7 +1216,7 @@ function Section6({ data, pageNum, images }) {
                   <div key={i} style={{ borderRadius: 12, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
                     <img
                       src={p.url}
-                      alt={p.caption || `Photo ${i+1}`}
+                      alt={p.caption || `Business premises photo ${i+1}`}
                       style={{ width: '100%', height: 200, objectFit: 'cover', display: 'block' }}
                       loading="lazy"
                       onError={(e) => { e.target.parentElement.style.display = 'none'; }}
@@ -1265,7 +1265,7 @@ function Section6({ data, pageNum, images }) {
             <div key={i} style={{ borderRadius: 12, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
               <img
                 src={map.url}
-                alt={map.caption || 'Location map'}
+                alt={map.caption || 'Area map showing business location and surroundings'}
                 style={{ width: '100%', height: 'auto', display: 'block' }}
                 loading="lazy"
                 onError={(e) => { e.target.parentElement.style.display = 'none'; }}
@@ -1286,7 +1286,7 @@ function Section6({ data, pageNum, images }) {
             <div key={i} style={{ borderRadius: 12, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
               <img
                 src={sv.url}
-                alt={sv.caption || 'Street View'}
+                alt={sv.caption || 'Google Street View of the business premises'}
                 style={{ width: '100%', height: 220, objectFit: 'cover', display: 'block' }}
                 loading="lazy"
                 onError={(e) => { e.target.parentElement.style.display = 'none'; }}
@@ -1449,7 +1449,7 @@ function Section8({ data, pageNum, images = {} }) {
         <div style={{ marginBottom: 20, borderRadius: 10, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
           <img
             src={images.crime_heatmap.url}
-            alt={images.crime_heatmap.caption || 'Crime density heatmap'}
+            alt={images.crime_heatmap.caption || 'Crime density heatmap showing incident hotspots around business location'}
             style={{ width: '100%', display: 'block' }}
             loading="lazy"
           />
@@ -1784,7 +1784,7 @@ function Section9({ data, pageNum, images = {} }) {
           <div style={{ marginBottom: 12, borderRadius: 10, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
             <img
               src={images.competition_map.url}
-              alt={images.competition_map.caption || 'Competition map'}
+              alt={images.competition_map.caption || 'Competition map showing nearby rival businesses and Post Office branches'}
               style={{ width: '100%', display: 'block' }}
               loading="lazy"
               onError={(e) => { e.target.parentElement.style.display = 'none'; }}
@@ -1905,7 +1905,7 @@ function Section10({ data, pageNum, images = {} }) {
         <div style={{ marginBottom: 20, borderRadius: 10, overflow: 'hidden', border: `1px solid ${T.offWhite}` }}>
           <img
             src={images.footfall_map.url}
-            alt={images.footfall_map.caption || 'Footfall generator map'}
+            alt={images.footfall_map.caption || 'Footfall generator map showing schools, healthcare, transport, and retail nearby'}
             style={{ width: '100%', display: 'block' }}
             loading="lazy"
             onError={(e) => { e.target.parentElement.style.display = 'none'; }}

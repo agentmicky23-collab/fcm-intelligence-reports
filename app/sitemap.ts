@@ -1,58 +1,68 @@
-// app/sitemap.js
-// Next.js 16 App Router — auto-generates /sitemap.xml
+import { MetadataRoute } from 'next'
 
-export default function sitemap() {
-  const baseUrl = 'https://fcmreport.com';
-  const now = new Date().toISOString();
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = 'https://fcmreport.com'
 
   return [
     {
       url: baseUrl,
-      lastModified: now,
+      lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 1.0,
+      priority: 1,
     },
     {
       url: `${baseUrl}/reports`,
-      lastModified: now,
-      changeFrequency: 'weekly',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/opportunities`,
-      lastModified: now,
+      lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/insider`,
-      lastModified: now,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/pro`,
+      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
+      url: `${baseUrl}/report/2026-03-31-001`,
+      lastModified: new Date(),
+      changeFrequency: 'never',
+      priority: 0.6,
+    },
+    {
       url: `${baseUrl}/terms`,
-      lastModified: '2026-03-28',
+      lastModified: new Date(),
       changeFrequency: 'yearly',
-      priority: 0.2,
+      priority: 0.3,
     },
     {
       url: `${baseUrl}/privacy`,
-      lastModified: '2026-03-28',
+      lastModified: new Date(),
       changeFrequency: 'yearly',
-      priority: 0.2,
+      priority: 0.3,
     },
     {
       url: `${baseUrl}/cookies`,
-      lastModified: '2026-03-28',
+      lastModified: new Date(),
       changeFrequency: 'yearly',
-      priority: 0.2,
+      priority: 0.3,
     },
     {
       url: `${baseUrl}/refunds`,
-      lastModified: '2026-03-28',
+      lastModified: new Date(),
       changeFrequency: 'yearly',
-      priority: 0.2,
+      priority: 0.3,
     },
-  ];
+  ]
 }

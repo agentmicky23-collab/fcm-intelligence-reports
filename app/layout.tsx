@@ -43,7 +43,7 @@ export const metadata: Metadata = {
       'Data-driven intelligence reports for retail business acquisitions. 35+ live opportunities. 15 years industry experience.',
     images: [
       {
-        url: '/og-image.png',
+        url: 'https://fcmreport.com/og-image.png',
         width: 1200,
         height: 630,
         alt: 'FCM Intelligence — Retail Business Due Diligence Reports',
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     title: 'Retail Business Due Diligence Reports & Listings | FCM Intelligence',
     description:
       'Data-driven intelligence reports for retail business acquisitions. 35+ live opportunities with verified due diligence.',
-    images: ['/og-image.png'],
+    images: ['https://fcmreport.com/og-image.png'],
   },
   robots: {
     index: true,

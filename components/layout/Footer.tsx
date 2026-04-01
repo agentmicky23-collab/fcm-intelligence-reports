@@ -26,7 +26,7 @@ export function Footer() {
           <div>
             <Image
               src="/images/logo-transparent.png"
-              alt="FCM Intelligence"
+              alt="FCM Intelligence logo"
               width={120}
               height={40}
               className="h-8 w-auto mb-4"
