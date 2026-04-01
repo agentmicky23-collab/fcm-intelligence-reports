@@ -342,6 +342,14 @@ export default function MissionControlClient() {
   const [agentStats, setAgentStats] = useState(null);
   const [actionMsg, setActionMsg] = useState("");
 
+  // Listings & Scraping state
+  const [listingsStats, setListingsStats] = useState(null);
+  const [scraperStatus, setScraperStatus] = useState(null);
+  const [recentListings, setRecentListings] = useState([]);
+  const [listingsFilter, setListingsFilter] = useState({ broker: "all", category: "all", status: "all" });
+  const [scraperPolling, setScraperPolling] = useState(false);
+  const [logsVisible, setLogsVisible] = useState(false);
+
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("fcm_admin") === "true") setAuthed(true);
   }, []);
@@ -373,6 +381,80 @@ export default function MissionControlClient() {
     try { setSubscribers(await apiFetch("/api/admin/subscribers")); } catch {}
   };
 
+  const fetchListingsStats = async () => {
+    try { setListingsStats(await apiFetch("/api/mission-control/listings-stats")); } catch (e) { console.error("Listings stats error:", e); }
+  };
+
+  const fetchScraperStatus = async () => {
+    try {
+      const s = await apiFetch("/api/mission-control/scraper-status");
+      setScraperStatus(s);
+      if (s.status === "running" && !scraperPolling) {
+        setScraperPolling(true);
+      } else if (s.status !== "running" && scraperPolling) {
+        setScraperPolling(false);
+      }
+    } catch (e) { console.error("Scraper status error:", e); }
+  };
+
+  const fetchRecentListings = async (filters = listingsFilter) => {
+    try {
+      const params = new URLSearchParams();
+      if (filters.broker !== "all") params.set("broker", filters.broker);
+      if (filters.category !== "all") params.set("category", filters.category);
+      if (filters.status !== "all") params.set("status", filters.status);
+      const url = "/api/mission-control/recent-listings" + (params.toString() ? `?${params}` : "");
+      setRecentListings(await apiFetch(url));
+    } catch (e) { console.error("Recent listings error:", e); }
+  };
+
+  const fetchAllListingsData = async () => {
+    await Promise.all([fetchListingsStats(), fetchScraperStatus(), fetchRecentListings()]);
+  };
+
+  const handleTriggerScraper = async () => {
+    try {
+      setActionMsg("Triggering scraper...");
+      await apiFetch("/api/mission-control/trigger-scraper", { method: "POST" });
+      setActionMsg("Scraper triggered!");
+      setScraperPolling(true);
+      fetchScraperStatus();
+      setTimeout(() => setActionMsg(""), 3000);
+    } catch (e) {
+      setActionMsg(e.message.includes("409") ? "Scraper already running" : "Trigger failed: " + e.message);
+      setTimeout(() => setActionMsg(""), 4000);
+    }
+  };
+
+  const handleClearStale = async () => {
+    if (!confirm("Delete all stale listings? This cannot be undone.")) return;
+    try {
+      setActionMsg("Clearing stale listings...");
+      const res = await apiFetch("/api/mission-control/clear-stale", { method: "POST" });
+      setActionMsg(`Cleared ${res.deleted} stale listings`);
+      fetchListingsStats();
+      fetchRecentListings();
+      setTimeout(() => setActionMsg(""), 3000);
+    } catch (e) { setActionMsg("Clear failed: " + e.message); }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      const key = getApiKey();
+      const res = await fetch("/api/mission-control/export-listings", {
+        headers: { "x-api-key": key },
+      });
+      if (!res.ok) throw new Error(`Export failed: ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `fcm-listings-${new Date().toISOString().split("T")[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) { setActionMsg("Export failed: " + e.message); }
+  };
+
   useEffect(() => {
     if (!authed) return;
     fetchAll();
@@ -380,6 +462,27 @@ export default function MissionControlClient() {
     const iv = setInterval(fetchAll, 30000);
     return () => clearInterval(iv);
   }, [authed]);
+
+  // Fetch listings data when tab switches to listings
+  useEffect(() => {
+    if (!authed || tab !== "listings") return;
+    fetchAllListingsData();
+  }, [authed, tab]);
+
+  // Poll scraper status every 30s when running
+  useEffect(() => {
+    if (!scraperPolling || tab !== "listings") return;
+    const iv = setInterval(() => {
+      fetchScraperStatus();
+      fetchListingsStats();
+    }, 30000);
+    return () => clearInterval(iv);
+  }, [scraperPolling, tab]);
+
+  // Refetch listings when filters change
+  useEffect(() => {
+    if (tab === "listings" && authed) fetchRecentListings(listingsFilter);
+  }, [listingsFilter]);
 
   const handleApprove = async (orderId) => {
     try {
@@ -455,6 +558,7 @@ export default function MissionControlClient() {
     { id: "hq", label: "HQ" },
     { id: "squad", label: "Agent squad" },
     { id: "pipeline", label: "Pipeline" },
+    { id: "listings", label: "Listings & Scraping" },
     { id: "biz", label: "Business" },
   ];
 
@@ -486,7 +590,7 @@ export default function MissionControlClient() {
       {/* Tabs */}
       <div style={{ display: "flex", gap: 4, marginBottom: 24 }}>
         {tabs.map(t => (
-          <button key={t.id} onClick={() => { setTab(t.id); if (t.id === "biz") fetchSubscribers(); }} style={{
+          <button key={t.id} onClick={() => { setTab(t.id); if (t.id === "biz") fetchSubscribers(); if (t.id === "listings") fetchAllListingsData(); }} style={{
             fontSize: 13, padding: "8px 18px", borderRadius: 8, border: tab === t.id ? "none" : `1px solid ${BORDER}`,
             background: tab === t.id ? `${GOLD}15` : "transparent",
             color: tab === t.id ? GOLD : MUTED, cursor: "pointer", fontWeight: tab === t.id ? 600 : 400,
@@ -494,6 +598,7 @@ export default function MissionControlClient() {
           }}>
             {t.label}
             {t.id === "pipeline" && awaitingOrders.length > 0 && <span style={{ marginLeft: 6, fontSize: 10, padding: "1px 6px", borderRadius: 99, background: `${GOLD}20`, color: GOLD }}>{awaitingOrders.length}</span>}
+            {t.id === "listings" && listingsStats?.totalStale > 0 && <span style={{ marginLeft: 6, fontSize: 10, padding: "1px 6px", borderRadius: 99, background: `${RED}20`, color: RED }}>{listingsStats.totalStale} stale</span>}
           </button>
         ))}
       </div>
@@ -596,6 +701,255 @@ export default function MissionControlClient() {
         <div style={{ animation: "slideUp 0.3s ease" }}>
           {orders.length === 0 && <div style={{ color: MUTED, fontSize: 14, padding: 20, textAlign: "center" }}>No orders yet</div>}
           {orders.map(o => <OrderCard key={o.id} order={o} onApprove={handleApprove} onAgentAction={handleAgentAction} />)}
+        </div>
+      )}
+
+      {/* LISTINGS & SCRAPING TAB */}
+      {tab === "listings" && (
+        <div style={{ animation: "slideUp 0.3s ease" }}>
+          {/* Section 1: Real-time Stats */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
+            {[
+              { label: "Total Active", val: listingsStats?.totalActive ?? "—", icon: "📊", color: GREEN },
+              { label: "Scraped All-Time", val: listingsStats?.totalAllTime ?? "—", icon: "🔍", color: BLUE },
+              { label: "Stale Listings", val: listingsStats?.totalStale ?? "—", icon: "⚠️", color: listingsStats?.totalStale > 0 ? RED : MUTED },
+              { label: "Last Updated", val: listingsStats?.lastUpdated ? new Date(listingsStats.lastUpdated).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—", icon: "🕐", color: MUTED },
+            ].map((m, i) => (
+              <div key={i} style={{ background: CARD, borderRadius: 12, padding: 20, border: `1px solid ${BORDER}` }}>
+                <div style={{ fontSize: 11, color: MUTED, marginBottom: 8 }}>{m.icon} {m.label}</div>
+                <div style={{ fontSize: i === 3 ? 16 : 32, fontWeight: 700, color: m.color, fontFamily: i < 3 ? "'JetBrains Mono', monospace" : "inherit" }}>{m.val}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Section 2: Breakdown Stats */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginBottom: 24 }}>
+            {/* By Broker */}
+            <div style={{ background: CARD, borderRadius: 12, padding: 20, border: `1px solid ${BORDER}` }}>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ color: GOLD }}>⬡</span> By Broker
+              </div>
+              {listingsStats?.byBroker ? Object.entries(listingsStats.byBroker).sort((a, b) => b[1] - a[1]).map(([broker, count], i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: `1px solid ${BORDER}30` }}>
+                  <span style={{ fontSize: 13, color: TEXT }}>{broker}</span>
+                  <span style={{ fontSize: 13, fontFamily: "'JetBrains Mono', monospace", color: GOLD, fontWeight: 600 }}>{count}</span>
+                </div>
+              )) : <div style={{ color: MUTED, fontSize: 12 }}>Loading...</div>}
+            </div>
+
+            {/* By Category */}
+            <div style={{ background: CARD, borderRadius: 12, padding: 20, border: `1px solid ${BORDER}` }}>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ color: BLUE }}>◆</span> By Category
+              </div>
+              {listingsStats?.byCategory ? Object.entries(listingsStats.byCategory).sort((a, b) => b[1] - a[1]).map(([cat, count], i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: `1px solid ${BORDER}30` }}>
+                  <span style={{ fontSize: 13, color: TEXT }}>{cat}</span>
+                  <span style={{ fontSize: 13, fontFamily: "'JetBrains Mono', monospace", color: BLUE, fontWeight: 600 }}>{count}</span>
+                </div>
+              )) : <div style={{ color: MUTED, fontSize: 12 }}>Loading...</div>}
+            </div>
+
+            {/* By Region */}
+            <div style={{ background: CARD, borderRadius: 12, padding: 20, border: `1px solid ${BORDER}` }}>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ color: TEAL }}>●</span> By Region
+              </div>
+              {listingsStats?.byRegion ? Object.entries(listingsStats.byRegion).map(([region, count], i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: `1px solid ${BORDER}30` }}>
+                  <span style={{ fontSize: 13, color: TEXT }}>{region}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ width: 60, height: 4, borderRadius: 2, background: `${BORDER}60`, overflow: "hidden" }}>
+                      <div style={{ width: `${Math.min(100, (count / (listingsStats.totalActive || 1)) * 100)}%`, height: "100%", borderRadius: 2, background: TEAL }} />
+                    </div>
+                    <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: TEAL, fontWeight: 600, minWidth: 20, textAlign: "right" }}>{count}</span>
+                  </div>
+                </div>
+              )) : <div style={{ color: MUTED, fontSize: 12 }}>Loading...</div>}
+            </div>
+          </div>
+
+          {/* Section 3: Scraper Monitoring */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <span style={{ fontSize: 15, fontWeight: 600 }}>Scraper Status</span>
+            {scraperStatus?.status === "running" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: GREEN, animation: "pulse 1.5s infinite" }} />}
+          </div>
+          <div style={{ background: CARD, border: `1px solid ${scraperStatus?.status === "running" ? `${GREEN}40` : scraperStatus?.status === "error" ? `${RED}40` : BORDER}`, borderRadius: 16, padding: 24, marginBottom: 24 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 16, marginBottom: 20 }}>
+              <div>
+                <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Status</div>
+                <span style={{
+                  fontSize: 13, padding: "4px 12px", borderRadius: 99, fontWeight: 600,
+                  background: scraperStatus?.status === "running" ? `${GREEN}15` : scraperStatus?.status === "error" ? `${RED}15` : `${MUTED}15`,
+                  color: scraperStatus?.status === "running" ? GREEN : scraperStatus?.status === "error" ? RED : MUTED,
+                }}>
+                  {scraperStatus?.status === "running" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: GREEN, display: "inline-block", animation: "pulse 1.5s infinite", marginRight: 6 }} />}
+                  {(scraperStatus?.status || "idle").charAt(0).toUpperCase() + (scraperStatus?.status || "idle").slice(1)}
+                </span>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Last Run</div>
+                <div style={{ fontSize: 14, fontWeight: 500 }}>{scraperStatus?.lastRun ? new Date(scraperStatus.lastRun).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Duration</div>
+                <div style={{ fontSize: 14, fontWeight: 500, fontFamily: "'JetBrains Mono', monospace" }}>{scraperStatus?.duration || "—"}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Next Run</div>
+                <div style={{ fontSize: 14, fontWeight: 500 }}>{scraperStatus?.nextRun || "Manual only"}</div>
+              </div>
+            </div>
+
+            {/* Progress stats */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 20 }}>
+              {[
+                { label: "Scraped", val: scraperStatus?.progress?.scraped || 0, color: BLUE },
+                { label: "Filtered", val: scraperStatus?.progress?.filtered || 0, color: GOLD },
+                { label: "Enriched", val: scraperStatus?.progress?.enriched || 0, color: GREEN },
+              ].map((s, i) => (
+                <div key={i} style={{ background: BG, borderRadius: 8, padding: 12, textAlign: "center" }}>
+                  <div style={{ fontSize: 24, fontWeight: 700, color: s.color, fontFamily: "'JetBrains Mono', monospace" }}>{s.val}</div>
+                  <div style={{ fontSize: 11, color: MUTED }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {scraperStatus?.status === "running" && (
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ height: 6, borderRadius: 3, background: `${BORDER}60`, overflow: "hidden" }}>
+                  <div style={{ width: "100%", height: "100%", borderRadius: 3, background: `linear-gradient(90deg, ${GREEN}, ${BLUE}, ${GREEN})`, backgroundSize: "200% 100%", animation: "shimmer 2s linear infinite" }} />
+                </div>
+                <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+              </div>
+            )}
+
+            {scraperStatus?.errorMessage && (
+              <div style={{ fontSize: 12, color: RED, background: `${RED}10`, border: `1px solid ${RED}30`, borderRadius: 8, padding: "8px 12px", marginBottom: 16 }}>
+                ❌ {scraperStatus.errorMessage}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button onClick={handleTriggerScraper} disabled={scraperStatus?.status === "running"} style={{
+                fontSize: 13, padding: "8px 20px", borderRadius: 8, border: "none",
+                background: scraperStatus?.status === "running" ? `${MUTED}30` : GREEN,
+                color: scraperStatus?.status === "running" ? MUTED : "#fff",
+                cursor: scraperStatus?.status === "running" ? "not-allowed" : "pointer", fontWeight: 600, fontFamily: "inherit",
+              }}>
+                {scraperStatus?.status === "running" ? "⏳ Running..." : "▶ Run Scraper Now"}
+              </button>
+              <button onClick={() => setLogsVisible(!logsVisible)} style={{ fontSize: 13, padding: "8px 20px", borderRadius: 8, border: `1px solid ${BORDER}`, background: "transparent", color: MUTED, cursor: "pointer", fontFamily: "inherit" }}>
+                {logsVisible ? "Hide Logs" : "📋 View Logs"}
+              </button>
+              <button style={{ fontSize: 13, padding: "8px 20px", borderRadius: 8, border: `1px solid ${BORDER}`, background: "transparent", color: MUTED, cursor: "pointer", fontFamily: "inherit", opacity: 0.5 }}>
+                ⚙️ Configure Schedule
+              </button>
+            </div>
+
+            {logsVisible && (
+              <div style={{ marginTop: 16, background: BG, borderRadius: 8, padding: 16, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: MUTED, maxHeight: 200, overflowY: "auto", border: `1px solid ${BORDER}` }}>
+                <div>[{new Date().toISOString()}] Scraper log output will appear here when connected to the scraper service.</div>
+                <div style={{ color: `${MUTED}60`, marginTop: 8 }}>Connect the scraper service to stream real-time logs.</div>
+              </div>
+            )}
+          </div>
+
+          {/* Section 4: Recent Listings Table */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+            <span style={{ fontSize: 15, fontWeight: 600 }}>Recent Listings</span>
+            <div style={{ display: "flex", gap: 8 }}>
+              <select value={listingsFilter.broker} onChange={(e) => setListingsFilter(f => ({ ...f, broker: e.target.value }))} style={{ fontSize: 12, padding: "6px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, background: CARD, color: TEXT, cursor: "pointer", fontFamily: "inherit" }}>
+                <option value="all">All Brokers</option>
+                <option value="RightBiz">RightBiz</option>
+                <option value="Daltons">Daltons</option>
+                <option value="Christie">Christie & Co</option>
+                <option value="Kings">Kings</option>
+                <option value="Humberstones">Humberstones</option>
+              </select>
+              <select value={listingsFilter.category} onChange={(e) => setListingsFilter(f => ({ ...f, category: e.target.value }))} style={{ fontSize: 12, padding: "6px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, background: CARD, color: TEXT, cursor: "pointer", fontFamily: "inherit" }}>
+                <option value="all">All Categories</option>
+                <option value="Post Office">Post Office</option>
+                <option value="Convenience Store">Convenience Store</option>
+                <option value="Forecourt / Petrol Station">Forecourt</option>
+              </select>
+              <select value={listingsFilter.status} onChange={(e) => setListingsFilter(f => ({ ...f, status: e.target.value }))} style={{ fontSize: 12, padding: "6px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, background: CARD, color: TEXT, cursor: "pointer", fontFamily: "inherit" }}>
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="stale">Stale</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ background: CARD, borderRadius: 12, border: `1px solid ${BORDER}`, overflow: "hidden", marginBottom: 24 }}>
+            {/* Table header */}
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr 80px", gap: 0, padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, fontSize: 11, color: MUTED, fontWeight: 600 }}>
+              <span>Business Name</span>
+              <span>Broker</span>
+              <span>Price</span>
+              <span>Region</span>
+              <span>Category</span>
+              <span>Updated</span>
+              <span style={{ textAlign: "center" }}>Status</span>
+            </div>
+
+            {recentListings.length === 0 && (
+              <div style={{ padding: 24, textAlign: "center", color: MUTED, fontSize: 13 }}>
+                {listingsStats ? "No listings match the current filters" : "Loading listings..."}
+              </div>
+            )}
+
+            {recentListings.map((listing, i) => (
+              <div key={listing.id || i} style={{
+                display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr 80px", gap: 0,
+                padding: "10px 16px", borderBottom: `1px solid ${BORDER}30`,
+                fontSize: 13, alignItems: "center",
+                transition: "background 0.15s",
+              }}
+                onMouseEnter={(e) => e.currentTarget.style.background = `${BORDER}20`}
+                onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+              >
+                <span style={{ fontWeight: 500, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingRight: 8 }}>{listing.businessName || "—"}</span>
+                <span style={{ color: MUTED }}>{listing.broker}</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", color: GOLD }}>
+                  {listing.price ? `£${Number(listing.price).toLocaleString()}` : listing.priceLabel || "—"}
+                </span>
+                <span style={{ color: MUTED, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{listing.region || "—"}</span>
+                <span style={{ color: MUTED }}>{listing.category}</span>
+                <span style={{ fontSize: 11, color: MUTED }}>
+                  {listing.updatedAt ? new Date(listing.updatedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" }) : "—"}
+                </span>
+                <span style={{ textAlign: "center" }}>
+                  <span style={{
+                    fontSize: 11, padding: "2px 8px", borderRadius: 99, fontWeight: 500,
+                    background: listing.status === "active" ? `${GREEN}15` : `${RED}15`,
+                    color: listing.status === "active" ? GREEN : RED,
+                  }}>
+                    {listing.status || "—"}
+                  </span>
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Section 5: Quick Actions */}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <button onClick={handleExportCSV} style={{ fontSize: 13, padding: "10px 24px", borderRadius: 10, border: `1px solid ${GOLD}40`, background: `${GOLD}10`, color: GOLD, cursor: "pointer", fontWeight: 600, fontFamily: "inherit" }}>
+              📥 Download Listings CSV
+            </button>
+            <button onClick={handleClearStale} disabled={!listingsStats?.totalStale} style={{
+              fontSize: 13, padding: "10px 24px", borderRadius: 10, border: `1px solid ${RED}40`,
+              background: listingsStats?.totalStale ? `${RED}10` : "transparent",
+              color: listingsStats?.totalStale ? RED : MUTED,
+              cursor: listingsStats?.totalStale ? "pointer" : "not-allowed", fontWeight: 600, fontFamily: "inherit",
+            }}>
+              🗑️ Clear {listingsStats?.totalStale || 0} Stale Listings
+            </button>
+            <button onClick={fetchAllListingsData} style={{ fontSize: 13, padding: "10px 24px", borderRadius: 10, border: `1px solid ${BLUE}40`, background: `${BLUE}10`, color: BLUE, cursor: "pointer", fontWeight: 600, fontFamily: "inherit" }}>
+              🔄 Refresh Data
+            </button>
+          </div>
         </div>
       )}
 
