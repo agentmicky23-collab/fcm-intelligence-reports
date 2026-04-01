@@ -174,27 +174,31 @@ function ScoreRing({ score, label, grade, color }: { score: number; label: strin
 /* ── Count-up animation component ── */
 function CountUp({ target, suffix = "", duration = 6000, delay = 6000 }: { target: number; suffix?: string; duration?: number; delay?: number }) {
   const [count, setCount] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
+  const [done, setDone] = useState(false);
+  const hasAnimated = useRef(false);
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || hasAnimated.current) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
-          // Delay the count-up so the rotating headline finishes first
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
           const timer = setTimeout(() => {
             const start = performance.now();
             const animate = (now: number) => {
               const elapsed = now - start;
               const progress = Math.min(elapsed / duration, 1);
-              // ease-out quint — slow dramatic ramp then crisp snap to final value
               const eased = 1 - Math.pow(1 - progress, 5);
-              setCount(Math.round(eased * target));
-              if (progress < 1) requestAnimationFrame(animate);
+              const value = Math.round(eased * target);
+              setCount(value);
+              if (progress < 1) {
+                requestAnimationFrame(animate);
+              } else {
+                setDone(true);
+              }
             };
             requestAnimationFrame(animate);
           }, delay);
@@ -206,10 +210,13 @@ function CountUp({ target, suffix = "", duration = 6000, delay = 6000 }: { targe
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasAnimated, target, duration, delay]);
+  }, [target, duration, delay]);
+
+  // Show suffix only after animation completes to prevent doubled display
+  const displaySuffix = done || count === target ? suffix : '';
 
   return (
-    <span ref={ref}>{count}{suffix}</span>
+    <span ref={ref}>{count}{displaySuffix}</span>
   );
 }
 
@@ -253,7 +260,7 @@ export default function HomeClient() {
               <div className="text-sm font-medium uppercase tracking-wider" style={{ color: '#8b949e' }}>Years Industry Experience</div>
             </div>
             <div>
-              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}><CountUp target={40} /></div>
+              <div className="font-mono text-4xl mb-2" style={{ color: '#c9a227', fontWeight: 700 }}><CountUp target={400} /></div>
               <div className="text-sm font-medium uppercase tracking-wider" style={{ color: '#8b949e' }}>Branches Operated</div>
             </div>
             <div>
@@ -414,7 +421,7 @@ export default function HomeClient() {
             ))}
           </div>
           {/* Mobile: carousel, 1 card at a time */}
-          <div className="max-w-6xl mx-auto">
+          <div className="md:hidden max-w-6xl mx-auto">
             <MobileCarousel autoScrollMs={7000}>
               {featuredListings.map((listing) => (
                 <div key={listing.id} className="px-1">
