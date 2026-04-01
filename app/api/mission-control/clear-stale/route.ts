@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       .from('insider_picks')
       .delete()
       .eq('status', 'stale')
-      .select('id', { count: 'exact' });
+      .select('id');
 
     if (error) throw error;
 

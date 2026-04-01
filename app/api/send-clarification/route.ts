@@ -4,10 +4,13 @@ import { supabase } from '@/lib/supabase';
 import { signClarificationToken } from '@/lib/clarification-jwt';
 import { fcmEmailWrapper, goldButton } from '@/lib/email-template';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 export async function POST(req: NextRequest) {
   try {
+    const resend = getResend();
     // Auth check
     const apiKey = req.headers.get('x-api-key');
     if (apiKey !== process.env.FCM_PIPELINE_SECRET) {
