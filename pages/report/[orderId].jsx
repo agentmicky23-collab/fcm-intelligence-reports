@@ -40,6 +40,8 @@ const supabase = createClient(
 // ============================================================
 // SECTION ORDER — canonical display order for all 15 sections
 // ============================================================
+const SAMPLE_ORDER_ID = '2026-03-31-001';
+
 const SECTION_ORDER = [
   's1_executive_summary',
   's2_financial_analysis',
@@ -281,8 +283,110 @@ function ReportImageGallery({ images }) {
 // ============================================================
 // REPORT VIEWER (main renderer)
 // ============================================================
+// ============================================================
+// SAMPLE REPORT BANNER — shown when viewing the public sample
+// ============================================================
+function SampleReportBanner() {
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, #c9a227, #d4b84a)',
+      borderRadius: 12,
+      padding: '20px 28px',
+      marginBottom: 24,
+      textAlign: 'center',
+      boxShadow: '0 4px 16px rgba(201,162,39,0.3)',
+    }}>
+      <div style={{
+        display: 'inline-block',
+        background: 'rgba(11,29,58,0.15)',
+        borderRadius: 6,
+        padding: '4px 14px',
+        marginBottom: 10,
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: 11,
+        fontWeight: 700,
+        color: '#0B1D3A',
+        textTransform: 'uppercase',
+        letterSpacing: 2,
+      }}>
+        Sample Report
+      </div>
+      <p style={{
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: 14,
+        color: '#0B1D3A',
+        margin: 0,
+        lineHeight: 1.5,
+        fontWeight: 500,
+      }}>
+        This is a sample Intelligence report. Your report will be personalised for your chosen listing.
+      </p>
+      <a
+        href="/reports"
+        style={{
+          display: 'inline-block',
+          marginTop: 12,
+          padding: '10px 24px',
+          background: '#0B1D3A',
+          color: '#c9a227',
+          borderRadius: 8,
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: 13,
+          fontWeight: 600,
+          textDecoration: 'none',
+          transition: 'opacity 0.2s',
+        }}
+      >
+        Order Your Report →
+      </a>
+    </div>
+  );
+}
+
+// ============================================================
+// BLUR HELPER — redact business name/address for sample report
+// ============================================================
+function blurSampleReportData(report) {
+  const blurred = JSON.parse(JSON.stringify(report));
+
+  // Blur business name
+  if (blurred.metadata?.business_name) {
+    blurred.metadata.business_name = blurred.metadata.business_name
+      .replace(/Sale\s*Moor/gi, '████████');
+  }
+
+  // Blur specific address but keep region
+  if (blurred.metadata?.full_address) {
+    blurred.metadata.full_address = blurred.metadata.full_address
+      .replace(/\d+\s+[^,]+,\s*/i, '██ ████████ ████, ')
+      .replace(/Sale\s*Moor/gi, '████████');
+  }
+
+  // Blur in order data too
+  if (blurred.order?.business_name) {
+    blurred.order.business_name = blurred.order.business_name
+      .replace(/Sale\s*Moor/gi, '████████');
+  }
+  if (blurred.order?.business_address) {
+    blurred.order.business_address = blurred.order.business_address
+      .replace(/\d+\s+[^,]+,\s*/i, '██ ████████ ████, ')
+      .replace(/Sale\s*Moor/gi, '████████');
+  }
+
+  // Blur customer details for sample
+  if (blurred.order?.customer_name) {
+    blurred.order.customer_name = 'Sample Customer';
+  }
+  if (blurred.order?.customer_email) {
+    blurred.order.customer_email = 'sample@fcmreport.com';
+  }
+
+  return blurred;
+}
+
 function ReportViewer({ reportData, tier, orderId }) {
-  const report = reportData;
+  const isSample = orderId === SAMPLE_ORDER_ID;
+  const report = isSample ? blurSampleReportData(reportData) : reportData;
   const images = { ...(report?.images || {}) };
 
   // ── Promote maps[] entries into top-level image keys ──
@@ -376,6 +480,7 @@ function ReportViewer({ reportData, tier, orderId }) {
 
       {/* Report container */}
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "24px 16px" }}>
+        {isSample && <SampleReportBanner />}
         <Watermark email={report.order?.customer_email}>
 
           {/* Cover Page */}
@@ -540,6 +645,9 @@ export default function ReportPage({ orderId }) {
   const adminKey = router.query.admin;
   const isAdmin = adminKey === 'fcm-pipeline-2026-secure-key';
 
+  // ── Sample report bypass: order 2026-03-31-001 is publicly viewable ──
+  const isSampleReport = orderId === SAMPLE_ORDER_ID;
+
   // ── DEBUG: Log every render cycle ──
   console.log('[DEBUG] ReportPage render', {
     orderId,  // from getServerSideProps — always available
@@ -569,6 +677,13 @@ export default function ReportPage({ orderId }) {
       return;
     }
 
+    // Sample report bypass — publicly viewable, no auth needed
+    if (isSampleReport) {
+      console.log('[DEBUG] Sample report bypass — fetching public sample');
+      fetchReport(orderId);
+      return;
+    }
+
     try {
       const cached = sessionStorage.getItem(`fcm-verified-${orderId}`);
       console.log('[DEBUG] sessionStorage cached:', cached);
@@ -589,7 +704,7 @@ export default function ReportPage({ orderId }) {
       console.error('[DEBUG] sessionStorage access error:', err);
       setLoading(false);
     }
-  }, [orderId, isAdmin]);
+  }, [orderId, isAdmin, isSampleReport]);
 
   const fetchReport = async (id) => {
     console.log('[DEBUG] fetchReport called for id:', id);
@@ -757,7 +872,7 @@ export default function ReportPage({ orderId }) {
     );
   }
 
-  if (!verified && !isAdmin) {
+  if (!verified && !isAdmin && !isSampleReport) {
     return (
       <>
         <Head>

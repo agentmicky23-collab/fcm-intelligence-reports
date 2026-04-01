@@ -246,7 +246,7 @@ export default function HomeClient() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/reports" className="btn-primary text-lg px-8 py-3 w-full sm:w-auto">View Reports</Link>
-            <Link href="#sample-preview" className="btn-secondary text-lg px-8 py-3 w-full sm:w-auto">See a Sample Report</Link>
+            <Link href="/report/2026-03-31-001" className="btn-secondary text-lg px-8 py-3 w-full sm:w-auto">See a Sample Report</Link>
           </div>
         </div>
       </section>

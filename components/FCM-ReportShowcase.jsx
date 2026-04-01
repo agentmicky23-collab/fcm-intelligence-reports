@@ -251,6 +251,58 @@ export default function ReportShowcase() {
         </p>
       </div>
 
+      {/* SAMPLE REPORT CTA */}
+      <div style={{
+        background: 'rgba(201,162,39,0.04)',
+        border: '1px solid rgba(201,162,39,0.15)',
+        borderRadius: 16,
+        padding: '36px 24px',
+        margin: '0 20px 44px',
+        textAlign: 'center',
+      }}>
+        <h2 style={{
+          fontFamily: T.heading,
+          fontSize: 24,
+          fontWeight: 700,
+          color: T.white,
+          margin: '0 0 10px',
+        }}>
+          See What You'll Get Before You Buy
+        </h2>
+        <p style={{
+          fontFamily: T.body,
+          fontSize: 15,
+          color: T.mutedText,
+          margin: '0 0 22px',
+          lineHeight: 1.6,
+          maxWidth: 480,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}>
+          View a complete Intelligence report to see our analysis quality and depth
+        </p>
+        <a
+          href="/report/2026-03-31-001"
+          style={{
+            display: 'inline-block',
+            padding: '14px 32px',
+            background: `linear-gradient(135deg, ${T.gold}, ${T.goldLight})`,
+            color: '#000',
+            borderRadius: 10,
+            fontFamily: T.body,
+            fontSize: 15,
+            fontWeight: 600,
+            textDecoration: 'none',
+            boxShadow: '0 4px 16px rgba(201,162,39,0.3)',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(201,162,39,0.4)'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(201,162,39,0.3)'; }}
+        >
+          View a Full Sample Report →
+        </a>
+      </div>
+
       {/* AUDIENCE TABS — Centered with own visual section */}
       <div style={{
         background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)",
