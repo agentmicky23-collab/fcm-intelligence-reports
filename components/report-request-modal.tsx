@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 
 type ReportTier = "insight" | "intelligence";
@@ -63,8 +63,17 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Upload warning
+  const [uploadWarning, setUploadWarning] = useState<string | null>(null);
+
   // Disclaimer
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+
+  // Tutorial state
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorialSlide, setTutorialSlide] = useState(0);
+  const tutorialRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
 
   // Step 3: Customer details
   const [customerEmail, setCustomerEmail] = useState("");
@@ -83,6 +92,42 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Check if tutorial should be shown when modal opens
+  useEffect(() => {
+    if (isOpen && mounted) {
+      const seen = localStorage.getItem("fcm_tutorial_seen");
+      if (!seen) {
+        setShowTutorial(true);
+        setTutorialSlide(0);
+      } else {
+        setShowTutorial(false);
+      }
+    }
+  }, [isOpen, mounted]);
+
+  const completeTutorial = useCallback(() => {
+    localStorage.setItem("fcm_tutorial_seen", "1");
+    setShowTutorial(false);
+  }, []);
+
+  // Touch swipe handlers for tutorial
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && tutorialSlide < 3) {
+        setTutorialSlide(s => s + 1);
+      } else if (diff < 0 && tutorialSlide > 0) {
+        setTutorialSlide(s => s - 1);
+      }
+    }
+    touchStartX.current = null;
+  }, [tutorialSlide]);
 
   // Pre-fill from listing if provided
   useEffect(() => {
@@ -247,32 +292,36 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
     setLoading(true);
 
     try {
-      // If files are uploaded, send them via email first
+      // Upload files to Supabase Storage if any were selected
+      setUploadWarning(null);
       if (files.length > 0) {
-        const formData = new FormData();
-        files.forEach((file) => {
-          formData.append('files', file);
-        });
-        formData.append('tier', selectedTier);
-        formData.append('business_name', businessName);
-        formData.append('postcode', postcode);
-        formData.append('town_city', townCity);
-        formData.append('company_name', companyName);
-        formData.append('listing_source', listingSource);
-        formData.append('listing_url', listingUrl);
-        formData.append('customer_email', customerEmail);
-        formData.append('customer_phone', customerPhone);
+        try {
+          const formData = new FormData();
+          files.forEach((file) => {
+            formData.append('files', file);
+          });
+          // orderId may not exist yet pre-checkout — pass what we have
+          formData.append('orderId', `pre-${Date.now()}`);
 
-        const uploadRes = await fetch('/api/upload-documents', {
-          method: 'POST',
-          body: formData,
-        });
+          const uploadRes = await fetch('/api/upload-documents', {
+            method: 'POST',
+            body: formData,
+          });
 
-        if (!uploadRes.ok) {
-          const uploadError = await uploadRes.json();
-          console.error('Document upload error:', uploadError);
-          // Continue with checkout even if upload fails - we'll note it
+          if (!uploadRes.ok) {
+            const uploadError = await uploadRes.json().catch(() => ({}));
+            console.error('Document upload error:', uploadError);
+            setUploadWarning(
+              "Upload failed — your documents weren't saved. You can email them to reports@fcmreport.com after checkout."
+            );
+          }
+        } catch (uploadErr) {
+          console.error('Document upload exception:', uploadErr);
+          setUploadWarning(
+            "Upload failed — your documents weren't saved. You can email them to reports@fcmreport.com after checkout."
+          );
         }
+        // Always continue to checkout — don't block the sale
       }
 
       const payload = {
@@ -360,7 +409,192 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* TUTORIAL WALKTHROUGH                                       */}
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {showTutorial && (
+          <div
+            ref={tutorialRef}
+            className="p-6 overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Skip button */}
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={completeTutorial}
+                className="text-sm transition-colors hover:text-white"
+                style={{ color: "#666" }}
+              >
+                Skip tutorial
+              </button>
+            </div>
+
+            {/* Slides container */}
+            <div className="relative overflow-hidden rounded-xl" style={{ minHeight: 340 }}>
+              <div
+                className="flex transition-transform duration-300 ease-in-out"
+                style={{ transform: `translateX(-${tutorialSlide * 100}%)` }}
+              >
+                {/* Slide 1: How it works */}
+                <div className="w-full flex-shrink-0 px-1">
+                  <div className="text-center mb-6">
+                    <div className="text-4xl mb-3">⚡</div>
+                    <h3 className="text-xl font-bold text-white mb-1">Here&apos;s how it works</h3>
+                    <p className="text-sm" style={{ color: "#8b949e" }}>Ordering a report takes 2 minutes</p>
+                  </div>
+                  <div className="space-y-4">
+                    {[
+                      { num: "1", icon: "🔗", text: "Paste the listing URL" },
+                      { num: "2", icon: "✅", text: "Tick the info you have" },
+                      { num: "3", icon: "📧", text: "Enter your email & phone" },
+                      { num: "4", icon: "💳", text: "Choose your tier & pay" },
+                    ].map((step) => (
+                      <div key={step.num} className="flex items-center gap-4 p-3 rounded-lg" style={{ background: "#161b22", border: "1px solid #30363d" }}>
+                        <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold flex-shrink-0" style={{ background: "#D4AF37", color: "#000" }}>
+                          {step.num}
+                        </span>
+                        <span className="text-lg mr-2">{step.icon}</span>
+                        <span className="text-white text-sm font-medium">{step.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Slide 2: The listing URL */}
+                <div className="w-full flex-shrink-0 px-1">
+                  <div className="text-center mb-6">
+                    <div className="text-4xl mb-3">🔗</div>
+                    <h3 className="text-xl font-bold text-white mb-1">The listing URL</h3>
+                    <p className="text-sm" style={{ color: "#8b949e" }}>Where do I find the URL?</p>
+                  </div>
+                  {/* Browser bar mockup */}
+                  <div className="rounded-lg overflow-hidden mb-5" style={{ border: "1px solid #30363d" }}>
+                    <div className="flex items-center gap-2 px-3 py-2" style={{ background: "#1c2128" }}>
+                      <div className="flex gap-1.5">
+                        <div className="w-3 h-3 rounded-full" style={{ background: "#ff5f57" }} />
+                        <div className="w-3 h-3 rounded-full" style={{ background: "#febc2e" }} />
+                        <div className="w-3 h-3 rounded-full" style={{ background: "#28c840" }} />
+                      </div>
+                      <div className="flex-1 px-3 py-1.5 rounded text-xs font-mono truncate" style={{ background: "#0d1117", color: "#D4AF37", border: "1px solid #D4AF37" }}>
+                        https://rightbiz.co.uk/listing/post-office-for-sale-...
+                      </div>
+                    </div>
+                    <div className="px-4 py-3 text-center" style={{ background: "#161b22" }}>
+                      <p className="text-xs" style={{ color: "#8b949e" }}>Copy this URL from your browser</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3 p-3 rounded-lg" style={{ background: "#161b22", border: "1px solid #30363d" }}>
+                      <span className="text-base flex-shrink-0">📋</span>
+                      <p className="text-sm text-white">No URL? Select <strong style={{ color: "#D4AF37" }}>&quot;enter details manually&quot;</strong></p>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 rounded-lg" style={{ background: "#161b22", border: "1px solid #30363d" }}>
+                      <span className="text-base flex-shrink-0">✨</span>
+                      <p className="text-sm text-white">Clicked from our listings? <strong style={{ color: "#D4AF37" }}>URL is pre-filled</strong></p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Slide 3: What info do you have? */}
+                <div className="w-full flex-shrink-0 px-1">
+                  <div className="text-center mb-6">
+                    <div className="text-4xl mb-3">📋</div>
+                    <h3 className="text-xl font-bold text-white mb-1">What info do you have?</h3>
+                    <p className="text-sm" style={{ color: "#8b949e" }}>Tick anything you can share</p>
+                  </div>
+                  {/* Greyed-out checkbox preview */}
+                  <div className="space-y-2.5 mb-5 opacity-60">
+                    {["Company financials/accounts", "Confirmed asking price", "Lease terms/rent details", "Staff/payroll information", "Current turnover figures", "PO remuneration details"].map((label) => (
+                      <div key={label} className="flex items-center gap-3 px-3 py-2 rounded-lg" style={{ background: "#161b22", border: "1px solid #30363d" }}>
+                        <div className="w-4 h-4 rounded border-2 flex-shrink-0" style={{ borderColor: "#555" }} />
+                        <span className="text-sm text-gray-400">{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg" style={{ background: "rgba(212, 175, 55, 0.08)", border: "1px solid rgba(212, 175, 55, 0.3)" }}>
+                    <span className="text-base flex-shrink-0">💡</span>
+                    <p className="text-sm" style={{ color: "#D4AF37" }}>Don&apos;t have anything? That&apos;s fine — we research everything ourselves</p>
+                  </div>
+                </div>
+
+                {/* Slide 4: Choose & pay */}
+                <div className="w-full flex-shrink-0 px-1">
+                  <div className="text-center mb-6">
+                    <div className="text-4xl mb-3">💳</div>
+                    <h3 className="text-xl font-bold text-white mb-1">Choose &amp; pay</h3>
+                    <p className="text-sm" style={{ color: "#8b949e" }}>Two tiers to match your needs</p>
+                  </div>
+                  <div className="space-y-3 mb-5">
+                    {/* Insight card */}
+                    <div className="p-4 rounded-xl" style={{ background: "#161b22", border: "1px solid #30363d" }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-bold text-white text-base">Insight</span>
+                        <span className="font-mono font-bold text-lg" style={{ color: "#D4AF37" }}>£199</span>
+                      </div>
+                      <p className="text-sm" style={{ color: "#8b949e" }}>10 sections — <em>Is this the right business?</em></p>
+                    </div>
+                    {/* Intelligence card */}
+                    <div className="p-4 rounded-xl" style={{ background: "rgba(212, 175, 55, 0.08)", border: "2px solid #D4AF37" }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-white text-base">Intelligence</span>
+                          <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "#D4AF37", color: "#000" }}>⭐ RECOMMENDED</span>
+                        </div>
+                        <span className="font-mono font-bold text-lg" style={{ color: "#D4AF37" }}>£499</span>
+                      </div>
+                      <p className="text-sm" style={{ color: "#8b949e" }}>15 sections + strategy call — <em>Help me buy it.</em></p>
+                      <p className="text-xs mt-2" style={{ color: "#D4AF37" }}>Upgrade from Insight for £300</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Slide indicator dots */}
+            <div className="flex justify-center gap-2 mt-5 mb-5">
+              {[0, 1, 2, 3].map((i) => (
+                <button
+                  key={i}
+                  onClick={() => setTutorialSlide(i)}
+                  className="w-2.5 h-2.5 rounded-full transition-all duration-300"
+                  style={{
+                    background: tutorialSlide === i ? "#D4AF37" : "#333",
+                    transform: tutorialSlide === i ? "scale(1.2)" : "scale(1)",
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Navigation buttons */}
+            <div className="flex gap-3">
+              {tutorialSlide > 0 && (
+                <button
+                  onClick={() => setTutorialSlide(s => s - 1)}
+                  className="px-5 py-3 rounded-xl font-semibold text-sm transition-all hover:bg-white/10"
+                  style={{ color: "#8b949e", border: "1px solid #333" }}
+                >
+                  ← Back
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  if (tutorialSlide < 3) {
+                    setTutorialSlide(s => s + 1);
+                  } else {
+                    completeTutorial();
+                  }
+                }}
+                className="flex-1 py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90"
+                style={{ background: "#D4AF37", color: "#000" }}
+              >
+                {tutorialSlide < 3 ? "Next →" : "Got it — start my order →"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!showTutorial && <form onSubmit={handleSubmit} className="p-6">
           {/* ═══════════════════════════════════════════════════════════ */}
           {/* STEP 1: WHICH BUSINESS? */}
           {/* ═══════════════════════════════════════════════════════════ */}
@@ -889,6 +1123,17 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
             </label>
           </div>
 
+          {/* Upload warning banner */}
+          {uploadWarning && (
+            <div
+              className="mb-4 p-4 rounded-lg flex items-start gap-3"
+              style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.4)" }}
+            >
+              <span className="text-lg flex-shrink-0">⚠️</span>
+              <p className="text-sm text-red-400 leading-relaxed">{uploadWarning}</p>
+            </div>
+          )}
+
           {/* ═══════════════════════════════════════════════════════════ */}
           {/* SUBMIT BUTTON */}
           {/* ═══════════════════════════════════════════════════════════ */}
@@ -911,7 +1156,7 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
               </span>
             </div>
           </div>
-        </form>
+        </form>}
       </div>
     </div>
   );

@@ -34,7 +34,7 @@ function LoginModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0, 0, 0, 0.75)", backdropFilter: "blur(8px)" }}>
+    <div className="fixed inset-0 z-40 flex items-center justify-center p-4 pt-20" style={{ background: "rgba(0, 0, 0, 0.75)", backdropFilter: "blur(8px)" }}>
       <div
         className="w-full max-w-md rounded-xl p-8 relative"
         style={{ background: "#161b22", border: "1px solid #30363d", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.7)" }}
@@ -142,7 +142,7 @@ function UpgradeModal() {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0, 0, 0, 0.75)", backdropFilter: "blur(8px)" }}>
+    <div className="fixed inset-0 z-40 flex items-center justify-center p-4 pt-20" style={{ background: "rgba(0, 0, 0, 0.75)", backdropFilter: "blur(8px)" }}>
       <div
         className="w-full max-w-lg rounded-xl p-8 relative"
         style={{ background: "#161b22", border: "1px solid #30363d", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.7)" }}
