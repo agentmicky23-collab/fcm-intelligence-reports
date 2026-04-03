@@ -1,17 +1,17 @@
 import OpportunitiesClient from "./OpportunitiesClient";
 
 export const metadata = {
-  title: "Opportunities — Post Offices & Retail Businesses For Sale | FCM Intelligence",
+  title: 'Retail Businesses For Sale — 35+ Live Opportunities | FCM Intelligence',
   description:
-    "Browse every post office, convenience store, and forecourt for sale in the UK. Live listings from multiple brokers, updated daily. Prices from £50,000 to £500,000+.",
+    'Browse 35+ verified retail businesses for sale across the UK. Daily-updated listings from Daltons, RightBiz, and BusinessesForSale. Prices from £50,000 to £500,000+.',
   alternates: {
-    canonical: "https://fcmreport.com/opportunities",
+    canonical: 'https://fcmreport.com/opportunities',
   },
   openGraph: {
-    title: "Opportunities — Retail Businesses For Sale | FCM Intelligence",
+    title: '35+ Retail Businesses For Sale — FCM Intelligence',
     description:
-      "Every post office, convenience store, and forecourt for sale in the UK. Multiple brokers. One deck. Updated daily.",
-    url: "https://fcmreport.com/opportunities",
+      'Browse verified retail businesses for sale across the UK. Daily-updated from Daltons, RightBiz, and BusinessesForSale.',
+    url: 'https://fcmreport.com/opportunities',
   },
 };
 

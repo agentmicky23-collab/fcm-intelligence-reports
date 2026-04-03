@@ -5,23 +5,23 @@ import Link from "next/link";
 import { AppLayout } from "@/components/layout/AppLayout";
 import ListingCard from "@/components/ListingCard";
 
+// ─── Main Page ──────────────────────────────────────────
 export default function OpportunitiesClient() {
+  // Data from Supabase
   const [listings, setListings] = useState([]);
-  const [allRegions, setAllRegions] = useState([]);
-  const [brokerCount, setBrokerCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Filters
-  const [category, setCategory] = useState("all");
-  const [search, setSearch] = useState("");
-  const [priceRange, setPriceRange] = useState("all");
-  const [freeholdOnly, setFreeholdOnly] = useState(false);
-  const [selectedRegion, setSelectedRegion] = useState("");
-  const [page, setPage] = useState(1);
-  const CARDS_PER_PAGE = 24;
+  // Filter states
+  const [category, setCategory] = useState('all');
+  const [region, setRegion] = useState('');
+  const [search, setSearch] = useState('');
+  const [budget, setBudget] = useState('all');
+  const [insiderOnly, setInsiderOnly] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
-  // Fetch data
+  // Fetch listings from Supabase API on mount
   useEffect(() => {
     async function fetchListings() {
       try {
@@ -29,10 +29,8 @@ export default function OpportunitiesClient() {
         if (!res.ok) throw new Error("Failed to fetch listings");
         const data = await res.json();
         setListings(data.listings || []);
-        setAllRegions(data.regions || []);
-        setBrokerCount(data.brokers || 0);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching listings:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -41,360 +39,358 @@ export default function OpportunitiesClient() {
     fetchListings();
   }, []);
 
-  // Category counts
-  const categoryCounts = useMemo(() => {
-    const counts = { all: listings.length, post_office: 0, convenience: 0, forecourt: 0 };
-    listings.forEach((l) => {
-      if (l.category && counts[l.category] !== undefined) counts[l.category]++;
+  // Get unique regions from listings
+  const regions = useMemo(() => {
+    const uniqueRegions = new Set();
+    listings.forEach(listing => {
+      if (listing.region) uniqueRegions.add(listing.region);
     });
+    return Array.from(uniqueRegions).sort();
+  }, [listings]);
+
+  // Get category counts
+  const categoryCounts = useMemo(() => {
+    const counts = {
+      all: listings.length,
+      post_office: 0,
+      convenience: 0,
+      forecourt: 0,
+    };
+    
+    listings.forEach(listing => {
+      if (listing.category && counts[listing.category] !== undefined) {
+        counts[listing.category] = (counts[listing.category] || 0) + 1;
+      }
+    });
+    
     return counts;
   }, [listings]);
 
-  // Filter logic
-  const filtered = useMemo(() => {
-    let result = [...listings];
+  // Filter listings
+  const filteredListings = useMemo(() => {
+    let filtered = [...listings];
 
-    if (category !== "all") {
-      result = result.filter((l) => l.category === category);
+    if (category !== 'all') {
+      filtered = filtered.filter(l => l.category === category);
+    }
+
+    if (region) {
+      filtered = filtered.filter(l => l.region === region);
     }
 
     if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (l) =>
-          (l.business_name || "").toLowerCase().includes(q) ||
-          (l.location || "").toLowerCase().includes(q) ||
-          (l.postcode || "").toLowerCase().includes(q) ||
-          (l.pick_reason || "").toLowerCase().includes(q)
+      const query = search.toLowerCase();
+      filtered = filtered.filter(l => 
+        (l.business_name || '').toLowerCase().includes(query) ||
+        (l.location || '').toLowerCase().includes(query) ||
+        (l.pick_reason || '').toLowerCase().includes(query)
       );
     }
 
-    if (priceRange !== "all") {
-      result = result.filter((l) => {
+    if (budget !== 'all') {
+      filtered = filtered.filter(l => {
         if (!l.price) return false;
-        if (priceRange === "under-100k") return l.price < 100000;
-        if (priceRange === "100k-250k") return l.price >= 100000 && l.price <= 250000;
-        if (priceRange === "250k-plus") return l.price > 250000;
-        return true;
+        const price = parseInt(l.price);
+        
+        switch(budget) {
+          case 'under-50k': return price < 50000;
+          case '50k-100k': return price >= 50000 && price < 100000;
+          case '100k-200k': return price >= 100000 && price < 200000;
+          case '200k-plus': return price >= 200000;
+          default: return true;
+        }
       });
     }
 
-    if (freeholdOnly) {
-      result = result.filter((l) => l.tenure === "freehold");
+    if (insiderOnly) {
+      filtered = filtered.filter(l => l.is_curated === true);
     }
 
-    if (selectedRegion) {
-      result = result.filter((l) => l.region === selectedRegion);
-    }
-
-    return result;
-  }, [listings, category, search, priceRange, freeholdOnly, selectedRegion]);
-
-  // Pagination
-  const totalPages = Math.ceil(filtered.length / CARDS_PER_PAGE);
-  const paginatedCards = filtered.slice((page - 1) * CARDS_PER_PAGE, page * CARDS_PER_PAGE);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [category, search, priceRange, freeholdOnly, selectedRegion]);
-
-  const hasActiveFilters = category !== "all" || search || priceRange !== "all" || freeholdOnly || selectedRegion;
-
-  // Pill button style helper
-  const pill = (active) => ({
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "6px 14px",
-    borderRadius: 20,
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: "pointer",
-    border: "1px solid",
-    borderColor: active ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.08)",
-    background: active ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.03)",
-    color: active ? "#fff" : "rgba(255,255,255,0.5)",
-    transition: "all 0.2s",
-    whiteSpace: "nowrap",
-  });
-
-  // Insert upsell banners
-  function renderCardsWithUpsells() {
-    const elements = [];
-    paginatedCards.forEach((listing, i) => {
-      const globalIndex = (page - 1) * CARDS_PER_PAGE + i;
-      elements.push(
-        <ListingCard key={listing.id} listing={listing} tier="standard" index={i} />
-      );
-      // Insert upsell banner after every 7th card
-      if ((i + 1) % 7 === 0 && i < paginatedCards.length - 1) {
-        elements.push(
-          <div
-            key={`upsell-${i}`}
-            style={{
-              gridColumn: "1 / -1",
-              background: "linear-gradient(135deg, rgba(239,159,39,0.08), rgba(239,159,39,0.03))",
-              border: "1px solid rgba(239,159,39,0.15)",
-              borderRadius: 12,
-              padding: "20px 24px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: 12,
-            }}
-          >
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#EF9F27", marginBottom: 4 }}>
-                Want personalised matches?
-              </div>
-              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
-                Tell us what you&apos;re looking for and we&apos;ll find it for you.
-              </div>
-            </div>
-            <Link
-              href="/insider"
-              style={{
-                padding: "8px 20px",
-                borderRadius: 8,
-                fontSize: 13,
-                fontWeight: 700,
-                background: "#EF9F27",
-                color: "#000",
-                textDecoration: "none",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Join Insider · £15/mo
-            </Link>
-          </div>
-        );
-      }
+    filtered.sort((a, b) => {
+      if (a.is_curated && !b.is_curated) return -1;
+      if (!a.is_curated && b.is_curated) return 1;
+      return 0;
     });
-    return elements;
-  }
+
+    return filtered;
+  }, [listings, category, region, search, budget, insiderOnly]);
+
+  const hasActiveFilters = category !== 'all' || region !== '' || search !== '' || budget !== 'all' || insiderOnly;
+
+  const resetFilters = () => {
+    setCategory('all');
+    setRegion('');
+    setSearch('');
+    setBudget('all');
+    setInsiderOnly(false);
+  };
 
   return (
     <AppLayout>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "32px 16px 64px" }}>
-        {/* Header */}
-        <div style={{ marginBottom: 28 }}>
-          <h1
-            style={{
-              fontSize: 36,
-              fontWeight: 800,
-              color: "#fff",
-              marginBottom: 8,
-              lineHeight: 1.1,
-            }}
-          >
-            Opportunities
-          </h1>
-          <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", maxWidth: 600, lineHeight: 1.5 }}>
-            Every post office, convenience store, and forecourt for sale in the UK.
-            Multiple brokers. One deck. Updated daily.
-          </p>
-        </div>
-
-        {/* Filters */}
-        <div style={{ marginBottom: 12, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-          {/* Category pills */}
-          <button onClick={() => setCategory("all")} style={pill(category === "all")}>
-            All ({categoryCounts.all})
-          </button>
-          <button onClick={() => setCategory("post_office")} style={pill(category === "post_office")}>
-            🏤 Post Office ({categoryCounts.post_office})
-          </button>
-          <button onClick={() => setCategory("convenience")} style={pill(category === "convenience")}>
-            🏪 Convenience ({categoryCounts.convenience})
-          </button>
-          <button onClick={() => setCategory("forecourt")} style={pill(category === "forecourt")}>
-            ⛽ Forecourt ({categoryCounts.forecourt})
-          </button>
-
-          {/* Search */}
-          <div style={{ position: "relative", flex: "1 1 200px", minWidth: 180 }}>
-            <input
-              type="text"
-              placeholder="Search location, name, postcode..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+      {/* ═══════════════════════════ FREE ACCESS BANNER ═══════════════════════════ */}
+      {!bannerDismissed && (
+        <div
+          className="relative w-full mt-16 py-3 px-4 text-center z-40"
+          style={{
+            background: 'linear-gradient(135deg, #D4AF37 0%, #c9a227 50%, #b8960f 100%)',
+            color: '#0d1117',
+          }}
+        >
+          <div className="container mx-auto px-4 flex items-center justify-center gap-4 flex-wrap">
+            <p className="text-sm md:text-base font-semibold" style={{ color: '#0d1117' }}>
+              Free access for now — Soon you&apos;ll need an Insider subscription to view these opportunities. Subscribe today to lock in early access.
+            </p>
+            <Link
+              href="/insider"
+              className="inline-flex items-center px-5 py-2 rounded-lg text-sm font-bold transition-all hover:opacity-90"
               style={{
-                width: "100%",
-                padding: "7px 14px 7px 34px",
-                borderRadius: 20,
-                border: "1px solid rgba(255,255,255,0.1)",
-                background: "rgba(255,255,255,0.04)",
-                color: "#fff",
-                fontSize: 13,
-                outline: "none",
-              }}
-            />
-            <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 14, opacity: 0.4 }}>
-              🔍
-            </span>
-          </div>
-        </div>
-
-        {/* Price + tenure + region filters */}
-        <div style={{ marginBottom: 20, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-          <button onClick={() => setPriceRange(priceRange === "under-100k" ? "all" : "under-100k")} style={pill(priceRange === "under-100k")}>
-            Under £100k
-          </button>
-          <button onClick={() => setPriceRange(priceRange === "100k-250k" ? "all" : "100k-250k")} style={pill(priceRange === "100k-250k")}>
-            £100k–£250k
-          </button>
-          <button onClick={() => setPriceRange(priceRange === "250k-plus" ? "all" : "250k-plus")} style={pill(priceRange === "250k-plus")}>
-            £250k+
-          </button>
-          <button onClick={() => setFreeholdOnly(!freeholdOnly)} style={pill(freeholdOnly)}>
-            Freehold
-          </button>
-
-          {/* Divider */}
-          <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)", margin: "0 4px" }} />
-
-          {/* Region pills */}
-          {allRegions.slice(0, 8).map((r) => (
-            <button key={r} onClick={() => setSelectedRegion(selectedRegion === r ? "" : r)} style={pill(selectedRegion === r)}>
-              {r}
-            </button>
-          ))}
-          {allRegions.length > 8 && (
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>+{allRegions.length - 8} more</span>
-          )}
-        </div>
-
-        {/* Counter + clear */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)" }}>
-            <span style={{ color: "#fff", fontWeight: 700 }}>{filtered.length}</span> listing{filtered.length !== 1 ? "s" : ""}
-            {brokerCount > 0 && <> · {brokerCount} broker{brokerCount !== 1 ? "s" : ""}</>}
-            {" · "}
-            <span style={{ color: colours_accent }}>click to flip</span>
-          </div>
-          {hasActiveFilters && (
-            <button
-              onClick={() => {
-                setCategory("all");
-                setSearch("");
-                setPriceRange("all");
-                setFreeholdOnly(false);
-                setSelectedRegion("");
-              }}
-              style={{
-                fontSize: 12,
-                color: "rgba(255,255,255,0.4)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                textDecoration: "underline",
+                background: '#0d1117',
+                color: '#D4AF37',
+                border: '1px solid #0d1117',
               }}
             >
-              Clear filters
+              Subscribe →
+            </Link>
+          </div>
+          <button
+            onClick={() => setBannerDismissed(true)}
+            className="absolute top-1/2 right-3 -translate-y-1/2 p-1 rounded-full transition-all hover:bg-black/10"
+            style={{ color: '#0d1117', lineHeight: 1 }}
+            aria-label="Dismiss banner"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {/* ═══════════════════════════ HERO (COMPACT) ═══════════════════════════ */}
+      <section 
+        className={`relative pb-12 md:pb-16 ${bannerDismissed ? 'pt-24 md:pt-32 mt-16' : 'pt-12 md:pt-16'}`}
+        style={{ background: 'linear-gradient(180deg, #1e3a5f 0%, #0d1117 100%)' }}
+      >
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(201, 162, 39, 0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h1 className="font-playfair text-4xl md:text-6xl font-bold tracking-tight mb-4" style={{ lineHeight: 1.2 }}>
+            Opportunities
+          </h1>
+          <p className="text-xl mb-4 max-w-2xl mx-auto" style={{ color: '#8b949e' }}>
+            Only the deals worth your time — curated daily by experts
+          </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm" style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid #22c55e', color: '#22c55e' }}>
+            <span className="flex h-2 w-2 rounded-full bg-[#22c55e] animate-pulse"></span>
+            Every listing verified active within 48 hours
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════ FILTERS BAR (STICKY) ═══════════════════════════ */}
+      <section 
+        className="sticky top-0 z-40 border-b" 
+        style={{ background: '#0d1117', borderColor: '#30363d' }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between gap-2 py-4 overflow-x-auto">
+            <div className="flex gap-2 flex-nowrap">
+              <button
+                onClick={() => setCategory('all')}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
+                  category === 'all' 
+                    ? 'bg-[#c9a227] text-black' 
+                    : 'bg-[#161b22] text-[#8b949e] hover:bg-[#21262d] hover:text-white'
+                }`}
+              >
+                All ({categoryCounts.all})
+              </button>
+              <button
+                onClick={() => setCategory('post_office')}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
+                  category === 'post_office' 
+                    ? 'bg-[#c9a227] text-black' 
+                    : 'bg-[#161b22] text-[#8b949e] hover:bg-[#21262d] hover:text-white'
+                }`}
+              >
+                Post Office ({categoryCounts.post_office})
+              </button>
+              <button
+                onClick={() => setCategory('convenience')}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
+                  category === 'convenience' 
+                    ? 'bg-[#c9a227] text-black' 
+                    : 'bg-[#161b22] text-[#8b949e] hover:bg-[#21262d] hover:text-white'
+                }`}
+              >
+                Convenience ({categoryCounts.convenience})
+              </button>
+              {categoryCounts.forecourt > 0 && (
+                <button
+                  onClick={() => setCategory('forecourt')}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
+                    category === 'forecourt' 
+                      ? 'bg-[#c9a227] text-black' 
+                      : 'bg-[#161b22] text-[#8b949e] hover:bg-[#21262d] hover:text-white'
+                  }`}
+                >
+                  Forecourt ({categoryCounts.forecourt})
+                </button>
+              )}
+            </div>
+            
+            <button
+              onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+              className="md:hidden px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap"
+              style={{ background: '#161b22', color: '#8b949e', border: '1px solid #30363d' }}
+            >
+              Filters {hasActiveFilters && '✓'}
             </button>
+          </div>
+
+          <div className={`${mobileFiltersOpen ? 'block' : 'hidden'} md:block pb-4`}>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-xs font-semibold mb-2" style={{ color: '#8b949e' }}>Region</label>
+                <select
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg text-sm"
+                  style={{ background: '#161b22', color: '#fff', border: '1px solid #30363d' }}
+                >
+                  <option value="">All Regions</option>
+                  {regions.map(r => (<option key={r} value={r}>{r}</option>))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-2" style={{ color: '#8b949e' }}>Search</label>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search listings..."
+                  className="w-full px-3 py-2 rounded-lg text-sm"
+                  style={{ background: '#161b22', color: '#fff', border: '1px solid #30363d' }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-2" style={{ color: '#8b949e' }}>Budget</label>
+                <select
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg text-sm"
+                  style={{ background: '#161b22', color: '#fff', border: '1px solid #30363d' }}
+                >
+                  <option value="all">All Budgets</option>
+                  <option value="under-50k">Under £50k</option>
+                  <option value="50k-100k">£50k - £100k</option>
+                  <option value="100k-200k">£100k - £200k</option>
+                  <option value="200k-plus">£200k+</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-2" style={{ color: '#8b949e' }}>Insider Picks</label>
+                <button
+                  onClick={() => setInsiderOnly(!insiderOnly)}
+                  className={`w-full px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                    insiderOnly 
+                      ? 'bg-[#c9a227] text-black' 
+                      : 'bg-[#161b22] text-[#8b949e] border border-[#30363d] hover:bg-[#21262d] hover:text-white'
+                  }`}
+                >
+                  {insiderOnly ? '⭐ Insider Only' : 'Show All'}
+                </button>
+              </div>
+            </div>
+
+            {hasActiveFilters && (
+              <div className="mt-4">
+                <button
+                  onClick={resetFilters}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold"
+                  style={{ background: '#161b22', color: '#c9a227', border: '1px solid #c9a227' }}
+                >
+                  Reset Filters
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════ RESULTS COUNT ═══════════════════════════ */}
+      <section className="py-6" style={{ background: '#0d1117', borderBottom: '1px solid #30363d' }}>
+        <div className="container mx-auto px-4">
+          {loading ? (
+            <p className="text-sm" style={{ color: '#8b949e' }}>Loading opportunities...</p>
+          ) : error ? (
+            <p className="text-sm" style={{ color: '#f85149' }}>Error loading listings. Please refresh the page.</p>
+          ) : (
+            <p className="text-sm" style={{ color: '#8b949e' }}>
+              Showing <strong className="text-white">{filteredListings.length}</strong> of <strong className="text-white">{listings.length}</strong> opportunities
+            </p>
           )}
         </div>
+      </section>
 
-        {/* Loading / Error states */}
-        {loading && (
-          <div style={{ textAlign: "center", padding: "80px 0", color: "rgba(255,255,255,0.4)" }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>🃏</div>
-            <div>Shuffling the deck...</div>
+      {/* ═══════════════════════════ LISTINGS GRID ═══════════════════════════ */}
+      <section className="py-12 md:py-20 container mx-auto px-4">
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="text-6xl mb-6 animate-pulse">📡</div>
+            <h3 className="text-2xl font-bold mb-4">Loading opportunities...</h3>
+            <p className="text-lg" style={{ color: '#8b949e' }}>
+              Fetching the latest listings from our database
+            </p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-20">
+            <div className="text-6xl mb-6">⚠️</div>
+            <h3 className="text-2xl font-bold mb-4">Something went wrong</h3>
+            <p className="text-lg mb-8" style={{ color: '#8b949e' }}>
+              Could not load listings. Please try refreshing the page.
+            </p>
+          </div>
+        ) : filteredListings.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredListings.map((listing, i) => (
+              <ListingCard key={listing.id} listing={listing} tier="standard" index={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <div className="text-6xl mb-6">🔍</div>
+            <h3 className="text-2xl font-bold mb-4">No listings match your filters</h3>
+            <p className="text-lg mb-8" style={{ color: '#8b949e' }}>
+              Try adjusting your search criteria or reset all filters
+            </p>
+            <button onClick={resetFilters} className="btn-primary px-8 py-3">
+              Reset Filters
+            </button>
           </div>
         )}
+      </section>
 
-        {error && (
-          <div style={{ textAlign: "center", padding: "80px 0", color: "#ef4444" }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>⚠️</div>
-            <div>Failed to load listings. Please try again.</div>
-          </div>
-        )}
-
-        {/* Card grid */}
-        {!loading && !error && (
-          <>
-            {filtered.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "80px 0", color: "rgba(255,255,255,0.4)" }}>
-                <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
-                <div>No listings match your filters. Try adjusting your search.</div>
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-                  gap: 18,
-                }}
-              >
-                {renderCardsWithUpsells()}
-              </div>
-            )}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 32 }}>
-                <button
-                  onClick={() => setPage(Math.max(1, page - 1))}
-                  disabled={page === 1}
-                  style={{
-                    padding: "8px 14px",
-                    borderRadius: 8,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    background: "rgba(255,255,255,0.05)",
-                    color: page === 1 ? "rgba(255,255,255,0.2)" : "#fff",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    cursor: page === 1 ? "default" : "pointer",
-                  }}
-                >
-                  ← Prev
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setPage(p)}
-                    style={{
-                      padding: "8px 12px",
-                      borderRadius: 8,
-                      fontSize: 13,
-                      fontWeight: 600,
-                      background: p === page ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.03)",
-                      color: p === page ? "#fff" : "rgba(255,255,255,0.4)",
-                      border: `1px solid ${p === page ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.06)"}`,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {p}
-                  </button>
-                ))}
-                <button
-                  onClick={() => setPage(Math.min(totalPages, page + 1))}
-                  disabled={page === totalPages}
-                  style={{
-                    padding: "8px 14px",
-                    borderRadius: 8,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    background: "rgba(255,255,255,0.05)",
-                    color: page === totalPages ? "rgba(255,255,255,0.2)" : "#fff",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    cursor: page === totalPages ? "default" : "pointer",
-                  }}
-                >
-                  Next →
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
-      `}</style>
+      {/* ═══════════════════════════ BOTTOM CTA ═══════════════════════════ */}
+      <section 
+        className="py-16" 
+        style={{ 
+          background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.08) 0%, rgba(30, 58, 95, 0.15) 100%)', 
+          borderTop: '1px solid rgba(201,162,39,0.2)', 
+          borderBottom: '1px solid rgba(201,162,39,0.2)' 
+        }}
+      >
+        <div className="container mx-auto px-4 text-center">
+          <h3 className="text-2xl md:text-3xl font-bold mb-4">
+            Can&apos;t find what you&apos;re looking for?
+          </h3>
+          <p className="text-lg mb-6" style={{ color: '#8b949e' }}>
+            Sign up for weekly alerts and we&apos;ll email you when new opportunities match your criteria
+          </p>
+          <Link href="/insider" className="btn-primary text-lg px-8 py-3 inline-block">
+            Sign Up for Insider Alerts
+          </Link>
+        </div>
+      </section>
     </AppLayout>
   );
 }
-
-const colours_accent = "rgba(239,159,39,0.7)";
