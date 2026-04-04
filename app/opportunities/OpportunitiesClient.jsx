@@ -186,7 +186,7 @@ export default function OpportunitiesClient() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ FILTERS BAR (STICKY) ═══════════════════════════ */}
+      {/* ═══════════════════════════ FILTERS BAR (STICKY on desktop, compact on mobile) ═══════════════════════════ */}
       <section 
         className="sticky top-0 z-40 border-b" 
         style={{ background: '#0d1117', borderColor: '#30363d' }}
@@ -248,12 +248,12 @@ export default function OpportunitiesClient() {
           </div>
 
           <div className={`${mobileFiltersOpen ? 'block' : 'hidden'} md:block pb-4`}>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
-                <label className="block text-xs font-semibold mb-2" style={{ color: '#8b949e' }}>Region</label>
+                <label className="block text-xs font-semibold mb-1" style={{ color: '#8b949e' }}>Region</label>
                 <select
                   value={region}
-                  onChange={(e) => setRegion(e.target.value)}
+                  onChange={(e) => { setRegion(e.target.value); setMobileFiltersOpen(false); }}
                   className="w-full px-3 py-2 rounded-lg text-sm"
                   style={{ background: '#161b22', color: '#fff', border: '1px solid #30363d' }}
                 >
@@ -262,21 +262,21 @@ export default function OpportunitiesClient() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-2" style={{ color: '#8b949e' }}>Search</label>
+                <label className="block text-xs font-semibold mb-1" style={{ color: '#8b949e' }}>Search</label>
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search listings..."
+                  placeholder="Search..."
                   className="w-full px-3 py-2 rounded-lg text-sm"
                   style={{ background: '#161b22', color: '#fff', border: '1px solid #30363d' }}
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-2" style={{ color: '#8b949e' }}>Budget</label>
+                <label className="block text-xs font-semibold mb-1" style={{ color: '#8b949e' }}>Budget</label>
                 <select
                   value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
+                  onChange={(e) => { setBudget(e.target.value); setMobileFiltersOpen(false); }}
                   className="w-full px-3 py-2 rounded-lg text-sm"
                   style={{ background: '#161b22', color: '#fff', border: '1px solid #30363d' }}
                 >
@@ -288,9 +288,9 @@ export default function OpportunitiesClient() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-2" style={{ color: '#8b949e' }}>Insider Picks</label>
+                <label className="block text-xs font-semibold mb-1" style={{ color: '#8b949e' }}>Insider Picks</label>
                 <button
-                  onClick={() => setInsiderOnly(!insiderOnly)}
+                  onClick={() => { setInsiderOnly(!insiderOnly); setMobileFiltersOpen(false); }}
                   className={`w-full px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
                     insiderOnly 
                       ? 'bg-[#c9a227] text-black' 

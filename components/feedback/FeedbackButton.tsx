@@ -10,7 +10,7 @@ export default function FeedbackButton() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed right-0 top-1/2 -translate-y-1/2 bg-black border border-yellow-500 text-yellow-500 px-3 py-6 rounded-l-lg hover:bg-yellow-500 hover:text-black transition-colors text-sm font-medium z-50"
+        className="fixed right-0 top-1/2 -translate-y-1/2 bg-black border border-yellow-500 text-yellow-500 px-3 py-6 rounded-l-lg hover:bg-yellow-500 hover:text-black transition-colors text-sm font-medium z-50 hidden md:block"
         style={{ writingMode: 'vertical-rl' }}
       >
         Feedback?
