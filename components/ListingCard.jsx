@@ -75,9 +75,26 @@ const CATEGORY_EMOJIS = {
 
 // ─── Helpers ─────────────────────────────────────────────
 function formatPrice(price, priceLabel) {
-  if (priceLabel) return priceLabel;
-  if (!price) return "POA";
+  // 1. Prefer numeric price
+  if (price && price > 0) return "£" + price.toLocaleString("en-GB");
+  // 2. If price_label looks like an actual price (starts with £ + digits)
+  if (priceLabel && priceLabel.match(/^£[\d,]+/)) return priceLabel;
+  // 3. POA variants
+  if (priceLabel && priceLabel.toLowerCase().includes('poa')) return 'POA';
+  // 4. Everything else (Leasehold, Freehold, Ultra-Low Entry, etc.) — NOT a price
+  if (!price || price === 0) return 'Price TBC';
   return "£" + price.toLocaleString("en-GB");
+}
+
+function getDisplayTenure(listing) {
+  if (listing.tenure === 'freehold') return 'Freehold';
+  if (listing.tenure === 'leasehold') return 'Leasehold';
+  if (listing.price_label) {
+    const pl = listing.price_label.toLowerCase();
+    if (pl.includes('freehold')) return 'Freehold';
+    if (pl.includes('leasehold')) return 'Leasehold';
+  }
+  return null;
 }
 
 function parseCurrency(str) {
@@ -191,8 +208,13 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
   if (priceRatio) statsItems.push({ label: "Price Ratio", value: priceRatio + "x salary", highlight: parseFloat(priceRatio) <= 3 ? "gold" : null });
   if (listing.postcode) statsItems.push({ label: "Postcode", value: listing.postcode });
 
+  // Pad to even number for 2-col grid
+  if (statsItems.length % 2 !== 0) statsItems.push({ label: '', value: '', highlight: null });
+
   // Back stats highlight — pick top 6
-  const backStats = statsItems.slice(0, 6);
+  const backStatsRaw = statsItems.filter(s => s.value);
+  if (backStatsRaw.length % 2 !== 0) backStatsRaw.push({ label: '', value: '', highlight: null });
+  const backStats = backStatsRaw.slice(0, 6);
 
   const locationLine = [listing.location, listing.postcode].filter(Boolean).join(" · ");
 
@@ -348,7 +370,7 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
                 style={{
                   fontSize: 32,
                   fontWeight: 800,
-                  color: listing.is_curated ? "#EF9F27" : "#fff",
+                  color: (listing.price && listing.price < 100000) || listing.is_curated ? "#EF9F27" : "#fff",
                   lineHeight: 1,
                   marginBottom: 4,
                   fontFamily: "'JetBrains Mono', monospace",
@@ -359,7 +381,7 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
 
               {/* Tenure + ratio pills */}
               <div style={{ display: "flex", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
-                {listing.tenure && (
+                {getDisplayTenure(listing) && (
                   <span
                     style={{
                       padding: "2px 8px",
@@ -367,11 +389,10 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
                       fontSize: 10,
                       fontWeight: 600,
                       background: "rgba(255,255,255,0.08)",
-                      color: "rgba(255,255,255,0.7)",
-                      textTransform: "capitalize",
+                      color: getDisplayTenure(listing) === 'Freehold' ? '#EF9F27' : "rgba(255,255,255,0.7)",
                     }}
                   >
-                    {listing.tenure}
+                    {getDisplayTenure(listing)}
                   </span>
                 )}
                 {priceRatio && (
@@ -404,6 +425,7 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
               {listing.pick_reason && (
                 <div
                   style={{
+                    flex: 1,
                     fontSize: 11,
                     fontStyle: "italic",
                     color: "rgba(255,255,255,0.65)",
@@ -413,24 +435,24 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
                     background: "rgba(255,255,255,0.03)",
                     borderRadius: "0 4px 4px 0",
                     marginBottom: 8,
+                    overflow: "hidden",
                   }}
                 >
-                  {truncate(listing.pick_reason, 100)}
+                  {truncate(listing.pick_reason, 120)}
                 </div>
               )}
+              {!listing.pick_reason && <div style={{ flex: 1 }} />}
 
-              {/* Stats grid */}
+              {/* Stats grid — only cells with data */}
               {statsItems.length > 0 && (
                 <div
                   style={{
-                    flex: 1,
                     display: "grid",
                     gridTemplateColumns: "1fr 1fr",
                     gap: 1,
                     background: "rgba(255,255,255,0.06)",
                     borderRadius: 6,
                     overflow: "hidden",
-                    minHeight: 0,
                   }}
                 >
                   {statsItems.slice(0, 8).map((stat, i) => (
