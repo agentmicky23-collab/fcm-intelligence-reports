@@ -498,32 +498,6 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
                 </div>
               )}
 
-              {/* Broker link */}
-              {listing.source_url && (
-                <a
-                  href={listing.source_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  style={{
-                    display: "block",
-                    textAlign: "center",
-                    padding: "7px 12px",
-                    marginTop: 6,
-                    borderRadius: 6,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    background: `linear-gradient(135deg, ${colours.frameFrom}40, ${colours.frameTo}40)`,
-                    color: colours.badgeText,
-                    border: `1px solid ${colours.taglineBorder}`,
-                    textDecoration: "none",
-                    transition: "opacity 0.2s",
-                  }}
-                >
-                  View Listing on {listing.source_platform || "Broker"} ↗
-                </a>
-              )}
-
               {/* Footer */}
               <div
                 style={{
@@ -727,7 +701,7 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
               >
                 Intelligence Report · £499
               </a>
-              {listing.source_url && (
+              {listing.source_url ? (
                 <a
                   href={listing.source_url}
                   target="_blank"
@@ -748,6 +722,25 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
                   }}
                 >
                   View on {listing.source_platform || "Broker"} ↗
+                </a>
+              ) : (
+                <a
+                  href="mailto:info@fcmreport.com"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    display: "block",
+                    textAlign: "center",
+                    padding: "9px 16px",
+                    borderRadius: 8,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    background: "transparent",
+                    color: "rgba(255,255,255,0.5)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    textDecoration: "none",
+                  }}
+                >
+                  Contact FCM for details →
                 </a>
               )}
             </div>
