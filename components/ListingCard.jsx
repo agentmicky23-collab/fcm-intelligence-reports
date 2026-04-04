@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 // ─── Flip CSS (injected once) ───────────────────────────────────
 const FLIP_STYLES = `
@@ -138,6 +138,28 @@ function isNewListing(addedAt) {
 // ─── ListingCard Component ─────────────────────────────────────────
 export default function ListingCard({ listing, tier = "standard", index = 0 }) {
   const [flipped, setFlipped] = useState(false);
+  const frontRef = useRef(null);
+  const backRef = useRef(null);
+  const innerRef = useRef(null);
+
+  // Apply backface-visibility programmatically after mount
+  useEffect(() => {
+    if (frontRef.current) {
+      frontRef.current.style.webkitBackfaceVisibility = 'hidden';
+      frontRef.current.style.backfaceVisibility = 'hidden';
+      frontRef.current.style.transformStyle = 'flat';
+      frontRef.current.style.transform = 'rotateY(0deg)';
+    }
+    if (backRef.current) {
+      backRef.current.style.webkitBackfaceVisibility = 'hidden';
+      backRef.current.style.backfaceVisibility = 'hidden';
+      backRef.current.style.transformStyle = 'flat';
+      backRef.current.style.transform = 'rotateY(180deg)';
+    }
+    if (innerRef.current) {
+      innerRef.current.style.transformStyle = 'preserve-3d';
+    }
+  }, []);
 
   const cat = listing.category || "post_office";
   const colours = CATEGORY_COLOURS[cat] || CATEGORY_COLOURS.post_office;
@@ -187,9 +209,10 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
       }}
       onClick={() => setFlipped((f) => !f)}
     >
-      <div className={`lc-inner${flipped ? ' flipped' : ''}`}>
+      <div ref={innerRef} className={`lc-inner${flipped ? ' flipped' : ''}`}>
         {/* ═══════ FRONT ═══════ */}
         <div
+          ref={frontRef}
           className="lc-face lc-front"
           style={{
             borderRadius: 14,
@@ -500,6 +523,7 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
 
         {/* ═══════ BACK ═══════ */}
         <div
+          ref={backRef}
           className="lc-face lc-back"
           style={{
             borderRadius: 14,
