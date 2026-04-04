@@ -2,6 +2,25 @@
 
 import { useState } from "react";
 
+// ─── Flip CSS (injected once) ───────────────────────────────────
+const FLIP_STYLES = `
+.lc-wrapper { perspective: 1000px; height: 580px; cursor: pointer; }
+.lc-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.65s cubic-bezier(.4,0,.2,1); }
+.lc-inner.flipped { transform: rotateY(180deg); }
+.lc-face { position: absolute; inset: 0; -webkit-backface-visibility: hidden !important; backface-visibility: hidden !important; transform-style: flat !important; }
+.lc-front { transform: rotateY(0deg); z-index: 2; }
+.lc-back { transform: rotateY(180deg); z-index: 1; }
+@keyframes cardEntrance { from { opacity:0; transform: translateY(30px) scale(0.95); } to { opacity:1; transform: translateY(0) scale(1); } }
+`;
+let stylesInjected = false;
+function injectStyles() {
+  if (stylesInjected || typeof document === 'undefined') return;
+  const s = document.createElement('style');
+  s.textContent = FLIP_STYLES;
+  document.head.appendChild(s);
+  stylesInjected = true;
+}
+
 // ─── Category colour maps ─────────────────────────────────────────
 const CATEGORY_COLOURS = {
   post_office: {
@@ -158,38 +177,21 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
   // Entrance animation delay
   const animDelay = Math.min(index * 80, 960);
 
+  injectStyles();
+
   return (
     <div
-      className="listing-card-wrapper"
+      className="lc-wrapper"
       style={{
-        perspective: "1000px",
-        height: 580,
-        cursor: "pointer",
         animation: `cardEntrance 0.5s cubic-bezier(.4,0,.2,1) ${animDelay}ms both`,
       }}
       onClick={() => setFlipped((f) => !f)}
     >
-      <div
-        className="listing-card-inner"
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "100%",
-          transformStyle: "preserve-3d",
-          transition: "transform 0.65s cubic-bezier(.4,0,.2,1)",
-          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-        }}
-      >
+      <div className={`lc-inner${flipped ? ' flipped' : ''}`}>
         {/* ═══════ FRONT ═══════ */}
         <div
+          className="lc-face lc-front"
           style={{
-            position: "absolute",
-            inset: 0,
-            WebkitBackfaceVisibility: "hidden",
-            backfaceVisibility: "hidden",
-            transformStyle: "flat",
-            transform: "rotateY(0deg)",
-            zIndex: 2,
             borderRadius: 14,
             background: `linear-gradient(135deg, ${colours.frameFrom}, ${colours.frameTo})`,
             padding: 6,
@@ -498,14 +500,8 @@ export default function ListingCard({ listing, tier = "standard", index = 0 }) {
 
         {/* ═══════ BACK ═══════ */}
         <div
+          className="lc-face lc-back"
           style={{
-            position: "absolute",
-            inset: 0,
-            WebkitBackfaceVisibility: "hidden",
-            backfaceVisibility: "hidden",
-            transformStyle: "flat",
-            transform: "rotateY(180deg)",
-            zIndex: 1,
             borderRadius: 14,
             background: `linear-gradient(135deg, ${colours.frameFrom}, ${colours.frameTo})`,
             padding: 6,
