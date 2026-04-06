@@ -28,11 +28,32 @@ export async function POST(request) {
       );
     }
 
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // LAYER 2: Server-side duplicate check (10-second window)
+    const { data: existingRequest, error: checkError } = await supabase
+      .from('support_audit_pdf_requests')
+      .select('id')
+      .eq('email', normalizedEmail)
+      .gte('created_at', new Date(Date.now() - 10000).toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('Duplicate check error:', checkError);
+    }
+
+    if (existingRequest) {
+      console.log('Duplicate PDF request detected within 10s, returning existing ID:', existingRequest.id);
+      return NextResponse.json({ success: true, id: existingRequest.id, duplicate: true });
+    }
+
     // Insert PDF request
     const { data, error } = await supabase
       .from('support_audit_pdf_requests')
       .insert({
-        email: email.toLowerCase().trim(),
+        email: normalizedEmail,
         branch_name: branch_name || null,
         pdf_sent_at: null, // Will be updated when PDF email sends
         follow_up_sent_at: null,
