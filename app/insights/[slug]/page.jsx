@@ -2,18 +2,6 @@ import { notFound } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import InsightPostClient from './InsightPostClient';
 
-export const metadata = {
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: {
-      index: false,
-      follow: false,
-    },
-  },
-};
-
 async function getPost(slug) {
   const supabase = getSupabase();
   
@@ -38,6 +26,15 @@ export async function generateMetadata({ params }) {
   if (!post) {
     return {
       title: 'Post Not Found — FCM Intelligence',
+      robots: {
+        index: false,
+        follow: false,
+        nocache: true,
+        googleBot: {
+          index: false,
+          follow: false,
+        },
+      },
     };
   }
 
