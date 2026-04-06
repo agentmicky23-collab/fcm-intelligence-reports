@@ -266,6 +266,7 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
   }, [isOpen]);
 
   const handleClose = () => {
+    console.log("[Analytics] audit_modal_closed", { state });
     if (state === "survey" && currentQuestion > 0) {
       if (confirm("You'll lose your progress if you close now. Are you sure?")) {
         resetModal();
@@ -309,6 +310,7 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
 
     // After Q8, show policy-check interstitial
     if (currentQuestion === 7) {
+      console.log("[Analytics] audit_policy_check_shown");
       setState("policy-check");
     } else if (currentQuestion < QUESTIONS.length - 1) {
       setCurrentQuestion(currentQuestion + 1);

@@ -70,6 +70,7 @@ export async function POST(request) {
     }
 
     console.log('Audit submission stored:', data.id);
+    console.log('Email send skipped in hidden mode');
 
     // TODO: Trigger confirmation email with gap analysis findings
     // This will be wired separately via Resend or existing email infrastructure

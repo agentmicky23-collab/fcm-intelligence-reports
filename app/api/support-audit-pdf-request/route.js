@@ -50,6 +50,7 @@ export async function POST(request) {
     }
 
     console.log('PDF request stored:', data.id);
+    console.log('Email send skipped in hidden mode');
 
     // TODO: Trigger immediate PDF email
     // TODO: Schedule 7-day follow-up email

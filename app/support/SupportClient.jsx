@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import InsuranceAuditModal from "@/components/InsuranceAuditModal";
 
 export default function SupportClient() {
   const [auditModalOpen, setAuditModalOpen] = useState(false);
+
+  useEffect(() => {
+    console.log("[Analytics] support_page_view");
+  }, []);
 
   return (
     <AppLayout>
