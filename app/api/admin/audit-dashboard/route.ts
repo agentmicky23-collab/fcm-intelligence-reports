@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   try {
     // Verify admin auth via x-api-key header
     const apiKey = request.headers.get("x-api-key");
-    if (apiKey !== process.env.FCM_ADMIN_API_KEY) {
+    if (apiKey !== process.env.FCM_PIPELINE_SECRET) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
