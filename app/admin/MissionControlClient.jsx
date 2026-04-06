@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import InsuranceAuditDashboard from "./InsuranceAuditDashboard";
 
 const GOLD = "#D4AF37";
 const BG = "#010409";
@@ -350,6 +351,9 @@ export default function MissionControlClient() {
   const [scraperPolling, setScraperPolling] = useState(false);
   const [logsVisible, setLogsVisible] = useState(false);
 
+  // Insurance Audit Dashboard state
+  const [auditDashboardData, setAuditDashboardData] = useState(null);
+
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("fcm_admin") === "true") setAuthed(true);
   }, []);
@@ -410,6 +414,15 @@ export default function MissionControlClient() {
 
   const fetchAllListingsData = async () => {
     await Promise.all([fetchListingsStats(), fetchScraperStatus(), fetchRecentListings()]);
+  };
+
+  const fetchAuditDashboard = async () => {
+    try {
+      const data = await apiFetch("/api/admin/audit-dashboard");
+      setAuditDashboardData(data);
+    } catch (e) {
+      console.error("Audit dashboard fetch error:", e);
+    }
   };
 
   const handleTriggerScraper = async () => {
@@ -483,6 +496,12 @@ export default function MissionControlClient() {
   useEffect(() => {
     if (tab === "listings" && authed) fetchRecentListings(listingsFilter);
   }, [listingsFilter]);
+
+  // Fetch audit dashboard data when tab switches to audit
+  useEffect(() => {
+    if (!authed || tab !== "audit") return;
+    fetchAuditDashboard();
+  }, [authed, tab]);
 
   const handleApprove = async (orderId) => {
     try {
@@ -559,6 +578,7 @@ export default function MissionControlClient() {
     { id: "squad", label: "Agent squad" },
     { id: "pipeline", label: "Pipeline" },
     { id: "listings", label: "Listings & Scraping" },
+    { id: "audit", label: "Insurance Audit" },
     { id: "biz", label: "Business" },
   ];
 
@@ -951,6 +971,12 @@ export default function MissionControlClient() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* BUSINESS TAB */}
+      {/* INSURANCE AUDIT TAB */}
+      {tab === "audit" && (
+        <InsuranceAuditDashboard data={auditDashboardData} onRefresh={fetchAuditDashboard} />
       )}
 
       {/* BUSINESS TAB */}
