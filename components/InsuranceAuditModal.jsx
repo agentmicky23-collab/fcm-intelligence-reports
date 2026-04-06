@@ -257,6 +257,10 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
   const [pdfBranchName, setPdfBranchName] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [pdfSubmitted, setPdfSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [pdfSubmitting, setPdfSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [pdfSubmitError, setPdfSubmitError] = useState("");
 
   // Analytics tracking
   useEffect(() => {
@@ -290,6 +294,10 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
     setPdfBranchName("");
     setSubmitted(false);
     setPdfSubmitted(false);
+    setSubmitting(false);
+    setPdfSubmitting(false);
+    setSubmitError("");
+    setPdfSubmitError("");
   };
 
   const startAudit = () => {
@@ -349,6 +357,12 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
 
   const submitPDFRequest = async () => {
     if (!pdfEmail) return;
+    
+    // Debounce check
+    if (pdfSubmitting) return;
+    
+    setSubmitting(true);
+    setPdfSubmitError("");
 
     try {
       const response = await fetch("/api/support-audit-pdf-request", {
@@ -362,14 +376,25 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
 
       if (response.ok) {
         setPdfSubmitted(true);
+      } else {
+        setPdfSubmitError("Something went wrong. Please try again.");
+        setPdfSubmitting(false);
       }
     } catch (error) {
       console.error("PDF request failed:", error);
+      setPdfSubmitError("Network error. Please check your connection and try again.");
+      setPdfSubmitting(false);
     }
   };
 
   const submitAudit = async () => {
     if (!email || !renewalBucket) return;
+    
+    // Debounce check
+    if (submitting) return;
+    
+    setSubmitting(true);
+    setSubmitError("");
 
     const gaps = calculateGaps(answers);
 
@@ -394,9 +419,14 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
       if (response.ok) {
         console.log("[Analytics] audit_email_submitted");
         setSubmitted(true);
+      } else {
+        setSubmitError("Something went wrong. Please try again.");
+        setSubmitting(false);
       }
     } catch (error) {
       console.error("Audit submission failed:", error);
+      setSubmitError("Network error. Please check your connection and try again.");
+      setSubmitting(false);
     }
   };
 
@@ -631,13 +661,18 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
                   />
                 </div>
               </div>
+              {pdfSubmitError && (
+                <p className="text-sm mb-4" style={{ color: '#f85149' }}>
+                  {pdfSubmitError}
+                </p>
+              )}
               <button
                 onClick={submitPDFRequest}
-                disabled={!pdfEmail}
-                className="w-full px-6 py-3 rounded-lg font-semibold transition-all disabled:opacity-50"
+                disabled={!pdfEmail || pdfSubmitting}
+                className="w-full px-6 py-3 rounded-lg font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ background: '#c9a227', color: '#0d1117' }}
               >
-                Send me the PDF →
+                {pdfSubmitting ? "Sending..." : "Send me the PDF →"}
               </button>
             </div>
           )}
@@ -732,13 +767,18 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
                     </select>
                   </div>
                 </div>
+                {submitError && (
+                  <p className="text-sm mb-4" style={{ color: '#f85149' }}>
+                    {submitError}
+                  </p>
+                )}
                 <button
                   onClick={submitAudit}
-                  disabled={!email || !renewalBucket}
-                  className="w-full px-6 py-3 rounded-lg font-semibold transition-all disabled:opacity-50 mb-4"
+                  disabled={!email || !renewalBucket || submitting}
+                  className="w-full px-6 py-3 rounded-lg font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed mb-4"
                   style={{ background: '#c9a227', color: '#0d1117' }}
                 >
-                  Send me the findings →
+                  {submitting ? "Sending..." : "Send me the findings →"}
                 </button>
                 <p className="text-xs text-center" style={{ color: '#8b949e' }}>
                   We'll only email you about this research and FCM updates. No spam.
