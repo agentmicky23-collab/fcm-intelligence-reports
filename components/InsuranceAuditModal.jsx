@@ -321,6 +321,21 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
     }
   };
 
+  const goBack = () => {
+    if (state === "policy-check") {
+      // From policy-check interstitial, go back to Q8
+      setState("survey");
+      setCurrentQuestion(7);
+    } else if (state === "results") {
+      // From results, go back to Q17
+      setState("survey");
+      setCurrentQuestion(16);
+    } else if (state === "survey" && currentQuestion > 0) {
+      // Normal backward navigation
+      setCurrentQuestion(currentQuestion - 1);
+    }
+  };
+
   const continueToPolicyQuestions = () => {
     console.log("[Analytics] audit_policy_check_continue");
     setState("survey");
@@ -387,6 +402,12 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
 
   const progress = ((currentQuestion + 1) / QUESTIONS.length) * 100;
   const currentQ = QUESTIONS[currentQuestion];
+
+  // Determine if back button should show
+  const showBackButton = 
+    (state === "survey" && currentQuestion > 0) ||
+    state === "policy-check" ||
+    state === "results";
 
   if (!isOpen) return null;
 
@@ -481,29 +502,50 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
                 </p>
               )}
               <div className="space-y-3">
-                {currentQ.options.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => answerQuestion(option.value)}
-                    className="w-full px-4 py-3 rounded-lg text-left transition-all border"
-                    style={{ 
-                      background: '#161b22', 
-                      borderColor: '#30363d',
-                      color: '#c9d1d9'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = '#c9a227';
-                      e.currentTarget.style.background = '#21262d';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#30363d';
-                      e.currentTarget.style.background = '#161b22';
-                    }}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+                {currentQ.options.map((option) => {
+                  const isSelected = answers[currentQ.storageKey] === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() => answerQuestion(option.value)}
+                      className="w-full px-4 py-3 rounded-lg text-left transition-all border"
+                      style={{ 
+                        background: isSelected ? '#21262d' : '#161b22', 
+                        borderColor: isSelected ? '#c9a227' : '#30363d',
+                        color: '#c9d1d9'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSelected) {
+                          e.currentTarget.style.borderColor = '#c9a227';
+                          e.currentTarget.style.background = '#21262d';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isSelected) {
+                          e.currentTarget.style.borderColor = '#30363d';
+                          e.currentTarget.style.background = '#161b22';
+                        }
+                      }}
+                    >
+                      {option.label}
+                      {isSelected && (
+                        <span className="ml-2" style={{ color: '#c9a227' }}>✓</span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
+              
+              {/* Back button for survey */}
+              {showBackButton && (
+                <button
+                  onClick={goBack}
+                  className="mt-6 px-4 py-2 rounded-lg text-sm font-medium transition-all border hover:bg-[#21262d]"
+                  style={{ background: 'transparent', borderColor: '#30363d', color: '#8b949e' }}
+                >
+                  ← Back
+                </button>
+              )}
             </div>
           )}
 
@@ -519,7 +561,7 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
               <p className="text-base mb-8" style={{ color: '#c9d1d9' }}>
                 The next 9 questions ask about specific figures from your actual policy. Answers based on guesses won't give you a useful audit.
               </p>
-              <div className="space-y-3">
+              <div className="space-y-3 mb-6">
                 <button
                   onClick={continueToPolicyQuestions}
                   className="w-full px-6 py-3 rounded-lg font-semibold transition-all hover:bg-[#d4af37]"
@@ -535,6 +577,17 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
                   No — send me the questions as a PDF
                 </button>
               </div>
+              
+              {/* Back button for policy-check */}
+              {showBackButton && (
+                <button
+                  onClick={goBack}
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all border hover:bg-[#21262d]"
+                  style={{ background: 'transparent', borderColor: '#30363d', color: '#8b949e' }}
+                >
+                  ← Back
+                </button>
+              )}
             </div>
           )}
 
@@ -691,6 +744,17 @@ export default function InsuranceAuditModal({ isOpen, onClose }) {
                   We'll only email you about this research and FCM updates. No spam.
                 </p>
               </div>
+              
+              {/* Back button for results */}
+              {showBackButton && (
+                <button
+                  onClick={goBack}
+                  className="mt-6 px-4 py-2 rounded-lg text-sm font-medium transition-all border hover:bg-[#21262d]"
+                  style={{ background: 'transparent', borderColor: '#30363d', color: '#8b949e' }}
+                >
+                  ← Back to questions
+                </button>
+              )}
             </div>
           )}
 
