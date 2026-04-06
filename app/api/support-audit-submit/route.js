@@ -39,6 +39,28 @@ export async function POST(request) {
       );
     }
 
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // LAYER 2: Server-side duplicate check (10-second window)
+    const { data: existingSubmission, error: checkError } = await supabase
+      .from('support_audit_submissions')
+      .select('id')
+      .eq('email', normalizedEmail)
+      .filter('fad_code', fad_code ? 'eq' : 'is', fad_code || null)
+      .gte('created_at', new Date(Date.now() - 10000).toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('Duplicate check error:', checkError);
+    }
+
+    if (existingSubmission) {
+      console.log('Duplicate submission detected within 10s, returning existing ID:', existingSubmission.id);
+      return NextResponse.json({ success: true, id: existingSubmission.id, duplicate: true });
+    }
+
     // Get user agent for analytics
     const userAgent = request.headers.get('user-agent') || null;
 
@@ -46,7 +68,7 @@ export async function POST(request) {
     const { data, error } = await supabase
       .from('support_audit_submissions')
       .insert({
-        email: email.toLowerCase().trim(),
+        email: normalizedEmail,
         branch_name: branch_name || null,
         fad_code: fad_code || null,
         renewal_bucket,
