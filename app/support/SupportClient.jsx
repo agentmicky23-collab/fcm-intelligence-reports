@@ -23,7 +23,7 @@ export default function SupportClient() {
           <h1 className="font-playfair text-4xl md:text-6xl font-bold tracking-tight mb-4" style={{ lineHeight: 1.2 }}>
             FCM Support
           </h1>
-          <p className="text-xl mb-4 max-w-2xl mx-auto" style={{ color: '#8b949e' }}>
+          <p className="text-xl mb-4 max-w2xl mx-auto" style={{ color: '#8b949e' }}>
             Tools and research for working Postmasters
           </p>
         </div>
@@ -31,16 +31,16 @@ export default function SupportClient() {
 
       {/* ═══════════════════════════ INTRO ═══════════════════════════ */}
       <section className="py-12 md:py-16 container mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w3xl mx-auto text-center">
           <p className="text-lg leading-relaxed" style={{ color: '#c9d1d9' }}>
-            The Post Office insurance market is broken. Lease terms are opaque. Operational risks go uninsured. FCM Support is where we build the tools Postmasters should already have had — starting with research into what the market actually offers, and what it doesn't. Each tool here is free to use. In return, we ask Postmasters to contribute data that helps us fix the gaps we find.
+            FCM Support is where we build the tools Postmasters should already have had. Each tool here is free to use. In return, we ask Postmasters to contribute data that helps us improve the market for everyone.
           </p>
         </div>
       </section>
 
       {/* ═══════════════════════════ TOOL GRID ═══════════════════════════ */}
       <section className="pb-20 container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w5xl mx-auto">
           {/* Insurance Audit Card */}
           <div 
             className="p-6 rounded-lg border transition-all hover:border-[#c9a227] cursor-pointer group"
@@ -57,7 +57,7 @@ export default function SupportClient() {
               <h3 className="text-xl font-bold">Post Office Insurance Audit</h3>
             </div>
             <p className="text-sm mb-4" style={{ color: '#8b949e' }}>
-              A 17-question audit of your current insurance policy. Takes around 7 minutes with your policy schedule to hand. At the end you'll see where your cover holds up and where it doesn't.
+              The PO insurance market is broken — most Postmasters are on retail shops cover with Post Office bits bolted on. This 17-question audit checks where your policy holds up and where it doesn't. Takes around 7 minutes with your policy schedule to hand.
             </p>
             <div className="flex items-center gap-4 text-xs mb-4" style={{ color: '#8b949e' }}>
               <span>⏱️ 7 minutes</span>
@@ -74,7 +74,7 @@ export default function SupportClient() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ DISCLAIMER ═══════════════════════════ */}
+      {/* ════════════════════════════ DISCLAIMER ════════════════════════════ */}
       <section 
         className="py-8 border-t"
         style={{ background: '#0d1117', borderColor: '#30363d' }}
@@ -86,7 +86,7 @@ export default function SupportClient() {
         </div>
       </section>
 
-      {/* ═══════════════════════════ MODAL ═══════════════════════════ */}
+      {/* ════════════════════════════ MODAL ═══════════════════════════ */}
       <InsuranceAuditModal 
         isOpen={auditModalOpen} 
         onClose={() => setAuditModalOpen(false)} 
