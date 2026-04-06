@@ -17,3 +17,4 @@ export const metadata = {
 export default function InsightsPage() {
   return <InsightsClient />;
 }
+
