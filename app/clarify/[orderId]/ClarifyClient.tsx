@@ -31,6 +31,40 @@ function ClarifyForm() {
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [editing, setEditing] = useState(false);
 
+  // File upload state
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+
+  const MAX_FILES = 5;
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+  const ACCEPTED_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx', '.xls', '.xlsx', '.csv'];
+
+  function handleFileSelect(selected: FileList | null) {
+    if (!selected) return;
+    const newFiles = Array.from(selected);
+    const combined = [...files, ...newFiles].slice(0, MAX_FILES);
+    const validated = combined.filter(f => {
+      if (f.size > MAX_FILE_SIZE) {
+        setUploadStatus(`"${f.name}" exceeds 10 MB limit`);
+        return false;
+      }
+      const ext = '.' + f.name.split('.').pop()?.toLowerCase();
+      if (!ACCEPTED_EXTENSIONS.includes(ext)) {
+        setUploadStatus(`"${f.name}" is not an accepted file type`);
+        return false;
+      }
+      return true;
+    });
+    setFiles(validated);
+    if (validated.length === combined.length) setUploadStatus(null);
+  }
+
+  function removeFile(index: number) {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+    setUploadStatus(null);
+  }
+
   useEffect(() => {
     if (!token) {
       setError('Missing authentication token. Please use the link from your email.');
@@ -94,6 +128,30 @@ function ClarifyForm() {
     setSubmitting(true);
 
     try {
+      // Upload files first (best-effort — don't block submission)
+      if (files.length > 0) {
+        try {
+          const formData = new FormData();
+          files.forEach(f => formData.append('files', f));
+          formData.append('orderId', orderId);
+
+          const uploadRes = await fetch('/api/upload-documents', {
+            method: 'POST',
+            body: formData,
+          });
+          if (uploadRes.ok) {
+            setUploadStatus('✅ Documents uploaded successfully');
+          } else {
+            console.error('Clarification file upload failed');
+            setUploadStatus('Upload failed — please email documents to reports@fcmreport.com');
+          }
+        } catch (uploadErr) {
+          console.error('Clarification file upload error:', uploadErr);
+          setUploadStatus('Upload failed — please email documents to reports@fcmreport.com');
+        }
+      }
+
+      // Submit answers
       const res = await fetch('/api/clarification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -250,6 +308,61 @@ function ClarifyForm() {
               </label>
             </div>
           ))}
+
+          {/* --- File upload section --- */}
+          <div style={styles.uploadSection}>
+            <p style={styles.uploadLabel}>📎 Supporting Documents (optional)</p>
+            <p style={{ fontSize: 13, color: '#8b949e', margin: '0 0 12px', lineHeight: 1.5 }}>
+              You can also attach documents here (accounts, lease agreements, etc.) to help us prepare your report.
+            </p>
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={(e) => { e.preventDefault(); setDragOver(false); handleFileSelect(e.dataTransfer.files); }}
+              onClick={() => document.getElementById('clarify-file-input')?.click()}
+              style={{
+                ...styles.dropZone,
+                borderColor: dragOver ? '#C9A227' : 'rgba(201,162,39,0.2)',
+                backgroundColor: dragOver ? 'rgba(201,162,39,0.05)' : 'rgba(11,29,58,0.3)',
+              }}
+            >
+              <input
+                id="clarify-file-input"
+                type="file"
+                multiple
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.csv"
+                onChange={(e) => handleFileSelect(e.target.files)}
+                style={{ display: 'none' }}
+              />
+              <p style={{ margin: 0, fontSize: 13, color: '#8b949e' }}>
+                <span style={{ color: '#C9A227' }}>Drop files here</span> or click to browse
+              </p>
+              <p style={{ margin: '4px 0 0', fontSize: 11, color: '#484f58' }}>
+                PDF, JPG, PNG, DOC, XLS, CSV · max 10 MB each · up to 5 files
+              </p>
+            </div>
+            {files.length > 0 && (
+              <div style={{ marginTop: 8 }}>
+                {files.map((f, i) => (
+                  <div key={i} style={styles.fileChip}>
+                    <span style={{ fontSize: 13, color: '#e6edf3' }}>📎 {f.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(i)}
+                      style={styles.removeBtn}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {uploadStatus && (
+              <p style={{ fontSize: 12, color: uploadStatus.startsWith('✅') ? '#4ade80' : '#f87171', marginTop: 6 }}>
+                {uploadStatus}
+              </p>
+            )}
+          </div>
 
           <button
             type="submit"
@@ -465,6 +578,45 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '50%',
     animation: 'spin 0.8s linear infinite',
     margin: '0 auto',
+  },
+  uploadSection: {
+    marginTop: 8,
+    marginBottom: 24,
+    padding: '16px 20px',
+    backgroundColor: 'rgba(11,29,58,0.3)',
+    border: '1px solid rgba(201,162,39,0.15)',
+    borderRadius: 8,
+  },
+  uploadLabel: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#e6edf3',
+    margin: '0 0 4px',
+  },
+  dropZone: {
+    padding: '20px 16px',
+    border: '1px dashed rgba(201,162,39,0.2)',
+    borderRadius: 8,
+    textAlign: 'center' as const,
+    cursor: 'pointer',
+    transition: 'border-color 0.15s, background-color 0.15s',
+  },
+  fileChip: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '6px 10px',
+    marginBottom: 4,
+    backgroundColor: 'rgba(201,162,39,0.08)',
+    borderRadius: 6,
+  },
+  removeBtn: {
+    background: 'none',
+    border: 'none',
+    color: '#8b949e',
+    cursor: 'pointer',
+    fontSize: 14,
+    padding: '2px 6px',
   },
 };
 

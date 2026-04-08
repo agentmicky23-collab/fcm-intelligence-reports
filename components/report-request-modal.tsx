@@ -302,6 +302,9 @@ export function ReportRequestModal({ isOpen, onClose, tier = "intelligence", lis
           });
           // orderId may not exist yet pre-checkout — pass what we have
           formData.append('orderId', `pre-${Date.now()}`);
+          formData.append('tier', selectedTier);
+          formData.append('business_name', businessName);
+          formData.append('customer_email', customerEmail);
 
           const uploadRes = await fetch('/api/upload-documents', {
             method: 'POST',
