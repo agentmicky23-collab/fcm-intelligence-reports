@@ -971,14 +971,46 @@ export default function CalculatorClient() {
           </div>
         </section>
 
-        {/* CLOSING */}
-        <section className="max-w-[1180px] mx-auto px-7 md:px-12 py-13 mb-12">
-          <div className="max-w-[720px] text-lg md:text-xl text-[#c9d1d9] leading-relaxed" style={{ fontFamily: "'Fraunces', serif" }}>
-            <p>
-              The Post Office doesn't publish these rates publicly. They go out through Branch Hub, marked "Postmaster – Confidential," visible only to existing Postmasters. That's one of the reasons buyers routinely pay the wrong price for branches: the people selling them have access to information the people buying them don't. Part of what FCM Intelligence does is close that gap. If this was useful and you're looking at a branch this year, <strong className="font-semibold">subscribe to Insider</strong> — we'll send you this kind of analysis before most of the market even knows it exists.
-            </p>
+        {/* FOOTER / DISCLAIMER */}
+        <footer className="bg-[#0d0d0d] border-t border-[#30363d] mt-16">
+          <div className="max-w-[1180px] mx-auto px-7 md:px-12 py-12 md:py-16">
+            {/* Main footer message */}
+            <div className="max-w-[720px] mb-10">
+              <h3 className="text-lg md:text-xl font-bold text-white mb-4" style={{ fontFamily: "'Fraunces', serif" }}>
+                Why this information matters
+              </h3>
+              <p className="text-[15px] md:text-base text-[#c9d1d9] leading-relaxed">
+                The Post Office doesn't publish these rates publicly. They go out through Branch Hub, marked "Postmaster – Confidential," visible only to existing Postmasters. That's one of the reasons buyers routinely pay the wrong price for branches: the people selling them have access to information the people buying them don't. Part of what FCM Intelligence does is close that gap. If this was useful and you're looking at a branch this year, <a href="/insider" className="text-[#c9a227] hover:underline font-semibold">subscribe to Insider</a> — we'll send you this kind of analysis before most of the market even knows it exists.
+              </p>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-[#21262d] pt-8">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                {/* Source citation */}
+                <div className="text-[12px] text-[#8b949e] leading-relaxed max-w-[600px]">
+                  <strong className="text-[#c9d1d9]">Source:</strong> Post Office Branch Remuneration Rates Booklet 2026/27 (v1.0, 30 March 2026) and Remuneration Changes 2026 commentary. FCM Intelligence is not affiliated with Post Office Ltd. Rates stated are facts; commentary is our interpretation. Always verify figures against the source booklet or your own Branch Hub access before making commercial decisions.
+                </div>
+
+                {/* Legal disclaimer */}
+                <div className="text-[11px] text-[#6e7681] md:text-right">
+                  <span className="inline-block px-2 py-1 bg-[#21262d] rounded text-[#8b949e] font-mono text-[10px] tracking-wider">NOT LEGAL OR FINANCIAL ADVICE</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Copyright */}
+            <div className="border-t border-[#21262d] mt-8 pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-[11px] text-[#6e7681]">
+              <div>© 2026 FCM Intelligence · Reports & Listings for serious UK Post Office buyers</div>
+              <div className="flex gap-4">
+                <a href="/reports" className="hover:text-[#c9d1d9] transition-colors">Reports</a>
+                <a href="/opportunities" className="hover:text-[#c9d1d9] transition-colors">Opportunities</a>
+                <a href="/insider" className="hover:text-[#c9d1d9] transition-colors">Insider</a>
+                <a href="/support" className="hover:text-[#c9d1d9] transition-colors">Support</a>
+              </div>
+            </div>
           </div>
-        </section>
+        </footer>
 
       </div>
     </AppLayout>
