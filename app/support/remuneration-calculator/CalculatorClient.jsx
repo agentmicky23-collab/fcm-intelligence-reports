@@ -182,8 +182,8 @@ export default function CalculatorClient() {
             </p>
           </div>
 
-          <blockquote className="text-xl md:text-2xl lg:text-3xl leading-snug text-[#c9d1d9] pl-8 border-l-4 border-[#b8231c] my-10 max-w-[820px]" style={{ fontFamily: "'Fraunces', serif" }}>
-            If you're looking at a branch listing right now, three things are true. The per-transaction rates are higher than last year across most product lines. Locals and SPSO branches are finally being paid the same as Mains for the same work. And there's a temporary 4% Mains top-up running through to April 2027 that inflates current Mains figures in a way the listings don't explain. <em className="italic text-[#7a1712]">Understanding these three changes is the difference between reading a listing accurately and overpaying for a branch.</em>
+          <blockquote className="text-xl md:text-2xl lg:text-3xl leading-snug text-[#c9d1d9] pl-8 border-l-4 border-[#e63946] my-10 max-w-[820px]" style={{ fontFamily: "'Fraunces', serif" }}>
+            If you're looking at a branch listing right now, three things are true. The per-transaction rates are higher than last year across most product lines. Locals and SPSO branches are finally being paid the same as Mains for the same work. And there's a temporary 4% Mains top-up running through to April 2027 that inflates current Mains figures in a way the listings don't explain. <em className="italic text-[#c92a37]">Understanding these three changes is the difference between reading a listing accurately and overpaying for a branch.</em>
           </blockquote>
         </section>
 
@@ -957,7 +957,7 @@ export default function CalculatorClient() {
             <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
               <a
                 href="/intelligence"
-                className="inline-block px-5 md:px-6 py-3 bg-[#b8231c] text-white no-underline text-[11px] font-bold tracking-[0.12em] uppercase border border-[#b8231c] transition-all font-mono hover:bg-[#7a1712]"
+                className="inline-block px-5 md:px-6 py-3 bg-[#e63946] text-white no-underline text-[11px] font-bold tracking-[0.12em] uppercase border border-[#e63946] transition-all font-mono hover:bg-[#c92a37]"
               >
                 Explore Intelligence Reports
               </a>
