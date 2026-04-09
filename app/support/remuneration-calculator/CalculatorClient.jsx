@@ -924,21 +924,36 @@ export default function CalculatorClient() {
                   </p>
                 </div>
 
-                {/* Survey Prompt */}
-                <div className="mt-8 p-5 md:p-6 bg-[#161b22] border border-[#30363d] rounded-lg">
-                  <div className="flex items-start gap-4">
-                    <span className="text-2xl">📋</span>
-                    <div>
-                      <h3 className="font-bold mb-2 text-base text-white">Help us improve this tool</h3>
-                      <p className="text-[13px] text-[#c9d1d9] leading-relaxed mb-4">
-                        We're building better tools for Post Office operators. Take 2 minutes to share your experience with branch insurance — your input shapes what we build next.
+                {/* Insurance Survey CTA */}
+                <div className="mt-10 p-6 md:p-8 bg-gradient-to-br from-[#1e3a5f] to-[#0d1117] border-2 border-[#c9a227] rounded-xl shadow-lg shadow-[#c9a227]/10">
+                  <div className="flex flex-col md:flex-row md:items-start gap-5">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-[#c9a227]/20 flex items-center justify-center text-3xl">
+                      🛡️
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold mb-3 text-xl md:text-2xl text-white" style={{ fontFamily: "'Fraunces', serif" }}>
+                        Is Your Branch Actually Insured?
+                      </h3>
+                      <p className="text-[14px] md:text-[15px] text-[#c9d1d9] leading-relaxed mb-4">
+                        Most Postmasters are on retail shop cover with Post Office bits bolted on. That's not Post Office insurance — it's a policy that may not pay out when you need it. 
                       </p>
-                      <a
-                        href="/support"
-                        className="inline-block px-4 py-2.5 bg-[#c9a227] text-[#0d1117] no-underline text-[11px] font-bold tracking-[0.12em] uppercase border border-[#c9a227] transition-all font-mono hover:bg-[#b8941f]"
-                      >
-                        Take the Insurance Survey
-                      </a>
+                      <p className="text-[14px] md:text-[15px] text-[#c9d1d9] leading-relaxed mb-5">
+                        Our <strong className="text-[#c9a227]">17-question insurance audit</strong> checks where your policy holds up and where it doesn't. Takes 7 minutes with your policy schedule to hand. <strong className="text-white">Free. No broker calls. No spam.</strong>
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <a
+                          href="/support"
+                          className="inline-flex items-center justify-center px-6 py-3 bg-[#c9a227] text-[#0d1117] no-underine text-[12px] font-bold tracking-[0.12em] uppercase border-2 border-[#c9a227] transition-all font-mono hover:bg-[#d4af37] hover:scale-105 rounded-lg"
+                        >
+                          Start the Free Insurance Audit →
+                        </a>
+                        <span className="inline-flex items-center justify-center px-4 py-3 text-[11px] text-[#8b949e] font-mono">
+                          ⏱️ 7 minutes • 17 questions
+                        </span>
+                      </div>
+                      <p className="mt-4 text-[11px] text-[#6e7681] italic">
+                        Already completed by 50+ Postmasters. Results help us build better market intelligence for the entire branch network.
+                      </p>
                     </div>
                   </div>
                 </div>
