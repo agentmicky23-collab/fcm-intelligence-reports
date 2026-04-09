@@ -22,8 +22,8 @@ export default function CalculatorClient() {
     setErrorMessage('');
 
     // Validate file
-    if (!file.name.match(/\.(xlsx)$/i)) {
-      setErrorMessage('Please upload an Excel file (.xlsx)');
+    if (!file.name.match(/\.(xlsx|csv)$/i)) {
+      setErrorMessage('Please upload an Excel (.xlsx) or CSV (.csv) file');
       setUploadState('error');
       return;
     }
@@ -180,7 +180,7 @@ export default function CalculatorClient() {
             >
               <input
                 type="file"
-                accept=".xlsx"
+                accept=".xlsx,.csv"
                 onChange={handleFileInput}
                 className="hidden"
                 id="file-upload"
@@ -190,9 +190,19 @@ export default function CalculatorClient() {
                 <h3 className="text-2xl font-bold mb-2">
                   {uploadState === 'uploading' ? 'Processing...' : 'Drop your statement here'}
                 </h3>
-                <p className="text-sm mb-4" style={{ color: '#8b949e' }}>
-                  or click to browse • .xlsx files only • max 1MB
+                <p className="text-sm mb-2" style={{ color: '#8b949e' }}>
+                  or click to browse • .xlsx or .csv • max 1MB
                 </p>
+                <div className="mt-4 p-4 rounded-lg text-left max-w-lg mx-auto" style={{ background: '#0d1117', border: '1px solid #30363d' }}>
+                  <p className="text-sm font-semibold mb-2" style={{ color: '#c9d1d9' }}>Where do I get this file?</p>
+                  <ol className="text-xs space-y-1 list-decimal list-inside" style={{ color: '#8b949e' }}>
+                    <li>Log in to <strong style={{ color: '#c9d1d9' }}>Branch Hub</strong> (the Post Office ServiceNow portal)</li>
+                    <li>Go to <strong style={{ color: '#c9d1d9' }}>Remuneration</strong> → <strong style={{ color: '#c9d1d9' }}>Monthly Statements</strong></li>
+                    <li>Select any recent month and click <strong style={{ color: '#c9d1d9' }}>Export to Excel</strong></li>
+                    <li>Upload the downloaded .xlsx file here</li>
+                  </ol>
+                  <p className="text-xs mt-2" style={{ color: '#6e7681' }}>The file is usually called something like <code style={{ color: '#c9a227' }}>sn_customerservice_rem_monthly_statement.xlsx</code></p>
+                </div>
                 {errorMessage && (
                   <div className="mt-4 p-3 rounded" style={{ background: 'rgba(248, 81, 73, 0.1)', color: '#f85149' }}>
                     {errorMessage}
