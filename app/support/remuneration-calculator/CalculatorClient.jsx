@@ -299,7 +299,7 @@ export default function CalculatorClient() {
                   <td className="py-2 px-3 text-right text-[#3fb950]">+69%</td>
                 </tr>
                 <tr className="border-b border-[#21262d]">
-                  <td className="py-2 px-3">Automated Deposit (> £1,000)</td>
+                  <td className="py-2 px-3">Automated Deposit (&gt; £1,000)</td>
                   <td className="py-2 px-3 text-right">63p</td>
                   <td className="py-2 px-3 text-right">87p</td>
                   <td className="py-2 px-3 text-right text-[#3fb950]">+38%</td>
