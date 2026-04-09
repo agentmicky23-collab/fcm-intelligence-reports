@@ -5,13 +5,16 @@ import Image from "next/image";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
-const navLinks = [
+const mainLinks = [
   { href: "/", label: "Home" },
   { href: "/reports", label: "Reports" },
   { href: "/opportunities", label: "Opportunities" },
-  { href: "/my-reports", label: "My Reports" },
-  { href: "/pro", label: "Pro Dashboard", special: true },
   { href: "/support", label: "Support" },
+];
+
+const actionLinks = [
+  { href: "/pro", label: "Pro Dashboard" },
+  { href: "/my-reports", label: "My Reports" },
   { href: "/insider", label: "Insider" },
 ];
 
@@ -35,22 +38,32 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={
-                  link.label === "Insider"
-                    ? "text-sm font-semibold px-4 py-2 rounded-lg bg-primary text-black hover:bg-primary/90 transition-colors"
-                    : link.special
-                    ? "text-sm font-semibold px-4 py-2 rounded-lg border border-primary text-primary hover:bg-primary hover:text-black transition-colors"
-                    : "text-sm text-muted-foreground hover:text-primary transition-colors"
-                }
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="hidden md:flex items-center gap-6 flex-1 justify-end">
+            {/* Main links - plain text */}
+            <div className="flex items-center gap-6 mr-auto ml-12">
+              {mainLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Action links - gold buttons, right side */}
+            <div className="flex items-center gap-3">
+              {actionLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm font-semibold px-4 py-2 rounded-lg bg-primary text-black hover:bg-primary/90 transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </nav>
 
           {/* Mobile toggle */}
@@ -65,22 +78,28 @@ export function Navbar() {
         {/* Mobile Nav */}
         {mobileOpen && (
           <nav className="md:hidden pb-4 border-t border-gray-900 pt-4">
-            {navLinks.map((link) => (
+            {mainLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={
-                  link.label === "Insider"
-                    ? "block py-2 px-4 my-2 text-sm font-semibold rounded-lg bg-primary text-black text-center"
-                    : link.special
-                    ? "block py-2 px-4 my-2 text-sm font-semibold rounded-lg border border-primary text-primary text-center hover:bg-primary hover:text-black transition-colors"
-                    : "block py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                }
+                className="block py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 {link.label}
               </Link>
             ))}
+            <div className="mt-3 pt-3 border-t border-gray-900 space-y-2">
+              {actionLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block py-2 px-4 text-sm font-semibold rounded-lg bg-primary text-black text-center"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </nav>
         )}
       </div>
