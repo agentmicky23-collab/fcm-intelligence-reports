@@ -924,35 +924,84 @@ export default function CalculatorClient() {
                   </p>
                 </div>
 
-                {/* Insurance Survey CTA */}
-                <div className="mt-10 p-6 md:p-8 bg-gradient-to-br from-[#1e3a5f] to-[#0d1117] border-2 border-[#c9a227] rounded-xl shadow-lg shadow-[#c9a227]/10">
-                  <div className="flex flex-col md:flex-row md:items-start gap-5">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-[#c9a227]/20 flex items-center justify-center text-3xl">
-                      🛡️
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold mb-3 text-xl md:text-2xl text-white" style={{ fontFamily: "'Fraunces', serif" }}>
-                        Is Your Branch Actually Insured?
-                      </h3>
-                      <p className="text-[14px] md:text-[15px] text-[#c9d1d9] leading-relaxed mb-4">
-                        Most Postmasters are on retail shop cover with Post Office bits bolted on. That's not Post Office insurance — it's a policy that may not pay out when you need it. 
-                      </p>
-                      <p className="text-[14px] md:text-[15px] text-[#c9d1d9] leading-relaxed mb-5">
-                        Our <strong className="text-[#c9a227]">17-question insurance audit</strong> checks where your policy holds up and where it doesn't. Takes 7 minutes with your policy schedule to hand. <strong className="text-white">Free. No broker calls. No spam.</strong>
-                      </p>
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        <a
-                          href="/support"
-                          className="inline-flex items-center justify-center px-6 py-3 bg-[#c9a227] text-[#0d1117] no-underine text-[12px] font-bold tracking-[0.12em] uppercase border-2 border-[#c9a227] transition-all font-mono hover:bg-[#d4af37] hover:scale-105 rounded-lg"
-                        >
-                          Start the Free Insurance Audit →
-                        </a>
-                        <span className="inline-flex items-center justify-center px-4 py-3 text-[11px] text-[#8b949e] font-mono">
-                          ⏱️ 7 minutes • 17 questions
-                        </span>
+                {/* Insurance Survey CTA - FULL WIDTH BANNER */}
+                <div className="mt-12 -mx-7 md:-mx-12 px-7 md:px-12 py-12 md:py-16 bg-gradient-to-br from-[#c9a227] via-[#d4af37] to-[#b8941f] relative overflow-hidden">
+                  {/* Background pattern */}
+                  <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #000 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
+                  
+                  <div className="max-w-[1180px] mx-auto relative z-10">
+                    <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12">
+                      {/* Left: Icon & Headline */}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-16 h-16 rounded-2xl bg-[#0d1117] flex items-center justify-center text-4xl shadow-xl">
+                            🛡️
+                          </div>
+                          <div className="px-3 py-1 bg-[#0d1117] rounded-full">
+                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#c9a227] font-mono">Critical for all Postmasters</span>
+                          </div>
+                        </div>
+                        <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0d1117] mb-4 leading-tight" style={{ fontFamily: "'Fraunces', serif" }}>
+                          Is Your Branch<br/>Actually Insured?
+                        </h3>
+                        <p className="text-lg md:text-xl text-[#1f1e18] font-medium max-w-[600px]">
+                          Most Postmasters are on retail shop cover with Post Office bits bolted on. That's not Post Office insurance — and it may not pay out when you need it most.
+                        </p>
                       </div>
-                      <p className="mt-4 text-[11px] text-[#6e7681] italic">
-                        Already completed by 50+ Postmasters. Results help us build better market intelligence for the entire branch network.
+                      
+                      {/* Right: The Problem & CTA */}
+                      <div className="flex-1 lg:max-w-[480px]">
+                        <div className="bg-[#0d1117] rounded-2xl p-6 md:p-8 shadow-2xl">
+                          <h4 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
+                            <span className="text-[#c9a227]">⚠️</span> The Insurance Gap
+                          </h4>
+                          <ul className="space-y-3 mb-6">
+                            <li className="flex items-start gap-3 text-[14px] text-[#c9d1d9]">
+                              <span className="text-[#ff6b6b] mt-0.5">✗</span>
+                              <span>Retail policies often exclude Post Office-specific risks</span>
+                            </li>
+                            <li className="flex items-start gap-3 text-[14px] text-[#c9d1d9]">
+                              <span className="text-[#ff6b6b] mt-0.5">✗</span>
+                              <span>Cash handling limits may be lower than your actual holdings</span>
+                            </li>
+                            <li className="flex items-start gap-3 text-[14px] text-[#c9d1d9]">
+                              <span className="text-[#ff6b6b] mt-0.5">✗</span>
+                              <span>Business interruption cover often misses PO-specific losses</span>
+                            </li>
+                          </ul>
+                          
+                          <div className="border-t border-[#30363d] pt-6">
+                            <p className="text-[13px] text-[#8b949e] mb-4">
+                              Our <strong className="text-white">17-question audit</strong> checks your policy against Post Office-specific risks. Takes 7 minutes.
+                            </p>
+                            <a
+                              href="/support"
+                              className="block w-full text-center px-6 py-4 bg-[#c9a227] text-[#0d1117] no-underline text-[13px] font-bold tracking-[0.12em] uppercase border-2 border-[#c9a227] transition-all font-mono hover:bg-white hover:border-white rounded-lg shadow-lg"
+                            >
+                              Start Your Free Insurance Audit →
+                            </a>
+                            <p className="mt-3 text-center text-[10px] text-[#6e7681] font-mono">
+                              ⏱️ 7 minutes • 17 questions • No broker calls • No spam
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Bottom trust bar */}
+                    <div className="mt-10 pt-6 border-t border-[#0d1117]/20 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">👥</span>
+                          <span className="text-[#1f1e18] font-bold">50+ Postmasters</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">📊</span>
+                          <span className="text-[#1f1e18] font-bold">Building market intelligence</span>
+                        </div>
+                      </div>
+                      <p className="text-[13px] text-[#1f1e18]/80 italic">
+                        Your audit helps us improve the entire branch network's understanding of insurance gaps.
                       </p>
                     </div>
                   </div>
