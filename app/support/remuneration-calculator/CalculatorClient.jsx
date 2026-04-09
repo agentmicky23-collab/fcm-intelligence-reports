@@ -785,30 +785,40 @@ export default function CalculatorClient() {
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6 flex-wrap">
                       {(results.branch.contractType === 'mains' || results.branch.contractType === 'local') && (
                         <>
-                          <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#c9d1d9]">
-                            <input
-                              type="checkbox"
-                              checked={applyMBSP}
-                              onChange={(e) => {
-                                setApplyMBSP(e.target.checked);
-                                setTimeout(recalculate, 0);
-                              }}
-                              className="w-4 h-4"
-                            />
-                            <span>MBSP (4% of variable)</span>
-                          </label>
-                          <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#c9d1d9]">
-                            <input
-                              type="checkbox"
-                              checked={applyRSP}
-                              onChange={(e) => {
-                                setApplyRSP(e.target.checked);
-                                setTimeout(recalculate, 0);
-                              }}
-                              className="w-4 h-4"
-                            />
-                            <span>RSP (£416.67/month)</span>
-                          </label>
+                          <div className="flex flex-col gap-1">
+                            <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#c9d1d9]">
+                              <input
+                                type="checkbox"
+                                checked={applyMBSP}
+                                onChange={(e) => {
+                                  setApplyMBSP(e.target.checked);
+                                  setTimeout(recalculate, 0);
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <span className="font-medium">MBSP (4% of variable)</span>
+                            </label>
+                            <p className="text-[11px] text-[#8b949e] ml-6 max-w-[320px]">
+                              Major Branch Support Payment. For branches in town/city centres with 2+ operating banks within ¼ mile. Adds 4% to all variable remuneration.
+                            </p>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#c9d1d9]">
+                              <input
+                                type="checkbox"
+                                checked={applyRSP}
+                                onChange={(e) => {
+                                  setApplyRSP(e.target.checked);
+                                  setTimeout(recalculate, 0);
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <span className="font-medium">RSP (£416.67/month)</span>
+                            </label>
+                            <p className="text-[11px] text-[#8b949e] ml-6 max-w-[320px]">
+                              Remote Support Payment. For branches with fewer than 1,500 residents within ½ mile. Fixed £5,000/year paid monthly (£416.67/month).
+                            </p>
+                          </div>
                         </>
                       )}
                     </div>
