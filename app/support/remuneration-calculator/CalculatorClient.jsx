@@ -854,6 +854,7 @@ export default function CalculatorClient() {
                           <th className="text-left py-2.5 px-2 text-[#8b949e] text-[9px] tracking-[0.12em] uppercase font-bold">Ref</th>
                           <th className="text-left py-2.5 px-2 text-[#8b949e] text-[9px] tracking-[0.12em] uppercase font-bold">Product</th>
                           <th className="text-left py-2.5 px-2 text-[#8b949e] text-[9px] tracking-[0.12em] uppercase font-bold">Category</th>
+                          <th className="text-right py-2.5 px-2 text-[#8b949e] text-[9px] tracking-[0.12em] uppercase font-bold">Units</th>
                           <th className="text-right py-2.5 px-2 text-[#8b949e] text-[9px] tracking-[0.12em] uppercase font-bold">Old £</th>
                           <th className="text-right py-2.5 px-2 text-[#8b949e] text-[9px] tracking-[0.12em] uppercase font-bold">New £</th>
                           <th className="text-right py-2.5 px-2 text-[#8b949e] text-[9px] tracking-[0.12em] uppercase font-bold">Δ</th>
@@ -865,10 +866,11 @@ export default function CalculatorClient() {
                             <td className="py-1.5 px-2 text-[#6e7681] text-[10px]" style={{ fontVariantNumeric: 'tabular-nums' }}>{row.salesRef}</td>
                             <td className="py-1.5 px-2 text-white text-xs" style={{ fontFamily: "'Inter', sans-serif" }}>{row.name}</td>
                             <td className="py-1.5 px-2 text-[#c9d1d9]" style={{ fontVariantNumeric: 'tabular-nums' }}>{row.category}</td>
+                            <td className="py-1.5 px-2 text-[#8b949e] text-right" style={{ fontVariantNumeric: 'tabular-nums' }}>{row.salesValue?.toLocaleString('en-GB') || '—'}</td>
                             <td className="py-1.5 px-2 text-[#c9d1d9] text-right" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(row.oldAmount)}</td>
                             <td className="py-1.5 px-2 text-[#c9d1d9] text-right" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(row.newAmount)}</td>
                             <td className={`py-1.5 px-2 font-bold text-right ${row.delta >= 0 ? 'text-[#3fb950]' : 'text-[#ff6b6b]'}`} style={{ fontVariantNumeric: 'tabular-nums' }}>
-                              {row.isUncertain ? '?' : (row.delta === 0 ? '—' : (row.delta > 0 ? '+' : '') + formatCurrency(row.delta))}
+                              {row.isUncertain ? '?' : (Math.abs(row.delta) < 0.005 ? '—' : (row.delta > 0 ? '+' : '') + formatCurrency(row.delta))}
                             </td>
                           </tr>
                         ))}
