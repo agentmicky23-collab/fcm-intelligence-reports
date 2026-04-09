@@ -15,7 +15,6 @@ export default function CalculatorClient() {
   const [applyRSP, setApplyRSP] = useState(false);
   const [resellerPct, setResellerPct] = useState(33);
   const [showAllRows, setShowAllRows] = useState(false);
-  const [showChangedOnly, setShowChangedOnly] = useState(true);
 
   const handleFile = useCallback((file) => {
     setUploadState('uploading');
@@ -132,7 +131,7 @@ export default function CalculatorClient() {
   };
 
   const displayRows = results ? 
-    (showAllRows ? results.processedRows : (showChangedOnly ? results.processedRows.filter(r => r.changed) : results.processedRows.filter(r => Math.abs(r.delta) > 0.01)))
+    (showAllRows ? results.processedRows : results.processedRows.filter(r => r.changed))
     : [];
 
   return (
@@ -832,29 +831,27 @@ export default function CalculatorClient() {
 
                   <div className="flex flex-col md:flex-row gap-3 items-start md:items-center flex-wrap">
                     <button
-                      onClick={() => setShowAllRows(!showAllRows)}
+                      onClick={() => setShowAllRows(true)}
                       className={`font-mono px-4 md:px-5 py-2.5 text-[11px] tracking-[0.1em] uppercase font-bold cursor-pointer transition-all rounded ${
-                        showAllRows 
-                          ? 'bg-[#c9a227] border border-[#c9a227] text-[#0d1117]' 
+                        showAllRows
+                          ? 'bg-[#c9a227] border border-[#c9a227] text-[#0d1117]'
                           : 'bg-transparent border border-[#30363d] text-[#c9d1d9] hover:border-[#8b949e]'
                       }`}
                     >
-                      {showAllRows ? 'Hide unchanged lines' : 'Show all line items'}
+                      Show all line items
                     </button>
-                    {showAllRows && (
-                      <button
-                        onClick={() => setShowChangedOnly(!showChangedOnly)}
-                        className={`font-mono px-4 md:px-5 py-2.5 text-[11px] tracking-[0.1em] uppercase font-bold cursor-pointer transition-all rounded ${
-                          !showChangedOnly 
-                            ? 'bg-[#c9a227] border border-[#c9a227] text-[#0d1117]' 
-                            : 'bg-transparent border border-[#30363d] text-[#c9d1d9] hover:border-[#8b949e]'
-                        }`}
-                      >
-                        {showChangedOnly ? 'Changed lines only' : 'All lines'}
-                      </button>
-                    )}
+                    <button
+                      onClick={() => setShowAllRows(false)}
+                      className={`font-mono px-4 md:px-5 py-2.5 text-[11px] tracking-[0.1em] uppercase font-bold cursor-pointer transition-all rounded ${
+                        !showAllRows
+                          ? 'bg-[#c9a227] border border-[#c9a227] text-[#0d1117]'
+                          : 'bg-transparent border border-[#30363d] text-[#c9d1d9] hover:border-[#8b949e]'
+                      }`}
+                    >
+                      Changed lines only
+                    </button>
                     <span className="font-mono text-[11px] text-[#8b949e] md:ml-auto">
-                      Showing {displayRows.length} {showAllRows ? (showChangedOnly ? 'changed' : '') : 'changed'} lines
+                      Showing {displayRows.length} {showAllRows ? 'total' : 'changed'} lines
                     </span>
                   </div>
                 </div>
