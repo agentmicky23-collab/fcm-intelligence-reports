@@ -71,6 +71,37 @@ export default function SupportClient() {
               Start audit →
             </button>
           </div>
+
+          {/* Remuneration Calculator Card */}
+          <a 
+            href="/support/remuneration-calculator" 
+            className="p-6 rounded-lg border transition-all hover:border-[#c9a227] cursor-pointer group block"
+            style={{ background: '#161b22', borderColor: '#30363d' }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div 
+                className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl"
+                style={{ background: 'rgba(201, 162, 39, 0.1)' }}
+              >
+                📊
+              </div>
+              <h3 className="text-xl font-bold">Remuneration Calculator 2026/27</h3>
+            </div>
+            <p className="text-sm mb-4" style={{ color: '#8b949e' }}>
+              The Post Office rewrote every transaction rate on 30 March 2026. Upload your monthly statement and see exactly what the new rates mean for your branch. Runs entirely in your browser — your data never leaves your device.
+            </p>
+            <div className="flex items-center gap-4 text-xs mb-4" style={{ color: '#8b949e' }}>
+              <span>📄 Upload statement</span>
+              <span>⚡ Instant results</span>
+              <span className="text-[#22c55e]">✓ Free</span>
+            </div>
+            <span 
+              className="w-full px-4 py-2 rounded-lg font-semibold transition-all group-hover:bg-[#d4af37] block text-center"
+              style={{ background: '#c9a227', color: '#0d1117' }}
+            >
+              Calculate now →
+            </span>
+          </a>
         </div>
       </section>
 
