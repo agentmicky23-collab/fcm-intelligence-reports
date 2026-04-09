@@ -11,6 +11,7 @@ const navLinks = [
   { href: "/opportunities", label: "Opportunities" },
   { href: "/my-reports", label: "My Reports" },
   { href: "/pro", label: "Pro Dashboard", special: true },
+  { href: "/support", label: "Support" },
   { href: "/insider", label: "Insider" },
 ];
 
