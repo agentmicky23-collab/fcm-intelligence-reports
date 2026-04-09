@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import * as XLSX from 'xlsx';
-import AppLayout from '@/components/layout/AppLayout';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { parseStatement, calculateNewRates } from '@/lib/remuneration/calculator';
 
 export default function CalculatorClient() {
