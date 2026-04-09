@@ -143,7 +143,7 @@ export default function CalculatorClient() {
     <AppLayout>
       <div className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
         {/* Hero Section */}
-        <div className="max-w-5xl mx-auto px-6 py-12">
+        <div className="max-w-5xl mx-auto px-6 pt-24 pb-12">
           <div className="mb-8">
             <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif', color: '#c9a227' }}>
               Remuneration Calculator 2026/27
