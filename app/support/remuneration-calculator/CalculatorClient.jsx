@@ -944,9 +944,17 @@ export default function CalculatorClient() {
                         <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0d1117] mb-4 leading-tight" style={{ fontFamily: "'Fraunces', serif" }}>
                           Is Your Branch<br/>Actually Insured?
                         </h3>
-                        <p className="text-lg md:text-xl text-[#1f1e18] font-medium max-w-[600px]">
+                        <p className="text-lg md:text-xl text-[#1f1e18] font-medium max-w-[600px] mb-6">
                           Most Postmasters are on retail shop cover with Post Office bits bolted on. That's not Post Office insurance — and it may not pay out when you need it most.
                         </p>
+                        <div className="bg-[#0d1117]/10 rounded-xl p-5 border-2 border-[#0d1117]/20">
+                          <p className="text-[15px] text-[#0d1117] font-bold mb-2 flex items-center gap-2">
+                            <span className="text-xl">📂</span> You already have your documents out...
+                          </p>
+                          <p className="text-[14px] text-[#1f1e18] leading-relaxed">
+                            You've got your <strong>remuneration statement</strong> in front of you. While you're logged into Branch Hub, <strong>grab your insurance policy schedule too</strong>. Two audits, 10 minutes total, complete peace of mind for your branch.
+                          </p>
+                        </div>
                       </div>
                       
                       {/* Right: The Problem & CTA */}
