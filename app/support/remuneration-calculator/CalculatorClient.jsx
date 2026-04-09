@@ -890,8 +890,8 @@ export default function CalculatorClient() {
                             <td className="py-1.5 px-2 text-[#8b949e] text-right" style={{ fontVariantNumeric: 'tabular-nums' }}>{row.salesValue?.toLocaleString('en-GB') || '—'}</td>
                             <td className="py-1.5 px-2 text-[#c9d1d9] text-right" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(row.oldAmount)}</td>
                             <td className="py-1.5 px-2 text-[#c9d1d9] text-right" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(row.newAmount)}</td>
-                            <td className={`py-1.5 px-2 font-bold text-right ${row.delta >= 0 ? 'text-[#3fb950]' : 'text-[#ff6b6b]'}`} style={{ fontVariantNumeric: 'tabular-nums' }}>
-                              {row.isUncertain ? '?' : (Math.abs(row.delta) < 0.005 ? '—' : (row.delta > 0 ? '+' : '') + formatCurrency(row.delta))}
+                            <td className={`py-1.5 px-2 font-bold text-right ${row.delta > 0 ? 'text-[#3fb950]' : row.delta < 0 ? 'text-[#ff6b6b]' : 'text-[#8b949e]'}`} style={{ fontVariantNumeric: 'tabular-nums' }}>
+                              {row.isUncertain ? '?' : (row.delta > 0 ? '+' : '') + formatCurrency(row.delta)}
                             </td>
                           </tr>
                         ))}
