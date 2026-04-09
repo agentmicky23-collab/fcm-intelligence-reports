@@ -902,6 +902,25 @@ export default function CalculatorClient() {
                     Actual remuneration depends on your branch's specific trading patterns, OEI score, and Post Office Ltd's application of the new rates.
                   </p>
                 </div>
+
+                {/* Survey Prompt */}
+                <div className="mt-8 p-5 md:p-6 bg-[#161b22] border border-[#30363d] rounded-lg">
+                  <div className="flex items-start gap-4">
+                    <span className="text-2xl">📋</span>
+                    <div>
+                      <h3 className="font-bold mb-2 text-base text-white">Help us improve this tool</h3>
+                      <p className="text-[13px] text-[#c9d1d9] leading-relaxed mb-4">
+                        We're building better tools for Post Office operators. Take 2 minutes to share your experience with branch insurance — your input shapes what we build next.
+                      </p>
+                      <a
+                        href="/support"
+                        className="inline-block px-4 py-2.5 bg-[#c9a227] text-[#0d1117] no-underline text-[11px] font-bold tracking-[0.12em] uppercase border border-[#c9a227] transition-all font-mono hover:bg-[#b8941f]"
+                      >
+                        Take the Insurance Survey
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
