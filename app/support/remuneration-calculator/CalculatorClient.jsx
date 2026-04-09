@@ -603,15 +603,29 @@ export default function CalculatorClient() {
               </p>
             </div>
 
-            {/* Privacy Notice */}
+            {/* Privacy & Disclaimer Notice */}
             <div className="mb-9 p-4 md:p-5 bg-[#161b22] border border-[#30363d] rounded-lg">
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 mb-4">
                 <span className="text-2xl">🔒</span>
                 <div>
                   <h3 className="font-bold mb-1 text-white">100% Client-Side Processing</h3>
                   <p className="text-sm text-[#8b949e] leading-relaxed">
                     Your data is processed entirely in your browser. No upload. No server. No storage. When you close this page, your data is gone.
                   </p>
+                </div>
+              </div>
+              <div className="border-t border-[#30363d] pt-4 mt-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-xl">⚠️</span>
+                  <div>
+                    <h4 className="font-bold mb-1 text-[#c9a227] text-sm">Illustration Only — Not Financial Advice</h4>
+                    <p className="text-xs text-[#8b949e] leading-relaxed">
+                      This calculator is for illustration purposes only. It is developed by FCM Intelligence and may contain errors or inaccuracies. 
+                      Actual Post Office remuneration may differ significantly from these projections. Do not use this calculator as the basis for 
+                      financial decisions, business planning, or altering your operations. Rates are subject to change by Post Office Ltd at any time. 
+                      Always verify figures against official POL documentation or your Branch Hub account before making commercial decisions.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
