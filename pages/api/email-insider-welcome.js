@@ -2,6 +2,31 @@
 // Triggered by Stripe webhook when Insider subscription starts
 // Welcomes new member and explains what they get
 
+import { createClient } from '@supabase/supabase-js';
+
+// Read the live active count at send-time. Round down to nearest 100 for
+// stability ("600+"), and fall back to a non-numeric phrase if the DB is
+// unreachable — never hardcode a number.
+async function getLiveOpportunityPhrase() {
+  try {
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) return 'hundreds of';
+    const sb = createClient(url, key);
+    const { count, error } = await sb
+      .from('insider_picks')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'active');
+    if (error || count == null || count <= 0) return 'hundreds of';
+    if (count < 25) return `${10 * Math.floor(count / 10) || 10}+`;
+    if (count < 100) return `${25 * Math.floor(count / 25)}+`;
+    if (count < 500) return `${50 * Math.floor(count / 50)}+`;
+    return `${100 * Math.floor(count / 100)}+`;
+  } catch {
+    return 'hundreds of';
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -12,6 +37,7 @@ export default async function handler(req, res) {
     if (!email) return res.status(400).json({ error: 'email required' });
 
     const firstName = name ? name.split(' ')[0] : 'there';
+    const livePhrase = await getLiveOpportunityPhrase();
 
     const htmlBody = `
 <!DOCTYPE html>
@@ -115,7 +141,7 @@ export default async function handler(req, res) {
                 <tr>
                   <td style="padding:16px 20px;">
                     <div style="font-size:14px;color:#c9a227;font-weight:600;margin-bottom:4px;">🚀 Your First Step</div>
-                    <div style="font-size:13px;color:#8b949e;line-height:1.5;">Browse our 35+ live opportunities — and if one catches your eye, order a report. As an Insider, you'll have the context to spot the real gems before other buyers even know they exist.</div>
+                    <div style="font-size:13px;color:#8b949e;line-height:1.5;">Browse our ${livePhrase} live opportunities — and if one catches your eye, order a report. As an Insider, you'll have the context to spot the real gems before other buyers even know they exist.</div>
                   </td>
                 </tr>
               </table>

@@ -5,11 +5,10 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ListingCard } from "@/components/listing-card";
-import { listings } from "@/lib/listings-data";
-import type { BusinessType } from "@/types/listing";
+import type { BusinessType, Listing } from "@/types/listing";
 
 // ─── Login Modal ────────────────────────────────────────
-function LoginModal() {
+function LoginModal({ totalCount }: { totalCount: number | null }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -47,7 +46,7 @@ function LoginModal() {
                 Sign in to unlock opportunities
               </h2>
               <p className="text-sm" style={{ color: "#8b949e" }}>
-                Access {listings.length}+ curated Post Office listings with expert analysis
+                Access {totalCount && totalCount > 0 ? `${totalCount}+ ` : ""}curated Post Office listings with expert analysis
               </p>
             </div>
 
@@ -211,6 +210,11 @@ export default function OpportunitiesClient() {
   const { data: session, status } = useSession();
   const [subscriptionStatus, setSubscriptionStatus] = useState<"loading" | "subscribed" | "not_subscribed">("loading");
 
+  // Live data from /api/opportunities
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [listingsLoading, setListingsLoading] = useState(true);
+  const [listingsError, setListingsError] = useState<string | null>(null);
+
   // Filter states
   const [category, setCategory] = useState<'all' | BusinessType>('all');
   const [region, setRegion] = useState<string>('');
@@ -239,6 +243,28 @@ export default function OpportunitiesClient() {
     }
   }, [status, checkSubscription]);
 
+  // Fetch live listings from API
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/opportunities");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (cancelled) return;
+        setListings(Array.isArray(data.listings) ? data.listings : []);
+      } catch (e) {
+        if (cancelled) return;
+        setListingsError(e instanceof Error ? e.message : "Failed to load");
+      } finally {
+        if (!cancelled) setListingsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Determine what to show
   const isLoading = status === "loading" || (status === "authenticated" && subscriptionStatus === "loading");
   const showLoginModal = status === "unauthenticated";
@@ -252,7 +278,7 @@ export default function OpportunitiesClient() {
       if (listing.region) uniqueRegions.add(listing.region);
     });
     return Array.from(uniqueRegions).sort();
-  }, []);
+  }, [listings]);
 
   // Get category counts
   const categoryCounts = useMemo(() => {
@@ -263,13 +289,13 @@ export default function OpportunitiesClient() {
       forecourt: 0,
       newsagent: 0,
     };
-    
+
     listings.forEach(listing => {
       counts[listing.businessType] = (counts[listing.businessType] || 0) + 1;
     });
-    
+
     return counts;
-  }, []);
+  }, [listings]);
 
   // Filter listings
   const filteredListings = useMemo(() => {
@@ -314,11 +340,13 @@ export default function OpportunitiesClient() {
     filtered.sort((a, b) => {
       if (a.insiderVisible && !b.insiderVisible) return -1;
       if (!a.insiderVisible && b.insiderVisible) return 1;
-      return b.id.localeCompare(a.id);
+      // API returns newest-first by added_at — preserve that order as fallback.
+      // localeCompare on numeric DB ids is good enough for tie-breaking.
+      return b.id.localeCompare(a.id, undefined, { numeric: true });
     });
 
     return filtered;
-  }, [category, region, search, budget, insiderOnly]);
+  }, [listings, category, region, search, budget, insiderOnly]);
 
   const hasActiveFilters = category !== 'all' || region !== '' || search !== '' || budget !== 'all' || insiderOnly;
 
@@ -333,7 +361,7 @@ export default function OpportunitiesClient() {
   return (
     <AppLayout>
       {/* Auth Modals */}
-      {showLoginModal && <LoginModal />}
+      {showLoginModal && <LoginModal totalCount={listings.length} />}
       {showUpgradeModal && <UpgradeModal />}
 
       {/* ═══════════════════════════ HERO (COMPACT) ═══════════════════════════ */}
@@ -514,14 +542,30 @@ export default function OpportunitiesClient() {
         <section className="py-6" style={{ background: '#0d1117', borderBottom: '1px solid #30363d' }}>
           <div className="container mx-auto px-4">
             <p className="text-sm" style={{ color: '#8b949e' }}>
-              Showing <strong className="text-white">{filteredListings.length}</strong> of <strong className="text-white">{listings.length}</strong> opportunities
+              {listingsLoading ? (
+                <span className="animate-pulse">Loading live opportunities…</span>
+              ) : listingsError ? (
+                <span style={{ color: '#f97316' }}>Could not load opportunities — please refresh.</span>
+              ) : (
+                <>Showing <strong className="text-white">{filteredListings.length}</strong> of <strong className="text-white">{listings.length}</strong> opportunities</>
+              )}
             </p>
           </div>
         </section>
 
         {/* ═══════════════════════════ LISTINGS GRID ═══════════════════════════ */}
         <section className="py-12 md:py-20 container mx-auto px-4">
-          {filteredListings.length > 0 ? (
+          {listingsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-lg animate-pulse"
+                  style={{ background: '#161b22', height: 360, border: '1px solid #30363d' }}
+                />
+              ))}
+            </div>
+          ) : filteredListings.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredListings.map((listing) => (
                 <ListingCard key={listing.id} listing={listing} />

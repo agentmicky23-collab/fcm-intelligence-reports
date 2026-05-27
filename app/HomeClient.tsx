@@ -10,7 +10,7 @@ import { ReportRequestModal } from "@/components/report-request-modal";
 import { FinalHookCarousel } from "@/components/final-hook-carousel";
 import { MobileCarousel } from "@/components/mobile-carousel";
 
-import { listings } from "@/lib/listings-data";
+import type { Listing } from "@/types/listing";
 
 // Rotating headline words for hero
 // Desktop and mobile variants — mobile uses shorter text to prevent layout shift
@@ -124,13 +124,14 @@ function RotatingHeadline() {
   );
 }
 
-// Get 3 featured listings with daily rotation
-function getFeaturedListings() {
-  const availableListings = listings.filter(listing => isSoldListingVisible(listing));
+// Get 3 featured listings with daily rotation from a live source set
+function getFeaturedListings(allListings: Listing[]): Listing[] {
+  const availableListings = allListings.filter(listing => isSoldListingVisible(listing));
+  if (availableListings.length === 0) return [];
   const today = new Date();
   const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
   const startIndex = dayOfYear % Math.max(1, availableListings.length - 2);
-  const featured = [];
+  const featured: Listing[] = [];
   for (let i = 0; i < 3 && i < availableListings.length; i++) {
     const idx = (startIndex + i) % availableListings.length;
     featured.push(availableListings[idx]);
@@ -212,9 +213,34 @@ function CountUp({ target, suffix = "", duration = 6000, delay = 6000 }: { targe
 }
 
 export default function HomeClient() {
-  const featuredListings = getFeaturedListings();
+  const [liveListings, setLiveListings] = useState<Listing[]>([]);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTier, setModalTier] = useState<"insight" | "intelligence">("intelligence");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/opportunities");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled) return;
+        if (Array.isArray(data.listings)) setLiveListings(data.listings);
+        if (typeof data.total === "number") setTotalCount(data.total);
+        else if (Array.isArray(data.listings)) setTotalCount(data.listings.length);
+      } catch {
+        // Silent fallback — featured listings just stay empty and we render
+        // the "Browse Listings" CTA with no count.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const featuredListings = getFeaturedListings(liveListings);
+  const countLabel = totalCount && totalCount > 0 ? totalCount : null;
 
   const openOrderModal = (tier: "insight" | "intelligence") => {
     setModalTier(tier);
@@ -402,7 +428,11 @@ export default function HomeClient() {
             <h2 className="text-3xl md:text-5xl font-bold mb-4">🔥 Live Opportunities</h2>
             <p style={{ color: '#8b949e' }} className="max-w-2xl mx-auto mb-2">Businesses For Sale Now</p>
             <p style={{ color: '#57606a', fontSize: '0.9rem' }}>
-              Showing {featuredListings.length} of {listings.length} opportunities • <Link href="/opportunities" className="underline" style={{ color: '#c9a227' }}>View All</Link>
+              {countLabel ? (
+                <>Showing {featuredListings.length} of {countLabel} opportunities</>
+              ) : (
+                <>Browse all live opportunities</>
+              )} • <Link href="/opportunities" className="underline" style={{ color: '#c9a227' }}>View All</Link>
             </p>
           </div>
           {/* Desktop: 3-column grid */}
@@ -422,7 +452,7 @@ export default function HomeClient() {
             </MobileCarousel>
           </div>
           <div className="text-center mt-8">
-            <Link href="/opportunities" className="btn-primary text-lg px-10 py-4">View All {listings.length} Listings</Link>
+            <Link href="/opportunities" className="btn-primary text-lg px-10 py-4">View All{countLabel ? ` ${countLabel}` : ""} Listings</Link>
           </div>
         </div>
       </section>
