@@ -3,13 +3,12 @@
 // File: pages/report/[orderId].jsx
 // Purpose: Web viewer for FCM reports with email gate + tier-based rendering
 // URL: fcmreport.com/report/123 (where 123 = orders.id)
-// Data: reads from 'reports' table (joined to 'orders' by order_id)
+// Data: fetched server-side from /api/report/view (email or admin key checked there)
 // ============================================================
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { createClient } from "@supabase/supabase-js";
 
 // Import ALL components from the v2 library
 import {
@@ -30,12 +29,22 @@ import LockedSectionTeaser from "../../components/LockedSectionTeaser";
 import UpgradeBannerComponent from "../../components/UpgradeBanner";
 
 // ============================================================
-// SUPABASE CLIENT
+// REPORT ACCESS — server-side check via /api/report/view
+// (the reports table is not readable from the browser)
 // ============================================================
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+async function requestReport({ orderId, email, adminKey }) {
+  const res = await fetch("/api/report/view", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orderId, email, adminKey }),
+  });
+  let body = {};
+  try { body = await res.json(); } catch { /* non-JSON error */ }
+  if (res.status !== 200) {
+    return { error: body.error || "Something went wrong. Please try again." };
+  }
+  return { data: body };
+}
 
 // ============================================================
 // SECTION ORDER — canonical display order for all 15 sections
@@ -105,31 +114,17 @@ function EmailGate({ orderId, onVerified }) {
     setLoading(true);
 
     try {
-      // Query reports table by order_id (which matches orders.id)
-      const { data, error: dbError } = await supabase
-        .from("reports")
-        .select("report_json, customer_email, tier, status")
-        .eq("order_id", orderId)
-        .single();
+      const { data, error: accessError } = await requestReport({ orderId, email: email.trim() });
 
-      if (dbError || !data) {
-        setError("Report not found. Please check your link and try again.");
+      if (accessError) {
+        setError(accessError);
         setLoading(false);
         return;
       }
 
-      if (data.status === "generating" || data.status === "validating") {
-        setError("Your report is still being prepared. We'll email you when it's ready.");
-        setLoading(false);
-        return;
-      }
-
-      if (data.customer_email.toLowerCase().trim() !== email.toLowerCase().trim()) {
-        setError("Email doesn't match our records. Please use the email you purchased with.");
-        setLoading(false);
-        return;
-      }
-
+      try {
+        sessionStorage.setItem(`fcm-verified-${orderId}`, email.trim());
+      } catch { /* storage unavailable — user re-enters email on refresh */ }
       onVerified(data);
     } catch (err) {
       setError("Something went wrong. Please try again.");
@@ -535,9 +530,9 @@ export default function ReportPage({ orderId }) {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
-  // ── Admin bypass: ?admin=fcm-pipeline-2026-secure-key ──
-  const adminKey = router.query.admin;
-  const isAdmin = adminKey === 'fcm-pipeline-2026-secure-key';
+  // ── Admin review: ?admin=<FCM_PIPELINE_SECRET>, validated server-side ──
+  const adminKey = typeof router.query.admin === "string" ? router.query.admin : null;
+  const isAdmin = !!adminKey;
 
   // ── DEBUG: Log every render cycle ──
   console.log('[DEBUG] ReportPage render', {
@@ -564,15 +559,15 @@ export default function ReportPage({ orderId }) {
     // Admin bypass — skip email gate, fetch report directly
     if (isAdmin) {
       console.log('[DEBUG] Admin bypass active — fetching report directly');
-      fetchReport(orderId);
+      fetchReport(orderId, { adminKey });
       return;
     }
 
     try {
       const cached = sessionStorage.getItem(`fcm-verified-${orderId}`);
-      console.log('[DEBUG] sessionStorage cached:', cached);
-      if (cached) {
-        fetchReport(orderId);
+      // Older sessions stored "true" rather than the email — ignore those.
+      if (cached && cached.includes("@")) {
+        fetchReport(orderId, { email: cached });
       } else {
         setLoading(false);
       }
@@ -580,16 +575,14 @@ export default function ReportPage({ orderId }) {
       console.error('[DEBUG] sessionStorage access error:', err);
       setLoading(false);
     }
-  }, [orderId, isAdmin]);
+  }, [orderId, isAdmin, adminKey]);
 
-  const fetchReport = async (id) => {
+  const fetchReport = async (id, { email, adminKey: key } = {}) => {
     console.log('[DEBUG] fetchReport called for id:', id);
     try {
-      const { data, error } = await supabase
-        .from("reports")
-        .select("report_json, tier")
-        .eq("order_id", id)
-        .single();
+      const { data: result, error: accessError } = await requestReport({ orderId: id, email, adminKey: key });
+      const data = result || null;
+      const error = accessError ? { message: accessError } : null;
 
       console.log('[DEBUG] Supabase response:', {
         hasData: !!data,
@@ -602,7 +595,7 @@ export default function ReportPage({ orderId }) {
 
       if (error) {
         console.error('[DEBUG] Supabase query error:', error);
-        setFetchError(`Database error: ${error.message}`);
+        setFetchError(error.message);
         setLoading(false);
         return;
       }
@@ -648,7 +641,6 @@ export default function ReportPage({ orderId }) {
       setReportData(data.report_json);
       setTier(data.tier);
       setVerified(true);
-      sessionStorage.setItem(`fcm-verified-${id}`, "true");
     } catch (err) {
       console.error('[DEBUG] fetchReport exception:', err);
       setFetchError(`Unexpected error: ${err.message}`);
@@ -687,7 +679,6 @@ export default function ReportPage({ orderId }) {
       setReportData(reportJson);
       setTier(data.tier);
       setVerified(true);
-      sessionStorage.setItem(`fcm-verified-${orderId}`, "true");
     } catch (err) {
       console.error('[DEBUG] handleVerified error:', err);
       setFetchError(`Failed to process report data: ${err.message}`);
